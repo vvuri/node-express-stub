@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 
-const config = require('./config.json');
+const config = require('../config.json');
 const hostname = config.hostname || '127.0.0.1';
 const port = config.port || '8888';
 const dirname = config.dirname || "";

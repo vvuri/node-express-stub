@@ -1,32 +1,11 @@
 import * as http from 'http';
 import * as fs from 'fs';
+import * as mime from 'mime-types';
 
 const config = require('../config.json');
 const hostname = config.hostname || '127.0.0.1';
 const port = config.port || '8888';
 const dirname = config.dirname || '';
-
-const ContentType = {
-    'mov':  'video/quicktime',
-    'mp4':  'video/mp4',
-    'flv':  'video/x-flv',
-    '3gp':  'video/3gpp',
-    'wmv':  'video/x-ms-wmv',
-    'avi':  'video/x-msvideo',
-    'mpeg': 'video/mpeg',
-    'wav':  'audio/wav',
-    'txt':  'text/plain; charset=utf-8',
-    'ttf':  'font/ttf',
-    'htm':  'text/html',
-    'html': 'text/html',
-    'jpg':  'image/jpeg',
-    'png':  'image/png',
-    'jpeg': 'image/jpeg',
-    'json': 'application/json',
-    'svg':  'image/svg+xml',
-    'pdf':  'application/pdf',
-    'css':  'text/css'
-};
 
 // logging to file debug
 const util = require('util');
@@ -81,15 +60,8 @@ const server = http.createServer((req, res) => {
                 console.log(JSON.stringify(err));
                 return;
             }
-            const ext = (req.url.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1].toLowerCase();
-
-            console.log(ext);
-            if (ext in ContentType) {
-                console.log(ContentType[ext]);
-                res.setHeader('Content-Type', ContentType[ext]);
-            }
-            else
-                res.setHeader('Content-Type', 'text/plain');
+            console.log(`ContentType: ${mime.lookup(req.url)}`);
+            res.setHeader('Content-Type', mime.lookup(req.url));
             res.writeHead(200);
             res.end(data);
         });

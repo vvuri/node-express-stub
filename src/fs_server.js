@@ -1,12 +1,10 @@
-const http = require('http');
-const fs = require('fs');
+import * as http from 'http';
+import * as fs from 'fs';
 
 const config = require('../config.json');
 const hostname = config.hostname || '127.0.0.1';
 const port = config.port || '8888';
 const dirname = config.dirname || '';
-
-//const mime = require('mime-types');
 
 const ContentType = {
     'mov':  'video/quicktime',
@@ -83,7 +81,7 @@ const server = http.createServer((req, res) => {
                 console.log(JSON.stringify(err));
                 return;
             }
-            const ext = (req.url.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1];
+            const ext = (req.url.match(/\.([^.]*?)(?=\?|#|$)/) || [])[1].toLowerCase();
 
             console.log(ext);
             if (ext in ContentType) {
@@ -109,10 +107,9 @@ function getDir (folder, enconding) {
                 reject(err);
             else {
                 let data = '';
-                let i = 0;
 
-                for ( i = 0; i < items.length; i++ )
-                    data += `<li> ${items[i]} (<A href="http://${hostname}:${port}/${items[i]}">open</A>) </li>`;
+                for (const item of items)
+                    data += `<li> ${item} (<A href="http://${hostname}:${port}/${item}">open</A>) </li>`;
                 resolve(data);
             }
         });

@@ -5,16 +5,18 @@
   "main": "index.js",
   "babel": {
     "presets": [
+      "env",
       "es2017"
     ]
   },
   "scripts": {
-    "start": "node src/fs_server.js",
+    "start": "node dist/fs_server.js",
     "lint": "eslint src",
     "babel": "babel src -d dist",
     "prettier": "prettier --write src/**/*.js",
     "test": "mocha test/**/*-test.js",
-    "watch": "npm test -- -w"
+    "watch": "npm test -- -w",
+    "all": "eslint src && babel src -d dist && node dist/fs_server.js"
   },
   "repository": {
     "type": "git",

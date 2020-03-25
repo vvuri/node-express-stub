@@ -7,10 +7,14 @@ $ npm start
 ```
 
 ### Step by step
-```
+```bash
 $ npm run lint
 $ npm run babel
 $ node dist/fs_server.js
+```
+or
+```bash
+$ npm run all
 ```
 
 ### configure

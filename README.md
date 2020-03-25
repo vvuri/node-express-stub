@@ -1,2 +1,10 @@
 # nodejs-stub
-Stub of a Node.js project
+Simple static server on Node.js
+
+### run 
+```bash
+$ node fs-server
+```
+
+### configure
+in config.json - host and port

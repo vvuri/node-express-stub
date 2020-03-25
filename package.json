@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "node src/fs_server.js",
-    "lint": "eslint test",
+    "lint": "eslint src",
     "babel": "babel src -d dist",
     "prettier": "prettier --write src/**/*.js",
     "test": "mocha test/**/*-test.js",

@@ -8,6 +8,7 @@ $ npm start
 
 ### Step by step
 ```
+$ npm run lint
 $ npm run babel
 $ node dist/fs_server.js
 ```

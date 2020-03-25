@@ -3,8 +3,17 @@ Simple static server on Node.js
 
 ### run 
 ```bash
-$ node fs-server
+$ npm start
+```
+
+### Step by step
+```
+$ npm run babel
+$ node dist/fs_server.js
 ```
 
 ### configure
-in config.json - host and port
+- config.json - file configuration
+- host:port - IP server listen
+- dirname - public directory
+ 

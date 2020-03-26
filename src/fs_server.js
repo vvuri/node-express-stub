@@ -94,3 +94,5 @@ app.get('/elements/subelements/:id', filesDir);
 app.listen(port, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+module.exports = app;

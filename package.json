@@ -14,7 +14,7 @@
     "lint": "eslint src",
     "babel": "babel src -d dist",
     "prettier": "prettier --write src/**/*.js",
-    "test": "mocha test/**/*-test.js",
+    "test": "mocha tests/*-test.js",
     "watch": "npm test -- -w",
     "all": "eslint src && babel src -d dist && node dist/fs_server.js"
   },
@@ -33,10 +33,13 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2017": "^6.24.1",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-http": "^4.3.0",
     "eslint": "^6.8.0",
     "mime-types": "^2.1.26",
-    "mocha": "^7.0.1",
+    "mocha": "^7.1.1",
     "proxyquire": "^2.1.3",
+    "request": "^2.88.2",
     "sinon": "^8.1.1"
   },
   "dependencies": {

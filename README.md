@@ -16,6 +16,10 @@ or
 ```bash
 $ npm run all
 ```
+### Run test
+```bash
+$ npm test
+```
 
 ### configure
 - config.json - file configuration

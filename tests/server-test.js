@@ -44,7 +44,7 @@ describe('Request chai-http test:', () => {
     });
 
     runs = [
-        {it: 'Table_htm.Htm', options: {dir: '/', name: 'Table_htm.Htm', contenttype: 'text/html'}},
+        {it: 'Table_htm.Htm', options: {dir: '/', name: 'Table_htm.htm', contenttype: 'text/html'}},
         {it: 'line.png', options: {dir: '/elements/', name: 'line.png', contenttype: 'image/png'}},
         {it: 'text.txt', options: {dir: '/elements/', name: 'text.txt', contenttype: 'text/plain'}},
         {it: 'logo2.svg', options: {dir: '/elements/subelements/', name: 'logo2.svg', contenttype: 'image/svg+xml'}},

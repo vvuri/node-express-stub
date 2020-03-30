@@ -76,5 +76,10 @@ describe('Request chai-http test:', () => {
             })
             .then(() => requester.close());
     });
+
+});
+
+after(() => {
+    process.exit();
 });
 

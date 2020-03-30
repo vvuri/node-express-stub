@@ -16,7 +16,7 @@
     "watch": "npm test -- -w",
     "lint": "eslint src",
     "prettier": "prettier --write src/**/*.js",
-    "all": "eslint src && babel src -d dist && node dist/fs_server.js"
+    "all": "eslint src && babel src -d dist && mocha tests/*-test.js && node dist/fs_server.js"
   },
   "repository": {
     "type": "git",

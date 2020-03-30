@@ -1,13 +1,13 @@
 import * as fs from 'fs';
 import * as mime from 'mime-types';
 
-const config = require('../config.json');
+import config from '../config.json';
 const hostname = config.hostname || '127.0.0.1';
 const port = config.port || '8888';
 const dirname = config.dirname || '';
 
 // logging to file debug
-const util = require('util');
+import util from 'util';
 const logFile = fs.createWriteStream('debug.log', { flags: 'w' });
 
 console.log = function (d) {

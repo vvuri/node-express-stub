@@ -2,9 +2,7 @@ import fs from 'fs';
 import mime from 'mime-types';
 
 import config from '../config.json';
-const hostname = config.hostname || '127.0.0.1';
-const port = config.port || '8888';
-const dirname = config.dirname || '';
+const { hostname, port, dirname } = config;
 
 // logging to file debug
 import util from 'util';

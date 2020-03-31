@@ -2,7 +2,6 @@
   "name": "nodejs-katas",
   "version": "1.0.0",
   "description": "Basic Node.js exercises",
-  "main": "index.js",
   "babel": {
     "presets": [
       "env",
@@ -11,12 +10,11 @@
   },
   "scripts": {
     "build": "babel src -d dist",
-    "test": "mocha tests/*-test.js",
+    "test": "eslint src tests && mocha tests/*-test.js",
     "start": "node dist/fs_server.js",
     "watch": "npm test -- -w",
-    "lint": "eslint src",
-    "prettier": "prettier --write src/**/*.js",
-    "all": "eslint src && babel src -d dist && mocha tests/*-test.js && node dist/fs_server.js"
+    "lint": "eslint src tests",
+    "all": "eslint src tests && babel src -d dist && mocha tests/*-test.js && node dist/fs_server.js"
   },
   "repository": {
     "type": "git",
@@ -36,8 +34,7 @@
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
     "eslint": "^6.8.0",
-    "mocha": "^7.1.1",
-    "sinon": "^8.1.1"
+    "mocha": "^7.1.1"
   },
   "dependencies": {
     "express": "^4.17.1",

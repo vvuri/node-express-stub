@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as mime from 'mime-types';
+import fs from 'fs';
+import mime from 'mime-types';
 
 import config from '../config.json';
 const hostname = config.hostname || '127.0.0.1';

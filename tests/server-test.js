@@ -2,8 +2,8 @@ const chai = require('chai');
 const assert = chai.assert;
 const chaiAsPromised = require('chai-as-promised');
 const chaiHttp = require('chai-http');
-// eslint-disable-next-line
-const app = require('../dist/fs_server');
+
+require('../dist/fs_server');
 
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);

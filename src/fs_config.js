@@ -9,13 +9,13 @@ debug(`HOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process
 const errors = [];
 
 if (typeof process.env.HOST === 'undefined')
-    errors.push('HOST not allow');
+    errors.push(`Environment variable ${chalk.green('HOST')} not found`);
 
 if (typeof process.env.PORT === 'undefined')
-    errors.push('PORT not allow');
+    errors.push(`Environment variable ${chalk.green('PORT')} not found`);
 
 if (typeof process.env.ROOT_DIR === 'undefined')
-    errors.push('ROOT_DIR not allow');
+    errors.push(`Environment variable ${chalk.green('ROOT_DIR')} not found`);
 
 if (errors.length) {
     for (const error of errors)

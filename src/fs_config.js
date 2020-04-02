@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import chalk from 'chalk';
 
 import debug from './fs_logger';
 
@@ -17,7 +18,8 @@ if (typeof process.env.ROOT_DIR === 'undefined')
     error = 'ROOT_DIR not allow';
 
 if (error) {
-    console.log(`\x1b[31mError: ${error}\x1b[0m\nPlease rename .env_simle to .env and restart server\n`);
+    console.log(chalk.red(`Error + ${error}`));
+    console.log(`Please rename .env_simple to .env and restart server\n`);
     console.log(`HOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process.env.ROOT_DIR}`);
     // eslint-disable-next-line
     process.exit();

@@ -17,10 +17,10 @@ describe('Request chai-http test:', () => {
         requester = chai.request(server).keepOpen();
     });
 
-    it('Positive: Get root list of files - body size 602 bytes', async () => {
+    it('Positive: Get root list of files - body size 552 bytes', async () => {
         const res = await requester.get('/');
 
-        assert.equal(res.header['content-length'], '602');
+        assert.equal(res.header['content-length'], '552');
         requester.close();
     });
 

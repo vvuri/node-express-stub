@@ -1,9 +1,9 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const TESTPORT = '8888';//'7777';
-const TESTHOST = '127.0.0.1';//'192.168.7.7';
-const TESTROOTDIR = 'public';//'private';
+const TESTPORT = '8888';
+const TESTHOST = '127.0.0.1';
+const TESTROOTDIR = 'public';
 
 process.env.PORT = TESTPORT;
 process.env.HOST = TESTHOST;
@@ -12,6 +12,10 @@ process.env.ROOT_DIR = TESTROOTDIR;
 const { HOST, PORT, ROOT_DIR }  = require('../dist/fs_config');
 
 describe('Environment test:', () => {
+    before(() => {
+        console.log(`HOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process.env.ROOT_DIR}`);
+    });
+
     it(`Positive: PORT = ${TESTPORT}`, async () => {
         assert.equal(PORT, TESTPORT);
     });
@@ -22,12 +26,5 @@ describe('Environment test:', () => {
 
     it(`Positive: ROOT_DIR = ${TESTROOTDIR}`, async () => {
         assert.equal(ROOT_DIR, TESTROOTDIR);
-    });
-
-    after(() => {
-        // .env_simple
-        process.env.PORT = '8888';
-        process.env.HOST = '127.0.0.1';
-        process.env.ROOT_DIR = 'public';
     });
 });

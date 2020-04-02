@@ -8,7 +8,7 @@ require('../dist/fs_server');
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
-const server = 'http://127.0.0.1:8888';
+const server = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
     let requester;

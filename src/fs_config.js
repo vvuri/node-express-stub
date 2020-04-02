@@ -6,21 +6,23 @@ import debug from './fs_logger';
 dotenv.config();
 debug(`HOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process.env.ROOT_DIR}`);
 
-let error = false;
+const errors = [];
 
 if (typeof process.env.HOST === 'undefined')
-    error = 'HOST not allow';
+    errors.push('HOST not allow');
 
 if (typeof process.env.PORT === 'undefined')
-    error = 'PORT not allow';
+    errors.push('PORT not allow');
 
 if (typeof process.env.ROOT_DIR === 'undefined')
-    error = 'ROOT_DIR not allow';
+    errors.push('ROOT_DIR not allow');
 
-if (error) {
-    console.log(chalk.red(`Error + ${error}`));
-    console.log(`Please rename .env_simple to .env and restart server\n`);
-    console.log(`HOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process.env.ROOT_DIR}`);
+if (errors.length) {
+    for (const error of errors)
+        console.log(chalk.red('Error: ').concat(error));
+    console.log(`\nHOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process.env.ROOT_DIR}`);
+    console.log(`\nPlease rename .env_simple to ${chalk.blue('.env')} and restart server\n`);
+
     // eslint-disable-next-line
     process.exit();
 }

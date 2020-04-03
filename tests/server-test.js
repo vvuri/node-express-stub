@@ -3,6 +3,10 @@ const assert = chai.assert;
 const chaiAsPromised = require('chai-as-promised');
 const chaiHttp = require('chai-http');
 
+process.env.PORT = '8888';
+process.env.HOST = '127.0.0.1';
+process.env.ROOT_DIR = 'public';
+
 require('../dist/fs_server');
 
 chai.use(chaiAsPromised);

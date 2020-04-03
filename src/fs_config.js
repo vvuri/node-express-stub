@@ -15,7 +15,7 @@ export let PORT = process.env.PORT;
 export let ROOT_DIR = process.env.ROOT_DIR;
 
 // Add from config, if environment is null
-const errors = [];
+export const errors = [];
 
 if (typeof process.env.HOST === 'undefined') {
     if (typeof hostname === 'undefined')
@@ -45,5 +45,5 @@ if (errors.length) {
     console.log(`\nPlease rename .env_simple to ${chalk.blue('.env')} and restart server\n`);
 
     // eslint-disable-next-line
-    process.exit();
+    // process.exit();
 }

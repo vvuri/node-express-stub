@@ -17,33 +17,22 @@ export let ROOT_DIR = process.env.ROOT_DIR;
 // Add from config, if environment is null
 export const errors = [];
 
-if (typeof process.env.HOST === 'undefined') {
-    if (typeof hostname === 'undefined')
-        errors.push(`Environment variable ${chalk.green('HOST')} not found`);
-    else
-        HOST = hostname;
-}
+const _checkEnvUndefined = (env, confenv, textname) => {
+    if (typeof env === 'undefined') {
+        if (typeof confenv === 'undefined')
+            errors.push(`Environment variable ${chalk.green(textname)} not found`);
+        return confenv;
+    }
+    return env;
+};
 
-if (typeof process.env.PORT === 'undefined') {
-    if (typeof port === 'undefined')
-        errors.push(`Environment variable ${chalk.green('PORT')} not found`);
-    else
-        PORT = port;
-}
-
-if (typeof process.env.ROOT_DIR === 'undefined') {
-    if (typeof dirname === 'undefined')
-        errors.push(`Environment variable ${chalk.green('ROOT_DIR')} not found`);
-    else
-        ROOT_DIR = dirname;
-}
+HOST = _checkEnvUndefined(process.env.HOST, hostname, 'HOST');
+PORT = _checkEnvUndefined(process.env.PORT, port, 'PORT');
+ROOT_DIR = _checkEnvUndefined(process.env.ROOT_DIR, dirname, 'ROOT_DIR');
 
 if (errors.length) {
     for (const error of errors)
         console.log(chalk.red('Error: ').concat(error));
     console.log(`\nHOST: ${process.env.HOST}\nPORT: ${process.env.PORT}\nROOT_DIR: ${process.env.ROOT_DIR}`);
     console.log(`\nPlease rename .env_simple to ${chalk.blue('.env')} and restart server\n`);
-
-    // eslint-disable-next-line
-    // process.exit();
 }

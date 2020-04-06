@@ -3,84 +3,49 @@ const proxyquire = require('proxyquire').noPreserveCache();
 
 const assert = chai.assert;
 
-const TESTPORT = '8888';
-const TESTHOST = '127.0.0.1';
-const TESTROOTDIR = 'public';
-
 const { HOST, PORT, ROOT_DIR }  = require('../dist/fs_config');
 
-describe('Environment test:', () => {
-    const initialEnvVar = {};
+describe('Environment variable should be set, if it is specified:', () => {
+    const TESTPORT = '8888';
+    const TESTHOST = '127.0.0.1';
+    const TESTROOTDIR = 'public';
 
-    it(`Positive: PORT = ${TESTPORT}`, async () => {
+    it(`Positive: Port should be set by process.env.PORT = ${TESTPORT}`, async () => {
+        process.env.PORT = TESTPORT;
         assert.equal(PORT, TESTPORT);
     });
 
-    it(`Positive: HOST = ${TESTHOST}`, async () => {
+    it(`Positive: Host name should be set by process.env.HOST = ${TESTHOST}`, async () => {
+        process.env.HOST = TESTHOST;
         assert.equal(HOST, TESTHOST);
     });
 
-    it(`Positive: ROOT_DIR = ${TESTROOTDIR}`, async () => {
-        assert.equal(ROOT_DIR, TESTROOTDIR);
-    });
-
-    before(() => {
-        initialEnvVar.PORT = process.env.PORT;
-        initialEnvVar.HOST = process.env.HOST;
-        initialEnvVar.ROOT_DIR = process.env.ROOT_DIR;
-
-        process.env.PORT = TESTPORT;
-        process.env.HOST = TESTHOST;
+    it(`Positive: Public directory should be set by process.env.ROOT_DIR = ${TESTROOTDIR}`, async () => {
         process.env.ROOT_DIR = TESTROOTDIR;
-    });
-
-    after(() => {
-        process.env.PORT = initialEnvVar.PORT;
-        process.env.HOST = initialEnvVar.HOST;
-        process.env.ROOT_DIR = initialEnvVar.ROOT_DIR;
+        assert.equal(ROOT_DIR, TESTROOTDIR);
     });
 });
 
 // Don`t work with .env file
 describe('Load from file when environment undefined:', () => {
-    const initialEnvVar = {};
-
     const config = {
         'hostname': '127.4.4.4',
         'port':     '4444',
         'dirname':  'test4'
     };
 
-    it(`Read PORT from config.json if env port null`, () => {
-        delete process.env.PORT;
-        const example = proxyquire('../dist/fs_config.js', { '../config.json': config });
+    const runs = [
+        { it: 'PORT', option: '4444' },
+        { it: 'HOST', option: '127.4.4.4' },
+        { it: 'ROOT_DIR', option: 'test4' }
+    ];
 
-        assert.equal(example.PORT, '4444');
-    });
+    runs.forEach( run => {
+        it(`Read ${ run.it } from config.json if env port null`, () => {
+            delete process.env[run.it];
+            const example = proxyquire('../dist/fs_config.js', { '../config.json': config });
 
-    it(`Read HOST from config.json if env host null`, () => {
-        delete process.env.HOST;
-        const example = proxyquire('../dist/fs_config.js', { '../config.json': config });
-
-        assert.equal(example.HOST, '127.4.4.4');
-    });
-
-    it(`Read ROOT_DIR from config.json if env host null`, () => {
-        delete process.env.ROOT_DIR;
-        const example = proxyquire('../dist/fs_config.js', { '../config.json': config });
-
-        assert.equal(example.ROOT_DIR, 'test4');
-    });
-
-    before(() => {
-        initialEnvVar.PORT = process.env.PORT;
-        initialEnvVar.HOST = process.env.HOST;
-        initialEnvVar.ROOT_DIR = process.env.ROOT_DIR;
-    });
-
-    after(() => {
-        process.env.PORT = initialEnvVar.PORT;
-        process.env.HOST = initialEnvVar.HOST;
-        process.env.ROOT_DIR = initialEnvVar.ROOT_DIR;
+            assert.equal(example[run.it], run.option);
+        });
     });
 });

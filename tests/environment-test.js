@@ -6,23 +6,17 @@ const assert = chai.assert;
 const { HOST, PORT, ROOT_DIR }  = require('../dist/fs_config');
 
 describe('Environment variable should be set, if it is specified:', () => {
-    const TESTPORT = '8888';
-    const TESTHOST = '127.0.0.1';
-    const TESTROOTDIR = 'public';
+    const runs = [
+        { it: PORT, option: '8888' },
+        { it: HOST, option: '127.0.0.1' },
+        { it: ROOT_DIR, option: 'public' }
+    ];
 
-    it(`Positive: Port should be set by process.env.PORT = ${TESTPORT}`, async () => {
-        process.env.PORT = TESTPORT;
-        assert.equal(PORT, TESTPORT);
-    });
-
-    it(`Positive: Host name should be set by process.env.HOST = ${TESTHOST}`, async () => {
-        process.env.HOST = TESTHOST;
-        assert.equal(HOST, TESTHOST);
-    });
-
-    it(`Positive: Public directory should be set by process.env.ROOT_DIR = ${TESTROOTDIR}`, async () => {
-        process.env.ROOT_DIR = TESTROOTDIR;
-        assert.equal(ROOT_DIR, TESTROOTDIR);
+    runs.forEach( run => {
+        it(`Positive: Port should be set by process.env.PORT = ${ run.option }`, async () => {
+            process.env[run.it] = run.option;
+            assert.equal([run.it], run.option);
+        });
     });
 });
 

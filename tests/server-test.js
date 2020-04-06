@@ -2,13 +2,17 @@ const chai = require('chai');
 const assert = chai.assert;
 const chaiAsPromised = require('chai-as-promised');
 const chaiHttp = require('chai-http');
-// eslint-disable-next-line
-const app = require('../dist/fs_server');
+
+process.env.PORT = '8888';
+process.env.HOST = '127.0.0.1';
+process.env.ROOT_DIR = 'public';
+
+require('../dist/fs_server');
 
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
-const server = 'http://127.0.0.1:8888';
+const server = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
     let requester;
@@ -17,10 +21,10 @@ describe('Request chai-http test:', () => {
         requester = chai.request(server).keepOpen();
     });
 
-    it('Positive: Get root list of files - body size 602 bytes', async () => {
+    it('Positive: Get root list of files - body size 552 bytes', async () => {
         const res = await requester.get('/');
 
-        assert.equal(res.header['content-length'], '602');
+        assert.equal(res.header['content-length'], '552');
         requester.close();
     });
 

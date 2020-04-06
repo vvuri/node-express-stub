@@ -1,9 +1,8 @@
 import express from 'express';
+import chalk from 'chalk';
 
 import { rootDir, filesDir } from './fs_tools';
-import config from '../config.json';
-
-const { hostname, port } = config;
+import { HOST, PORT } from './fs_config';
 
 const app = express();
 
@@ -12,8 +11,8 @@ app.get('/:id', filesDir);
 app.get('/elements/:id', filesDir);
 app.get('/elements/subelements/:id', filesDir);
 
-app.listen(port, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+app.listen(PORT, () => {
+    console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));
 });
 
 export default app;

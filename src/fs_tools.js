@@ -2,9 +2,8 @@ import fs from 'fs';
 import mime from 'mime-types';
 
 import debug from './fs_logger';
-import config from '../config.json';
+import { HOST, PORT, ROOT_DIR } from './fs_config';
 
-const { hostname, port, dirname } = config;
 const EISDIR = 'EISDIR';
 const EPERM = 'EPERM';
 const ENOENT = 'ENOENT';
@@ -13,9 +12,9 @@ export const rootDir = (req, res, next, subdir = '') => {
     let data;
 
     debug(`Dir: ${subdir}`);
-    _getDir(dirname.concat(subdir), subdir, 'utf-8')
+    _getDir(ROOT_DIR.concat(subdir), subdir, 'utf-8')
         .then(files => {
-            data = `<h2>List Files in <i>${dirname}${subdir}</i>:</h2>`;
+            data = `<h2>List Files in <i>${ROOT_DIR}${subdir}</i>:</h2>`;
             data += `<ul> ${files} </ul>`;
             res.statusCode = 200;
             res.setHeader('Content-Type', 'text/html');
@@ -31,7 +30,7 @@ export const rootDir = (req, res, next, subdir = '') => {
 
 export const filesDir = (req, res) => {
     debug(`url file:  ${req.url},  ${req.method},  ${req.params.id},  ${req.originalUrl}`);
-    fs.readFile(dirname + req.url, (err, data) => {
+    fs.readFile(ROOT_DIR + req.url, (err, data) => {
         if (err) {
             if (err.code === EISDIR)
                 rootDir(req, res, null, req.url);
@@ -82,7 +81,7 @@ function _getDir (folder, subdir, enconding) {
                 let data = '';
 
                 for (const item of items)
-                    data += `<li> ${item} (<A href="http://${hostname}:${port}${subdir}/${item}">open</A>) </li>`;
+                    data += `<li> ${item} (<A href="http://${HOST}:${PORT}${subdir}/${item}">open</A>) </li>`;
                 resolve(data);
             }
         });

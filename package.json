@@ -10,11 +10,11 @@
   },
   "scripts": {
     "build": "babel src -d dist",
-    "test": "eslint src tests && mocha tests/*-test.js",
+    "test": "npm run lint && mocha tests/*-test.js",
     "start": "node dist/fs_server.js",
     "watch": "npm test -- -w",
     "lint": "eslint src tests",
-    "all": "eslint src tests && babel src -d dist && mocha tests/*-test.js && node dist/fs_server.js"
+    "all": "npm run lint && npm run build && npm test"
   },
   "repository": {
     "type": "git",
@@ -33,8 +33,10 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-http": "^4.3.0",
+    "dotenv": "^8.2.0",
     "eslint": "^6.8.0",
-    "mocha": "^7.1.1"
+    "mocha": "^7.1.1",
+    "proxyquire": "^2.1.3"
   },
   "dependencies": {
     "express": "^4.17.1",

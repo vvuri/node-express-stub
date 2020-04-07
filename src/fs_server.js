@@ -17,8 +17,26 @@ for (const path of dirPath) {
     app.get(path, resDirListFiles);
 }
 
-app.listen(PORT, () => {
-    console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));
-});
+export function start () {
+    return new Promise((resolve, reject) => {
+        app.listen(PORT, err => {
+            if (err) reject(err);
+            console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));
+            resolve();
+        });
+    });
+}
+
+export function stop (url) {
+    return new Promise((resolve, reject) => {
+        app.close( err => {
+            if (err) reject(err);
+            console.log(`Server closed on ${url}`);
+            resolve();
+        });
+    });
+}
+
+start();
 
 export default app;

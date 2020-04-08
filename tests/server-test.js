@@ -7,7 +7,7 @@ process.env.PORT = '8888';
 process.env.HOST = '127.0.0.1';
 process.env.ROOT_DIR = 'public';
 
-require('../dist/fs_server');
+const srv = require('../dist/fs_server');
 
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
@@ -16,8 +16,10 @@ const server = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
     let requester;
+    let s;
 
     before(() => {
+        s = srv.startServer();
         requester = chai.request(server).keepOpen();
     });
 
@@ -69,7 +71,6 @@ describe('Request chai-http test:', () => {
     });
 
     after(() => {
-        // eslint-disable-next-line
-        process.exit();
+        srv.stopServer(s);
     });
 });

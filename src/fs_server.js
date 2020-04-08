@@ -25,9 +25,8 @@ export function startServer () {
             console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));
         });
     }
-    catch (error) {
-        console.log(chalk.red(`Error run server param`));
-        console.log(error);
+    catch (e) {
+        console.log(`${chalk.red('Error run server:')} ${e.message}`);
     }
     return server;
 }

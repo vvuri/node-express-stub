@@ -1,4 +1,3 @@
-// logging to file debug
 import fs from 'fs';
 import util from 'util';
 

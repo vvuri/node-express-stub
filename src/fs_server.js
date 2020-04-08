@@ -1,15 +1,21 @@
 import express from 'express';
 import chalk from 'chalk';
 
-import { rootDir, filesDir } from './fs_tools';
-import { HOST, PORT } from './fs_config';
+import { resDirListFiles } from './fs_tools';
+import { HOST, PORT, ROOT_DIR } from './fs_config';
 
 const app = express();
 
-app.get('/', rootDir);
-app.get('/:id', filesDir);
-app.get('/elements/:id', filesDir);
-app.get('/elements/subelements/:id', filesDir);
+const dirPath = [
+    '/',
+    '/elements',
+    '/elements/subelements'
+];
+
+for (const path of dirPath) {
+    app.use(path, express.static(ROOT_DIR + path));
+    app.get(path, resDirListFiles);
+}
 
 app.listen(PORT, () => {
     console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));

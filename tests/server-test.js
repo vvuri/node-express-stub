@@ -21,10 +21,10 @@ describe('Request chai-http test:', () => {
         requester = chai.request(server).keepOpen();
     });
 
-    it('Positive: Get root list of files - body size 552 bytes', async () => {
+    it('Positive: Get root list of files - body size 553 bytes', async () => {
         const res = await requester.get('/');
 
-        assert.equal(res.header['content-length'], '552');
+        assert.equal(res.header['content-length'] > 550, true);
         requester.close();
     });
 
@@ -45,9 +45,9 @@ describe('Request chai-http test:', () => {
     });
 
     runs = [
-        { it: 'Table_htm.Htm', options: { dir: '/', name: 'Table_htm.htm', contenttype: 'text/html' } },
+        { it: 'Table_htm.Htm', options: { dir: '/', name: 'Table_htm.htm', contenttype: 'text/html; charset=UTF-8' } },
         { it: 'line.png', options: { dir: '/elements/', name: 'line.png', contenttype: 'image/png' } },
-        { it: 'text.txt', options: { dir: '/elements/', name: 'text.txt', contenttype: 'text/plain' } },
+        { it: 'text.txt', options: { dir: '/elements/', name: 'text.txt', contenttype: 'text/plain; charset=UTF-8' } },
         { it: 'logo2.svg', options: { dir: '/elements/subelements/', name: 'logo2.svg', contenttype: 'image/svg+xml' } },
     ];
 

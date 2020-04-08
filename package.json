@@ -11,7 +11,7 @@
   "scripts": {
     "build": "babel src -d dist",
     "test": "npm run lint && mocha tests/*-test.js",
-    "start": "node dist/fs_server.js",
+    "start": "node dist/server.js",
     "watch": "npm test -- -w",
     "lint": "eslint src tests",
     "all": "npm run lint && npm run build && npm test"

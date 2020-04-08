@@ -17,26 +17,23 @@ for (const path of dirPath) {
     app.get(path, resDirListFiles);
 }
 
-export function start () {
-    return new Promise((resolve, reject) => {
-        app.listen(PORT, err => {
-            if (err) reject(err);
+export function startServer () {
+    let server;
+
+    try {
+        server = app.listen(PORT, () => {
             console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));
-            resolve();
         });
-    });
+    }
+    catch (error) {
+        console.log(chalk.red(`Error run server param`));
+        console.log(error);
+    }
+    return server;
 }
 
-export function stop (url) {
-    return new Promise((resolve, reject) => {
-        app.close( err => {
-            if (err) reject(err);
-            console.log(`Server closed on ${url}`);
-            resolve();
-        });
+export function stopServer (server) {
+    server.close(() => {
+        console.log(chalk.blue('Server stop!'));
     });
 }
-
-start();
-
-export default app;

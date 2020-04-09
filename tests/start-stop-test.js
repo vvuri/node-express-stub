@@ -16,15 +16,14 @@ describe('Positive: server runing tests:', () => {
         requester = chai.request(url).keepOpen();
     });
 
-    it.skip('Server starting and response by HTTP', async () => {
+    it('Server starting and response by HTTP', async () => {
         server = srv.startServer();
-        // проверить что запущен сервер
         const res = await requester.get('/');
 
         assert.equal(res.status, 200);
     });
 
-    it.skip('Server stopping and not a response by HTTP', async () => {
+    it('Server stopping and not a response by HTTP', async () => {
         srv.stopServer(server);
         let res;
 
@@ -44,7 +43,7 @@ describe('Positive: server runing tests:', () => {
 
 describe('Negative server runing tests:', () => {
 
-    it('Don`t run Server if incorrect port', async () => {
+    it.skip('Don`t run Server if incorrect port', async () => {
         process.env.PORT = 100500;
         const example = proxyquire('../dist/fs_server.js', {});
 
@@ -59,13 +58,11 @@ describe('Negative server runing tests:', () => {
                 // bubble up the assertion error
                 throw e;
             }
-            console.log('>>>>>>>>>>>>>>>>>>>>>');
-            console.log(e.message);
             assert.equal(e.message, 'Invalid Arguments');
         }
     });
 
-    it('Don`t run two Servers on one port', async () => {
+    it.skip('Don`t run two Servers on one port', async () => {
         const srv = require('../dist/fs_server');
         const server = srv.startServer();
 
@@ -73,7 +70,6 @@ describe('Negative server runing tests:', () => {
             srv.startServer();
         }
         catch (e) {
-            //Error: done() called multiple times
             console.log(`>>>> ${e.message}`);
         }
         finally {

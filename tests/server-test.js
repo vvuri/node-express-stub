@@ -16,10 +16,9 @@ const server = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
     let requester;
-    let s;
+    const s = srv.startServer();
 
     before(() => {
-        s = srv.startServer();
         requester = chai.request(server).keepOpen();
     });
 

@@ -32,7 +32,15 @@ export function startServer () {
 }
 
 export function stopServer (server) {
-    server.close(() => {
-        console.log(chalk.blue('Server stop!'));
-    });
+    let result;
+
+    try {
+        result = server.close( () => {
+            console.log(chalk.blue('Server stop!'));
+        });
+    }
+    catch (e) {
+        console.log(`${chalk.red('Error:')} Server NOT stoped!`);
+    }
+    return result;
 }

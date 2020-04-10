@@ -21,7 +21,7 @@ describe('Positive: server runing tests:', () => {
         const res = await requester.get('/');
 
         assert.equal(res.status, 200);
-        srv.stopServer(server);
+        await srv.stopServer(server);
     });
 
     it('Server stopping and not a response by HTTP', async () => {
@@ -74,7 +74,25 @@ describe('Negative server runing tests:', () => {
             console.log(`>>>> ${e.message}`);
         }
         finally {
-            srv.stopServer(server);
+            await srv.stopServer(server);
+        }
+    });
+
+
+    it('Don`t stop Servers without parameter', async () => {
+        const srv = require('../dist/fs_server');
+        const server = srv.startServer();
+
+        try {
+            const result = await srv.stopServer();
+
+            assert.equal(result.message, `Cannot read property 'server' of undefined`);
+        }
+        catch (e) {
+            console.log(`>> ${e.message}`);
+        }
+        finally {
+            await srv.stopServer(server);
         }
     });
 });

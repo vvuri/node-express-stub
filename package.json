@@ -7,6 +7,14 @@
       "env",
       "es2017",
       "stage-0"
+    ],
+    "plugins": [
+      [
+        "transform-runtime",
+        {
+          "regenerator": true
+        }
+      ]
     ]
   },
   "scripts": {
@@ -29,6 +37,7 @@
   "homepage": "https://github.com/AndreyBelym/nodejs-katas#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2017": "^6.24.1",

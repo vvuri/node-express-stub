@@ -17,11 +17,11 @@ for (const path of dirPath) {
     app.get(path, resDirListFiles);
 }
 
-export function startServer () {
+export async function startServer () {
     let server;
 
     try {
-        server = app.listen(PORT, () => {
+        server = await app.listen(PORT, () => {
             console.log(chalk.blue(`Server running at http://${HOST}:${PORT}/`));
         });
     }

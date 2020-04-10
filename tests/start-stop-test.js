@@ -5,36 +5,36 @@ const { AssertionError } = require('assert');
 
 describe('Positive: server runing tests:', () => {
     const srv = require('../dist/fs_server');
-    let server;
     let requester;
 
-    before(() => {
+    before( async () => {
         const config = require('../dist/fs_config');
         const url = `http://${config.HOST}:${config.PORT}`;
 
-        console.log(url);
-        requester = chai.request(url).keepOpen();
+        requester = await chai.request(url).keepOpen();
     });
 
     it('Server starting and response by HTTP', async () => {
-        server = srv.startServer();
-        const res = await requester.get('/');
+        const server = await srv.startServer();
+        const res = requester.get('/');
 
         assert.equal(res.status, 200);
         await srv.stopServer(server);
     });
 
     it('Server stopping and not a response by HTTP', async () => {
-        server = srv.startServer();
-        srv.stopServer(server);
-        try {
-            const res = await requester.get('/');
+        const server = srv.startServer();
 
-            assert.notEqual(res.status, 200, 'Server not stoped');
+        await srv.stopServer(server);
+        let res;
+
+        try {
+            res = await requester.get('/');
         }
         catch (e) {
-            // assert.equal(typeof res, 'undefined', 'Server not stoped');
+            //
         }
+        assert.equal(typeof res, 'undefined', 'Server not stoped');
     });
 
     after(() => {
@@ -65,13 +65,14 @@ describe('Negative server runing tests:', () => {
 
     it.skip('Don`t run two Servers on one port', async () => {
         const srv = require('../dist/fs_server');
+        const srv2 = require('../dist/fs_server');
         const server = srv.startServer();
 
         try {
-            srv.startServer();
+            srv2.startServer();
         }
         catch (e) {
-            console.log(`>>>> ${e.message}`);
+            //console.log(`>>>> ${e.message}`);
         }
         finally {
             await srv.stopServer(server);
@@ -81,7 +82,7 @@ describe('Negative server runing tests:', () => {
 
     it('Don`t stop Servers without parameter', async () => {
         const srv = require('../dist/fs_server');
-        const server = srv.startServer();
+        const server = await srv.startServer();
 
         try {
             const result = await srv.stopServer();
@@ -89,7 +90,7 @@ describe('Negative server runing tests:', () => {
             assert.equal(result.message, `Cannot read property 'server' of undefined`);
         }
         catch (e) {
-            console.log(`>> ${e.message}`);
+            //console.log(`>> ${e.message}`);
         }
         finally {
             await srv.stopServer(server);

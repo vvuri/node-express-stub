@@ -16,10 +16,11 @@ const server = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
     let requester;
-    const s = srv.startServer();
+    let s;
 
-    before(() => {
+    before( async () => {
         requester = chai.request(server).keepOpen();
+        s = await srv.startServer();
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -69,7 +70,7 @@ describe('Request chai-http test:', () => {
         requester.close();
     });
 
-    after(() => {
-        srv.stopServer(s);
+    after( async () => {
+        await srv.stopServer(s);
     });
 });

@@ -1,29 +1,32 @@
 const chai = require('chai');
+const chaiHttp = require('chai-http');
 const proxyquire = require('proxyquire').noPreserveCache();
 const assert = require('assert');
 const { AssertionError } = require('assert');
+
+chai.use(chaiHttp);
 
 describe('Positive: server runing tests:', () => {
     const srv = require('../dist/fs_server');
     let requester;
 
-    before( async () => {
+    before( () => {
         const config = require('../dist/fs_config');
         const url = `http://${config.HOST}:${config.PORT}`;
 
-        requester = await chai.request(url).keepOpen();
+        requester = chai.request(url).keepOpen();
     });
 
     it('Server starting and response by HTTP', async () => {
         const server = await srv.startServer();
-        const res = requester.get('/');
+        const res = await requester.get('/');
 
         assert.equal(res.status, 200);
         await srv.stopServer(server);
     });
 
     it('Server stopping and not a response by HTTP', async () => {
-        const server = srv.startServer();
+        const server = await srv.startServer();
 
         await srv.stopServer(server);
         let res;

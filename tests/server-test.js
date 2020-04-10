@@ -1,24 +1,29 @@
-const chai = require('chai');
+import chai from 'chai';
+import { createRequester, getClearConfig } from './helper';
+
 const assert = chai.assert;
-const chaiAsPromised = require('chai-as-promised');
-const chaiHttp = require('chai-http');
 
-process.env.PORT = '8888';
-process.env.HOST = '127.0.0.1';
-process.env.ROOT_DIR = 'public';
-
-require('../dist/fs_server');
-
-chai.use(chaiAsPromised);
-chai.use(chaiHttp);
-
-const server = `http://${process.env.HOST}:${process.env.PORT}`;
+let requester;
+let startServer;
+let stopServer;
 
 describe('Request chai-http test:', () => {
-    let requester;
+    let server;
 
-    before(() => {
-        requester = chai.request(server).keepOpen();
+    before(async () => {
+        getClearConfig();
+
+        requester = createRequester();
+
+        const utils = require('../dist/fs_server');
+
+        startServer = utils.startServer;
+        stopServer  = utils.stopServer;
+
+        const result = await startServer();
+
+        server = result.server;
+        assert.equal(result.error, null);
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -34,7 +39,7 @@ describe('Request chai-http test:', () => {
         { it: 'subsubdir', options: { dir: '/elements/subelements' } }
     ];
 
-    runs.forEach( run => {
+    runs.forEach(run => {
         it(`Positive: Get sub directory ${run.it} list of files`, async () => {
             const res = await requester.get(run.options.dir);
 
@@ -48,10 +53,13 @@ describe('Request chai-http test:', () => {
         { it: 'Table_htm.Htm', options: { dir: '/', name: 'Table_htm.htm', contenttype: 'text/html; charset=UTF-8' } },
         { it: 'line.png', options: { dir: '/elements/', name: 'line.png', contenttype: 'image/png' } },
         { it: 'text.txt', options: { dir: '/elements/', name: 'text.txt', contenttype: 'text/plain; charset=UTF-8' } },
-        { it: 'logo2.svg', options: { dir: '/elements/subelements/', name: 'logo2.svg', contenttype: 'image/svg+xml' } },
+        {
+            it:      'logo2.svg',
+            options: { dir: '/elements/subelements/', name: 'logo2.svg', contenttype: 'image/svg+xml' }
+        },
     ];
 
-    runs.forEach( run => {
+    runs.forEach(run => {
         it(`Positive: Get file ${run.it} from ${run.options.dir}`, async () => {
             const res = await requester.get(run.options.dir + run.options.name);
 
@@ -68,8 +76,8 @@ describe('Request chai-http test:', () => {
         requester.close();
     });
 
-    after(() => {
-        // eslint-disable-next-line
-        process.exit();
+    after(async () => {
+        requester.close();
+        await stopServer(server);
     });
 });

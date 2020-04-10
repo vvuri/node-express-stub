@@ -1,46 +1,41 @@
 import assert from 'assert';
 import { createRequester, getClearConfig, testConfig } from './helper';
+import StaticServer from '../src/fs_server';
 
+let srv;
 let requester;
-let startServer;
-let stopServer;
 
 describe('Start/stop API', () => {
     let result;
 
     before(async () => {
         getClearConfig();
-
         requester = createRequester();
-
-        const utils = require('../dist/fs_server');
-
-        startServer = utils.startServer;
-        stopServer  = utils.stopServer;
+        srv = new StaticServer(testConfig);
     });
 
     after(async () => {
-        await stopServer(result.server);
+        await srv.stop(); //stopServer(result.server);
     });
 
     describe('Positive: server running tests:', () => {
         beforeEach(async () => {
-            result = await startServer();
+            result = await srv.start();
         });
 
         afterEach(async () => {
-            await stopServer(result.server);
+            await srv.stop();
         });
 
-        it('Server starting and response by HTTP', async () => {
-            assert.equal(result.error, null);
+        it.only('Server starting and response by HTTP', async () => {
+            assert.equal(result, null);
             const res = await requester.get('/');
 
             assert.equal(res.status, 200);
         });
 
         it('Server stopping and not a response by HTTP', async () => {
-            await stopServer(result.server);
+            await srv.stop();
 
             await requester
                 .get('/')
@@ -61,8 +56,8 @@ describe('Start/stop API', () => {
         let resultStart;
 
         beforeEach(async () => {
-            resultStart = await startServer();
-            result = await stopServer(resultStart.server);
+            resultStart = await srv.start();
+            result = await srv.stop(); //stopServer(resultStart.server);
         });
 
         it('After the server stops, the returned parameters contain a link to the server.', async () => {
@@ -74,7 +69,7 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping a stopped server results in an error', async () => {
-            result = await stopServer(result.server);
+            result = await srv.stop(); // stopServer(result.server);
 
             assert.equal(result.error.message, 'Server is not running.');
         });
@@ -82,14 +77,15 @@ describe('Start/stop API', () => {
 
     describe('Negative server running tests:', () => {
         it('Don`t run Server if incorrect port', async () => {
-            result = await startServer(100500);
+            srv.port = 100500;
+            result = await srv.start();
 
             assert.equal(result.server, null);
             assert.equal(result.error, 'options.port should be >= 0 and < 65536. Received 100500.');
         });
 
         it(`Don't stop Server without parameter`, async () => {
-            const resultError = await stopServer();
+            const resultError = await srv.stop(); //stopServer();
 
             assert.equal(resultError.error.message, `Cannot read object 'server'`);
         });
@@ -102,11 +98,10 @@ describe('Start/stop API', () => {
 
         runs.forEach(run => {
             it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
-                const resultError = await stopServer(run.it);
+                const resultError = await srv.stop(); // stopServer(run.it);
 
                 assert.equal(resultError.error.message, run.options);//`Error: Cannot read object 'server'`);
             });
         });
     });
 });
-

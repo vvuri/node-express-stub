@@ -1,3 +1,15 @@
-import { startServer } from './fs_server';
+import StaticServer from './fs_server';
 
-startServer();
+const StartServer = async () => {
+    const args = {
+        host:    '127.0.0.1',
+        port:    '8888',
+        rootDir: 'public',
+        dirPath: ['/', '/elements', '/elements/subelements']
+    };
+    const srv = new StaticServer(args);
+
+    await srv.start();
+};
+
+StartServer();

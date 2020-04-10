@@ -21,7 +21,6 @@
     "build": "babel src -d dist",
     "test": "npm run lint && mocha --require babel-register --require babel-polyfill --colors tests/*-test.js",
     "start": "node dist/server.js",
-    "watch": "npm test -- -w",
     "lint": "eslint src tests",
     "all": "npm run lint && npm run build && npm test"
   },
@@ -37,6 +36,7 @@
   "homepage": "https://github.com/AndreyBelym/nodejs-katas#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",

@@ -17,6 +17,7 @@ for (const path of dirPath) {
     app.get(path, resDirListFiles);
 }
 
+// return [ error, server ]
 export async function startServer (...args) {
     let server;
 
@@ -28,9 +29,9 @@ export async function startServer (...args) {
         });
     }
     catch (e) {
-        return e.message;
+        return [ e.message, null ];
     }
-    return server;
+    return [ null, server ];
 }
 
 export async function stopServer (server) {
@@ -45,7 +46,7 @@ export async function stopServer (server) {
         });
     }
     catch (e) {
-        console.log(`${chalk.red('Error:')} Server NOT stoped!`);
+        console.log(`${chalk.red('Error:')} Server NOT stopped!`);
     }
 
     return result;

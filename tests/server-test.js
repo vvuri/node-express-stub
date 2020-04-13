@@ -12,15 +12,19 @@ const srv = require('../dist/fs_server');
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
-const server = `http://${process.env.HOST}:${process.env.PORT}`;
+const serverURL = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
     let requester;
-    let s;
+    let server;
 
     before( async () => {
-        requester = chai.request(server).keepOpen();
-        s = await srv.startServer();
+        let error;
+
+        requester = chai.request(serverURL).keepOpen();
+        [ error, server ] = await srv.startServer();
+
+        assert.equal(error, null);
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -71,6 +75,6 @@ describe('Request chai-http test:', () => {
     });
 
     after( async () => {
-        await srv.stopServer(s);
+        await srv.stopServer(server);
     });
 });

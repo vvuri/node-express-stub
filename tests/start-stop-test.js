@@ -16,7 +16,9 @@ describe('Positive: server runing tests:', () => {
     });
 
     it('Server starting and response by HTTP', async () => {
-        const server = await srv.startServer();
+        const [ error, server ] = await srv.startServer();
+
+        assert.equal(error, null);
         const res = await requester.get('/');
 
         assert.equal(res.status, 200);
@@ -24,7 +26,7 @@ describe('Positive: server runing tests:', () => {
     });
 
     it('Server stopping and not a response by HTTP', async () => {
-        const server = await srv.startServer();
+        const [ error, server ] = await srv.startServer();
 
         await srv.stopServer(server);
         let res;
@@ -35,6 +37,7 @@ describe('Positive: server runing tests:', () => {
         catch (e) {
             //
         }
+        assert.equal(error, null);
         assert.equal(typeof res, 'undefined', 'Server not stoped');
     });
 
@@ -47,15 +50,17 @@ describe('Negative server runing tests:', () => {
 
     it('Don`t run Server if incorrect port', async () => {
         const srv = require('../dist/fs_server.js');
+        const [ error, server ] = await srv.startServer(100500);
 
-        const result = await srv.startServer(100500);
-
-        assert.equal(result, 'options.port should be >= 0 and < 65536. Received 100500.');
+        assert.equal(server, null);
+        assert.equal(error, 'options.port should be >= 0 and < 65536. Received 100500.');
     });
 
     it('Don`t stop Servers without parameter', async () => {
         const srv = require('../dist/fs_server');
-        const server = await srv.startServer();
+        const [ error, server ] = await srv.startServer();
+
+        assert.equal(error, null);
 
         try {
             const result = await srv.stopServer();

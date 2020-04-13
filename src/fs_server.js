@@ -18,14 +18,12 @@ for (const path of dirPath) {
 }
 
 // return [ error, server ]
-export async function startServer (...args) {
+export async function startServer (port = PORT) {
     let server;
 
     try {
-        const NPORT = args[0] || PORT; // for testing
-
-        server = await app.listen(NPORT, () => {
-            console.log(chalk.blue(`Server running at http://${HOST}:${NPORT}/`));
+        server = await app.listen(port, () => {
+            console.log(chalk.blue(`Server running at http://${HOST}:${port}/`));
         });
     }
     catch (e) {

@@ -1,6 +1,7 @@
-const chai = require('chai');
-const proxyquire = require('proxyquire').noPreserveCache();
+import chai from 'chai';
+import proxyquire from 'proxyquire';
 
+proxyquire.noPreserveCache();
 const assert = chai.assert;
 
 describe('Environment variable should be set, if it is specified:', () => {

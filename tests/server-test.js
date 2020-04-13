@@ -1,13 +1,14 @@
-const chai = require('chai');
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import chaiHttp from 'chai-http';
+
 const assert = chai.assert;
-const chaiAsPromised = require('chai-as-promised');
-const chaiHttp = require('chai-http');
 
 process.env.PORT = '8888';
 process.env.HOST = '127.0.0.1';
 process.env.ROOT_DIR = 'public';
 
-const srv = require('../dist/fs_server');
+import { startServer, stopServer } from '../dist/fs_server';
 
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
@@ -22,7 +23,7 @@ describe('Request chai-http test:', () => {
         let error;
 
         requester = chai.request(serverURL).keepOpen();
-        [ error, server ] = await srv.startServer();
+        [ error, server ] = await startServer();
 
         assert.equal(error, null);
     });
@@ -75,6 +76,6 @@ describe('Request chai-http test:', () => {
     });
 
     after( async () => {
-        await srv.stopServer(server);
+        await stopServer(server);
     });
 });

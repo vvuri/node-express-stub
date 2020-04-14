@@ -7,8 +7,7 @@ chai.use(chaiHttp);
 
 describe('Positive: server running tests:', () => {
     let requester;
-    let error;
-    let server;
+    let result;
 
     before( () => {
         delete process.env.PORT;
@@ -21,22 +20,22 @@ describe('Positive: server running tests:', () => {
     });
 
     beforeEach( async () => {
-        [ error, server ] = await startServer();
+        result = await startServer();
     });
 
     afterEach( async () => {
-        await stopServer(server);
+        await stopServer(result.server);
     });
 
     it('Server starting and response by HTTP', async () => {
-        assert.equal(error, null);
+        assert.equal(result.error, null);
         const res = await requester.get('/');
 
         assert.equal(res.status, 200);
     });
 
     it('Server stopping and not a response by HTTP', async () => {
-        await stopServer(server);
+        await stopServer(result.server);
         let res;
 
         try {
@@ -45,7 +44,7 @@ describe('Positive: server running tests:', () => {
         catch (e) {
             //
         }
-        assert.equal(error, null);
+        assert.equal(result.error, null);
         assert.equal(typeof res, 'undefined', 'Server not stoped');
     });
 
@@ -57,27 +56,27 @@ describe('Positive: server running tests:', () => {
 describe('Negative server running tests:', () => {
 
     it('Don`t run Server if incorrect port', async () => {
-        const [ error, server ] = await startServer(100500);
+        const result = await startServer(100500);
 
-        assert.equal(server, null);
-        assert.equal(error, 'options.port should be >= 0 and < 65536. Received 100500.');
+        assert.equal(result.server, null);
+        assert.equal(result.error, 'options.port should be >= 0 and < 65536. Received 100500.');
     });
 
     it('Don`t stop Servers without parameter', async () => {
-        const [ error, server ] = await startServer();
+        const result = await startServer();
 
-        assert.equal(error, null);
+        assert.equal(result.error, null);
 
         try {
-            const result = await stopServer();
+            const resultError = await stopServer();
 
-            assert.equal(result.message, `Cannot read property 'server' of undefined`);
+            assert.equal(resultError.message, `Cannot read property 'server' of undefined`);
         }
         catch (e) {
             //
         }
         finally {
-            await stopServer(server);
+            await stopServer(result.server);
         }
     });
 });

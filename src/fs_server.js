@@ -1,6 +1,5 @@
-import express from 'express';
 import chalk from 'chalk';
-
+import express from 'express';
 import { resDirListFiles } from './fs_tools';
 import { HOST, PORT, ROOT_DIR } from './fs_config';
 
@@ -17,29 +16,28 @@ for (const path of dirPath) {
     app.get(path, resDirListFiles);
 }
 
-// return [ error, server ]
 export async function startServer (port = PORT) {
-    let server;
+    const result = { error: null, server: null };
 
     try {
-        server = await app.listen(port, () => {
+        result.server = await app.listen(port, () => {
             console.log(chalk.blue(`Server running at http://${HOST}:${port}/`));
         });
     }
     catch (e) {
-        return [ e.message, null ];
+        result.error = e.message;
     }
-    return [ null, server ];
+    return result;
 }
 
 export async function stopServer (server) {
-    let result;
+    const result = { error: null, server: null };
 
     if (!server)
-        return new Error(`Cannot read object 'server'`);
+        result.error = new Error(`Cannot read object 'server'`);
 
     try {
-        result = await server.close( err => {
+        result.server = await server.close( err => {
             if (err)
                 console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
             else

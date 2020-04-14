@@ -20,12 +20,11 @@ describe('Request chai-http test:', () => {
     let server;
 
     before( async () => {
-        let error;
-
         requester = chai.request(serverURL).keepOpen();
-        [ error, server ] = await startServer();
+        const result = await startServer();
 
-        assert.equal(error, null);
+        server = result.server;
+        assert.equal(result.error, null);
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {

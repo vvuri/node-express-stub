@@ -35,8 +35,8 @@ export async function startServer (port = PORT) {
 export async function stopServer (server) {
     let result;
 
-    if (typeof server === 'undefined' || !server)
-        return new Error(`Cannot read property 'server' of undefined `);
+    if (!server)
+        return new Error(`Cannot read object 'server'`);
 
     try {
         result = await server.close( err => {

@@ -7,35 +7,35 @@ chai.use(chaiHttp);
 
 describe('Positive: server running tests:', () => {
     let requester;
+    let error;
+    let server;
 
     before( () => {
+        delete process.env.PORT;
+        delete process.env.HOST;
+        delete process.env.ROOT_DIR;
         const config = require('../dist/fs_config');
         const url = `http://${config.HOST}:${config.PORT}`;
 
         requester = chai.request(url).keepOpen();
     });
 
-    it('Server starting and response by HTTP', async () => {
-        const [ error, server ] = await startServer();
+    beforeEach( async () => {
+        [ error, server ] = await startServer();
+    });
 
+    afterEach( async () => {
+        await stopServer(server);
+    });
+
+    it('Server starting and response by HTTP', async () => {
         assert.equal(error, null);
         const res = await requester.get('/');
 
         assert.equal(res.status, 200);
-        await stopServer(server);
-
-        // let error, server;
-        //
-        // new Promise(function(resolve, reject) {
-        //     const [ error, server ] = startServer();
-        // }).then(onFulfilled) {
-        //
-        // }
     });
 
     it('Server stopping and not a response by HTTP', async () => {
-        const [ error, server ] = await startServer();
-
         await stopServer(server);
         let res;
 
@@ -74,7 +74,7 @@ describe('Negative server running tests:', () => {
             assert.equal(result.message, `Cannot read property 'server' of undefined`);
         }
         catch (e) {
-            //console.log(`>> ${e.message}`);
+            //
         }
         finally {
             await stopServer(server);

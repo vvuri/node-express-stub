@@ -23,6 +23,14 @@ describe('Positive: server running tests:', () => {
 
         assert.equal(res.status, 200);
         await stopServer(server);
+
+        // let error, server;
+        //
+        // new Promise(function(resolve, reject) {
+        //     const [ error, server ] = startServer();
+        // }).then(onFulfilled) {
+        //
+        // }
     });
 
     it('Server stopping and not a response by HTTP', async () => {

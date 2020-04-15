@@ -17,3 +17,5 @@ const config = require('../dist/fs_config');
 const url = `http://${config.HOST}:${config.PORT}`;
 
 export const requester = chai.request(url).keepOpen();
+export const HOST = config.HOST;
+export const PORT = config.PORT;

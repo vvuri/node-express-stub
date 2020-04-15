@@ -68,6 +68,7 @@ describe('Request chai-http test:', () => {
     });
 
     after( async () => {
+        requester.close();
         await stopServer(server);
     });
 });

@@ -20,7 +20,7 @@ describe('Positive: server running tests:', () => {
         assert.equal(res.status, 200);
     });
 
-    it.only('Server stopping and not a response by HTTP', async () => {
+    it('Server stopping and not a response by HTTP', async () => {
         await stopServer(result.server);
 
         requester

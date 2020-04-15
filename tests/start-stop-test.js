@@ -2,6 +2,7 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import assert from 'assert';
 import { startServer, stopServer } from '../dist/fs_server';
+import { setClearEnv } from './helper';
 
 chai.use(chaiHttp);
 
@@ -10,9 +11,7 @@ describe('Positive: server running tests:', () => {
     let result;
 
     before( () => {
-        delete process.env.PORT;
-        delete process.env.HOST;
-        delete process.env.ROOT_DIR;
+        setClearEnv();
         const config = require('../dist/fs_config');
         const url = `http://${config.HOST}:${config.PORT}`;
 
@@ -62,21 +61,23 @@ describe('Negative server running tests:', () => {
         assert.equal(result.error, 'options.port should be >= 0 and < 65536. Received 100500.');
     });
 
-    it('Don`t stop Servers without parameter', async () => {
-        const result = await startServer();
+    it(`Don't stop Server without parameter`, async () => {
+        const resultError = await stopServer();
 
-        assert.equal(result.error, null);
+        assert.equal(resultError.error.message, `Cannot read object 'server'`);
+    });
 
-        try {
-            const resultError = await stopServer();
+    const runs = [
+        { it: null, options: '' },
+        { it: 'foo', options: '' },
+        { it: { foo: 'bar' }, options: '' }
+    ];
 
-            assert.equal(resultError.message, `Cannot read property 'server' of undefined`);
-        }
-        catch (e) {
-            //
-        }
-        finally {
-            await stopServer(result.server);
-        }
+    runs.forEach( run => {
+        it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
+            const resultError = await stopServer([run.it]);
+
+            assert.equal(resultError.error.message, `Error: Server NOT stopped!`);
+        });
     });
 });

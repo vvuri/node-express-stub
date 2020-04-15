@@ -35,18 +35,19 @@ export async function stopServer (server) {
 
     if (!server)
         result.error = new Error(`Cannot read object 'server'`);
-
-    try {
-        result.server = await server.close( err => {
-            if (err)
-                console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
-            else
-                console.log(`${chalk.blue('Server stop!')}`);
-        });
+    else {
+        try {
+            result.server = await server.close(err => {
+                if (err)
+                    console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
+                else
+                    console.log(`${chalk.blue('Server stop!')}`);
+            });
+        }
+        catch (e) {
+            console.log(`${chalk.red('Error:')} Server NOT stopped!`);
+            result.error = new Error(`Error: Server NOT stopped!`);
+        }
     }
-    catch (e) {
-        console.log(`${chalk.red('Error:')} Server NOT stopped!`);
-    }
-
     return result;
 }

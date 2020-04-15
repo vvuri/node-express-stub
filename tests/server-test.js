@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import chaiHttp from 'chai-http';
+import { setClearEnv } from './helper';
 
 const assert = chai.assert;
 
@@ -20,6 +21,8 @@ describe('Request chai-http test:', () => {
     let server;
 
     before( async () => {
+        setClearEnv();
+
         requester = chai.request(serverURL).keepOpen();
         const result = await startServer();
 

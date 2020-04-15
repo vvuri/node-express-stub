@@ -1,22 +1,9 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
 import assert from 'assert';
 import { startServer, stopServer } from '../dist/fs_server';
-import { setClearEnv } from './helper';
-
-chai.use(chaiHttp);
+import { requester } from './helper';
 
 describe('Positive: server running tests:', () => {
-    let requester;
     let result;
-
-    before( () => {
-        setClearEnv();
-        const config = require('../dist/fs_config');
-        const url = `http://${config.HOST}:${config.PORT}`;
-
-        requester = chai.request(url).keepOpen();
-    });
 
     beforeEach( async () => {
         result = await startServer();

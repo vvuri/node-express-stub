@@ -1,7 +1,5 @@
 import chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-import chaiHttp from 'chai-http';
-import { setClearEnv } from './helper';
+import { requester, setClearEnv } from './helper';
 
 const assert = chai.assert;
 
@@ -11,19 +9,11 @@ process.env.ROOT_DIR = 'public';
 
 import { startServer, stopServer } from '../dist/fs_server';
 
-chai.use(chaiAsPromised);
-chai.use(chaiHttp);
-
-const serverURL = `http://${process.env.HOST}:${process.env.PORT}`;
-
 describe('Request chai-http test:', () => {
-    let requester;
     let server;
 
     before( async () => {
         setClearEnv();
-
-        requester = chai.request(serverURL).keepOpen();
         const result = await startServer();
 
         server = result.server;

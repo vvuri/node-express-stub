@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { startServer, stopServer } from '../dist/fs_server';
-import { HOST, PORT, requester } from './helper';
+import { config, requester } from './helper';
 
 describe('Positive: server running tests:', () => {
     let result;
@@ -23,14 +23,13 @@ describe('Positive: server running tests:', () => {
     it('Server stopping and not a response by HTTP', async () => {
         await stopServer(result.server);
 
-        requester
+        await requester
             .get('/')
             .then( () => {
                 Promise.reject('Request should be rejected');
             })
             .catch( err => {
-                assert.equal(result.error, null);
-                assert.equal(err.message, `connect ECONNREFUSED ${HOST}:${PORT}`);
+                assert.equal(err.message, `connect ECONNREFUSED ${config.HOST}:${config.PORT}`);
             });
     });
 

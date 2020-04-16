@@ -2,19 +2,25 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
 
-export function setClearEnv () {
+function _setClearEnv () {
     delete process.env.PORT;
     delete process.env.HOST;
     delete process.env.ROOT_DIR;
 }
 
-let config;
+export let config;
+
+export function setDefaultEnv () {
+    process.env.PORT = '8888';
+    process.env.HOST = '127.0.0.1';
+    process.env.ROOT_DIR = 'public';
+}
 
 function createRequester () {
     chai.use(chaiHttp);
     chai.use(chaiAsPromised);
 
-    setClearEnv();
+    _setClearEnv();
     config = require('../dist/fs_config');
 
     const url = `http://${config.HOST}:${config.PORT}`;
@@ -24,5 +30,3 @@ function createRequester () {
 }
 
 export const requester = createRequester();
-export const HOST = config.HOST;
-export const PORT = config.PORT;

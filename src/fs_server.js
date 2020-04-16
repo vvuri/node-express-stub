@@ -38,16 +38,31 @@ export async function stopServer (server) {
     else {
         try {
             result.server = await server.close(err => {
-                if (err)
-                    console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
-                else
+                if (!err)
                     console.log(`${chalk.blue('Server stop!')}`);
+                else
+                    console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
             });
         }
         catch (e) {
-            console.log(`${chalk.red('Error:')} Server NOT stopped!`);
+            console.log(`${chalk.red('Error:')} Server NOT stopped!\n${e.message}`);
             result.error = new Error(`Error: Server NOT stopped!`);
         }
     }
     return result;
 }
+
+// export async function stopServer(server) {
+//     return new Promise((resolve, reject) => {
+//         app.close ( err => {
+//             if (err) {
+//                 console.log(`Error: ${err}`);
+//                 reject(err);
+//             }
+//             console.log(`Server closed on ${HOST}`);
+//
+//             resolve();
+//         });
+//     });
+// }
+

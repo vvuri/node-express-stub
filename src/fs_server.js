@@ -51,18 +51,3 @@ export async function stopServer (server) {
     }
     return result;
 }
-
-// export async function stopServer(server) {
-//     return new Promise((resolve, reject) => {
-//         app.close ( err => {
-//             if (err) {
-//                 console.log(`Error: ${err}`);
-//                 reject(err);
-//             }
-//             console.log(`Server closed on ${HOST}`);
-//
-//             resolve();
-//         });
-//     });
-// }
-

@@ -1,4 +1,5 @@
 import assert from 'assert';
+//import decache from 'decache';
 import { startServer, stopServer } from '../dist/fs_server';
 import { config, requester } from './helper';
 
@@ -66,4 +67,9 @@ describe('Negative server running tests:', () => {
             assert.equal(resultError.error.message, `Error: Server NOT stopped!`);
         });
     });
+
+    // after( () => {
+    //     decache('../dist/fs_server');
+    //     decache('../dist/fs_config');
+    // });
 });

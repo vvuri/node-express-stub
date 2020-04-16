@@ -1,24 +1,28 @@
-import chai from 'chai';
-import { requester, setDefaultEnv } from './helper';
-
+import decache from 'decache';
+const chai = require('chai');
 const assert = chai.assert;
+const chaiAsPromised = require('chai-as-promised');
+const chaiHttp = require('chai-http');
 
-setDefaultEnv();
-delete require.cache[require.resolve('../dist/fs_config')];
-delete require.cache[require.resolve('../dist/fs_server')];
+decache('../dist/fs_config');
+decache('../dist/fs_server');
 
-import { startServer, stopServer } from '../dist/fs_server';
+process.env.PORT = '8888';
+process.env.HOST = '127.0.0.1';
+process.env.ROOT_DIR = 'public';
+
+require('../dist/fs_server');
+
+chai.use(chaiAsPromised);
+chai.use(chaiHttp);
+
+const server = `http://${process.env.HOST}:${process.env.PORT}`;
 
 describe('Request chai-http test:', () => {
-    let server;
+    let requester;
 
-    before( async () => {
-        setDefaultEnv();
-        console.log(`Env::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`);
-        const result = await startServer();
-
-        server = result.server;
-        assert.equal(result.error, null);
+    before(() => {
+        requester = chai.request(server).keepOpen();
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -68,8 +72,8 @@ describe('Request chai-http test:', () => {
         requester.close();
     });
 
-    after( async () => {
-        requester.close();
-        await stopServer(server);
+    after(() => {
+        // eslint-disable-next-line
+        process.exit();
     });
 });

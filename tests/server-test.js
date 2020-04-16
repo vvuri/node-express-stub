@@ -4,12 +4,17 @@ import { requester, setDefaultEnv } from './helper';
 const assert = chai.assert;
 
 setDefaultEnv();
+delete require.cache[require.resolve('../dist/fs_config')];
+delete require.cache[require.resolve('../dist/fs_server')];
+
 import { startServer, stopServer } from '../dist/fs_server';
 
 describe('Request chai-http test:', () => {
     let server;
 
     before( async () => {
+        setDefaultEnv();
+        console.log(`Env::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`);
         const result = await startServer();
 
         server = result.server;

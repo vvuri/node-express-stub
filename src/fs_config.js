@@ -13,3 +13,5 @@ export const ROOT_DIR = process.env.ROOT_DIR || dirname;
 debug(`Env::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`);
 debug(`Json::  HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`);
 debug(`Export::  HOST: ${HOST}  PORT: ${PORT}  ROOT_DIR: ${ROOT_DIR}`);
+
+console.log(`Helper::   HOST: ${HOST}  PORT: ${PORT}  ROOT_DIR: ${ROOT_DIR}`);

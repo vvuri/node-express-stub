@@ -3,6 +3,8 @@ import assert from 'assert';
 import { startServer, stopServer } from '../dist/fs_server';
 import { config, requester } from './helper';
 
+console.log(`StSt: ${config.HOST}  ${config.PORT}  ${config.ROOT_DIR}`);
+
 describe('Positive: server running tests:', () => {
     let result;
 
@@ -67,9 +69,4 @@ describe('Negative server running tests:', () => {
             assert.equal(resultError.error.message, `Error: Server NOT stopped!`);
         });
     });
-
-    // after( () => {
-    //     decache('../dist/fs_server');
-    //     decache('../dist/fs_config');
-    // });
 });

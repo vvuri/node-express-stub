@@ -1,4 +1,5 @@
 import chai from 'chai';
+import decache from 'decache';
 import proxyquire from 'proxyquire';
 
 proxyquire.noPreserveCache();
@@ -42,5 +43,14 @@ describe('Load from file when environment undefined:', () => {
             delete process.env[run.it];
             assert.equal(example[run.it], run.option);
         });
+    });
+});
+
+describe('Declare config', () => {
+    it(`Do it`, () => {
+        decache('../dist/fs_server.js');
+        decache('../dist/fs_config.js');
+        decache('../dist/fs_tools.js');
+        decache('../helper.js');
     });
 });

@@ -1,6 +1,6 @@
 import chai from 'chai';
 import decache from 'decache';
-import { setDefaultEnv } from './helper';
+import { requester, setDefaultEnv } from './helper';
 
 const assert = chai.assert;
 
@@ -8,15 +8,12 @@ describe('Request chai-http test:', () => {
     let server;
     let startServer;
     let stopServer;
-    let requester;
 
     before( async () => {
         decache('../dist/fs_config.js');
         setDefaultEnv();
-        decache('./helper.js');
         startServer =  require('../dist/fs_server').startServer;
         stopServer =  require('../dist/fs_server').stopServer;
-        requester = require('./helper.js').requester;
 
         const result = await startServer();
 

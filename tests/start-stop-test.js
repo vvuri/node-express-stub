@@ -1,19 +1,17 @@
 import assert from 'assert';
 import decache from 'decache';
-import { config, setDefaultEnv } from './helper';
+import { config, requester, setDefaultEnv } from './helper';
 
 describe('Positive: server running tests:', () => {
     let result;
     let startServer;
     let stopServer;
-    let requester;
 
     before( async () => {
         decache('../dist/fs_config.js');
         setDefaultEnv();
         startServer = require('../dist/fs_server').startServer;
         stopServer = require('../dist/fs_server').stopServer;
-        requester = require('./helper.js').requester;
     });
 
     beforeEach( async () => {

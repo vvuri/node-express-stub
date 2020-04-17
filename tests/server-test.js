@@ -76,11 +76,3 @@ describe('Request chai-http test:', () => {
         await stopServer(server);
     });
 });
-
-// describe('Declare config', () => {
-//     it(`Do it`, () => {
-//         decache('../dist/fs_server');
-//         decache('../dist/fs_config');
-//         decache('../dist/fs_tools');
-//     });
-// });

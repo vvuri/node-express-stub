@@ -2,26 +2,21 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
 
-function _setClearEnv () {
-    delete process.env.PORT;
-    delete process.env.HOST;
-    delete process.env.ROOT_DIR;
-}
+const testHost = '127.0.0.1';
+const testPort = '8888';
+const testRootDir = 'public';
 
-export let config;
+export const config = { HOST: testHost, PORT: testPort, ROOT_DIR: testRootDir };
 
 export function setDefaultEnv () {
-    process.env.PORT = '8888';
-    process.env.HOST = '127.0.0.1';
-    process.env.ROOT_DIR = 'public';
+    process.env.PORT = testPort;
+    process.env.HOST = testHost;
+    process.env.ROOT_DIR = testRootDir;
 }
 
-function createRequester () {
+function createRequesterDefault () {
     chai.use(chaiHttp);
     chai.use(chaiAsPromised);
-
-    _setClearEnv();
-    config = require('../dist/fs_config');
 
     const url = `http://${config.HOST}:${config.PORT}`;
     const requester = chai.request(url).keepOpen();
@@ -31,4 +26,4 @@ function createRequester () {
     return requester;
 }
 
-export const requester = createRequester();
+export const requester = createRequesterDefault();

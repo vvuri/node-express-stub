@@ -26,6 +26,8 @@ function createRequester () {
     const url = `http://${config.HOST}:${config.PORT}`;
     const requester = chai.request(url).keepOpen();
 
+    console.log(`Req url: ${url}`);
+
     return requester;
 }
 

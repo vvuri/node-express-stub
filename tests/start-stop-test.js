@@ -53,6 +53,26 @@ describe('Start/stop API', () => {
         });
     });
 
+    describe('Server stopping test', () => {
+        let result;
+
+        beforeEach(async () => {
+            result = await startServer();
+            result = await stopServer(result.server);
+        });
+
+        it('Stopping the server does not result in an error', async () => {
+            assert.equal(typeof result.server, 'object');
+            assert.equal(result.error, null);
+        });
+
+        it('Stopping a stopped server results in an error', async () => {
+            result = await stopServer(result.server);
+
+            assert.equal(result.error.message, 'Server is not running.');
+        });
+    });
+
     describe('Negative server running tests:', () => {
         it('Don`t run Server if incorrect port', async () => {
             const result = await startServer(100500);

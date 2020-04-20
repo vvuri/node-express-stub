@@ -31,7 +31,7 @@ export async function startServer (port = PORT) {
 }
 
 export async function stopServer (server) {
-    const resultStop = { error: null, server: null };
+    const resultStop = { error: null, server: null, message: null };
 
     if (!server)
         resultStop.error = new Error(`Cannot read object 'server'`);
@@ -40,17 +40,20 @@ export async function stopServer (server) {
             try {
                 server.close(err => {
                     if (!err) {
-                        console.log(`${chalk.blue('Server stop!')}`);
+                        // resultStop.console.log(`${chalk.blue('Server stop!')}`);
+                        resultStop.message = `${chalk.blue('Server stop!')}`;
                         resolve(server);
                     }
                     else {
-                        console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
+                        // console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
+                        resultStop.message = `${chalk.red('Error')} server stopping: ${err.message}`;
                         reject(new Error(err.message));
                     }
                 });
             }
             catch (e) {
-                console.log(`${chalk.red('Error:')} Server NOT stopped!\n${e.message}`);
+                // console.log(`${chalk.red('Error:')} Server NOT stopped!\n${e.message}`);
+                resultStop.message = `${chalk.red('Error:')} Server NOT stopped!\n${e.message}`;
                 reject( new Error(`Error: Server NOT stopped!`) );
             }
         });

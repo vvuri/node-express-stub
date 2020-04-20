@@ -71,7 +71,7 @@ describe('Start/stop API', () => {
         it('Stopping a stopped server results in an error', async () => {
             result = await stopServer(result.server);
 
-            assert.equal(result.error.message, 'Server is not running.');
+            assert.equal(result.error.message, `Cannot read object 'server'`);
         });
     });
 
@@ -96,9 +96,12 @@ describe('Start/stop API', () => {
         ];
 
         runs.forEach(run => {
-            it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
+            it.only(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
                 const resultError = await stopServer([run.it]);
 
+                console.log(JSON.stringify(resultError));
+                console.log(JSON.stringify(resultError.error));
+                console.log(JSON.stringify(resultError.message));
                 assert.equal(resultError.error.message, `Error: Server NOT stopped!`);
             });
         });

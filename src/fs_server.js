@@ -34,38 +34,37 @@ export async function startServer (port = PORT) {
 export async function stopServer (server) {
     const resultStop = { error: null, server: null, message: null };
 
-    if (!server)
+    if (!server) {
         resultStop.error = new Error(`Cannot read object 'server'`);
-    else {
-        const promise = new Promise( (resolve, reject) => {
-            try {
-                server.close(err => {
-                    if (!err) {
-                        debug(`Server stop!`);
-                        resultStop.message = `${chalk.blue('Server stop!')}`;
-                        resolve(server);
-                    }
-                    else {
-                        debug(`Error server stopping: ${err.message}`);
-                        resultStop.message = `${chalk.red('Error')} server stopping: ${err.message}`;
-                        reject(new Error(err.message));
-                    }
-                });
-            }
-            catch (e) {
-                debug(`Error: Server NOT stopped!\n${e.message}`);
-                resultStop.message = `${chalk.red('Error:')} Server NOT stopped!\n${e.message}`;
-                reject( new Error(`Error: Server NOT stopped!`) );
-            }
-        });
-
-        await promise
-            .then( result => {
-                resultStop.server = result;
-            }, error => {
-                resultStop.error = error;
-            });
+        return Promise.resolve(resultStop);
     }
+
+    await new Promise( (resolve, reject) => {
+        try {
+            server.close(err => {
+                if (!err) {
+                    debug(`Server stop!`);
+                    resultStop.message = `${chalk.blue('Server stop!')}`;
+                    resolve(server);
+                }
+                else {
+                    debug(`Error server stopping: ${err.message}`);
+                    resultStop.message = `${chalk.red('Error')} server stopping: ${err.message}`;
+                    reject(new Error(err.message));
+                }
+            });
+        }
+        catch (e) {
+            debug(`Error: Server NOT stopped!\n${e.message}`);
+            resultStop.message = `${chalk.red('Error:')} Server NOT stopped!\n${e.message}`;
+            reject( new Error(`Error: Server NOT stopped!`) );
+        }
+    })
+        .then( result => {
+            resultStop.server = result;
+        }, error => {
+            resultStop.error = error;
+        });
 
     return resultStop;
 }

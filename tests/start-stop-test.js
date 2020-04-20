@@ -6,6 +6,8 @@ let startServer;
 let stopServer;
 
 describe('Start/stop API', () => {
+    let result;
+
     before(async () => {
         getClearConfig();
 
@@ -17,9 +19,11 @@ describe('Start/stop API', () => {
         stopServer  = utils.stopServer;
     });
 
-    describe('Positive: server running tests:', () => {
-        let result;
+    after(async () => {
+        await stopServer(result.server);
+    });
 
+    describe('Positive: server running tests:', () => {
         beforeEach(async () => {
             result = await startServer();
         });
@@ -46,7 +50,7 @@ describe('Start/stop API', () => {
                 .catch(err => {
                     assert.equal(err.message, `connect ECONNREFUSED ${testConfig.HOST}:${testConfig.PORT}`);
                 });
-        });
+        }).timeout(5000);
 
         after(() => {
             requester.close();
@@ -54,8 +58,6 @@ describe('Start/stop API', () => {
     });
 
     describe('Server stopping test', () => {
-        let result;
-
         beforeEach(async () => {
             result = await startServer();
             result = await stopServer(result.server);
@@ -75,7 +77,7 @@ describe('Start/stop API', () => {
 
     describe('Negative server running tests:', () => {
         it('Don`t run Server if incorrect port', async () => {
-            const result = await startServer(100500);
+            result = await startServer(100500);
 
             assert.equal(result.server, null);
             assert.equal(result.error, 'options.port should be >= 0 and < 65536. Received 100500.');

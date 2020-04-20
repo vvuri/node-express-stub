@@ -90,19 +90,16 @@ describe('Start/stop API', () => {
         });
 
         const runs = [
-            { it: null, options: '' },
-            { it: 'foo', options: '' },
-            { it: { foo: 'bar' }, options: '' }
+            { it: null, options: `Cannot read object 'server'` },
+            { it: 'foo', options: `Error: Server NOT stopped!` },
+            { it: { foo: 'bar' }, options: `Error: Server NOT stopped!` }
         ];
 
         runs.forEach(run => {
-            it.only(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
-                const resultError = await stopServer([run.it]);
+            it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
+                const resultError = await stopServer(run.it);
 
-                console.log(JSON.stringify(resultError));
-                console.log(JSON.stringify(resultError.error));
-                console.log(JSON.stringify(resultError.message));
-                assert.equal(resultError.error.message, `Error: Server NOT stopped!`);
+                assert.equal(resultError.error.message, run.options);//`Error: Cannot read object 'server'`);
             });
         });
     });

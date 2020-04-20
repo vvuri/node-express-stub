@@ -41,11 +41,11 @@ export async function stopServer (server) {
                 server.close(err => {
                     if (!err) {
                         console.log(`${chalk.blue('Server stop!')}`);
-                        resolve(this);
+                        resolve(server);
                     }
                     else {
                         console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
-                        reject(err);
+                        reject(new Error(err.message));
                     }
                 });
             }
@@ -53,14 +53,14 @@ export async function stopServer (server) {
                 console.log(`${chalk.red('Error:')} Server NOT stopped!\n${e.message}`);
                 reject( new Error(`Error: Server NOT stopped!`) );
             }
-        })
+        });
+
+        await promise
             .then( result => {
                 resultStop.server = result;
             }, error => {
                 resultStop.error = error;
             });
-
-        await promise;
     }
     return resultStop;
 }

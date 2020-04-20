@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import express from 'express';
 import { resDirListFiles } from './fs_tools';
 import { HOST, PORT, ROOT_DIR } from './fs_config';
+import debug from './fs_logger';
 
 const app = express();
 
@@ -40,19 +41,19 @@ export async function stopServer (server) {
             try {
                 server.close(err => {
                     if (!err) {
-                        // resultStop.console.log(`${chalk.blue('Server stop!')}`);
+                        debug(`Server stop!`);
                         resultStop.message = `${chalk.blue('Server stop!')}`;
                         resolve(server);
                     }
                     else {
-                        // console.log(`${chalk.red('Error')} server stopping: ${err.message}`);
+                        debug(`Error server stopping: ${err.message}`);
                         resultStop.message = `${chalk.red('Error')} server stopping: ${err.message}`;
                         reject(new Error(err.message));
                     }
                 });
             }
             catch (e) {
-                // console.log(`${chalk.red('Error:')} Server NOT stopped!\n${e.message}`);
+                debug(`Error: Server NOT stopped!\n${e.message}`);
                 resultStop.message = `${chalk.red('Error:')} Server NOT stopped!\n${e.message}`;
                 reject( new Error(`Error: Server NOT stopped!`) );
             }
@@ -65,5 +66,6 @@ export async function stopServer (server) {
                 resultStop.error = error;
             });
     }
+
     return resultStop;
 }

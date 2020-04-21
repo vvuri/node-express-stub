@@ -20,7 +20,7 @@ for (const path of dirPath) {
 export async function startServer (port = PORT) {
     const result = { error: null, server: null };
 
-    return await new Promise( resolve => {
+    return new Promise( resolve => {
         try {
             result.server = app.listen(port, () => {
                 console.log(chalk.blue(`Server running at http://${HOST}:${port}/`));
@@ -42,7 +42,7 @@ export async function stopServer (server) {
         return Promise.resolve(resultStop);
     }
 
-    return await new Promise( resolve => {
+    return new Promise( resolve => {
         try {
             server.close(err => {
                 if (err) {

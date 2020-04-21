@@ -65,12 +65,9 @@ describe('Start/stop API', () => {
             result = await stopServer(resultStart.server);
         });
 
-        it('After the server stops, the returned parameters contain a link to the server.', async () => {
-            assert.equal(result.server, resultStart.server);
-        });
-
         it('Stopping the server does not result in an error', async () => {
-            assert.equal(result.error, null);
+            assert.equal(result.server, resultStart.server, 'The returned parameters contain a link to the server.');
+            assert.equal(result.error, null, 'The returned parameters error = null');
         });
 
         it('Stopping a stopped server results in an error', async () => {

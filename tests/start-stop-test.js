@@ -64,14 +64,13 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping the server does not result in an error', async () => {
-            assert.equal(result.server, null);
             assert.equal(result.error, null);
         });
 
         it('Stopping a stopped server results in an error', async () => {
             result = await stopServer(result.server);
 
-            assert.equal(result.error.message, `Cannot read object 'server'`);
+            assert.equal(result.error.message, 'Server is not running.');
         });
     });
 

@@ -47,12 +47,11 @@ export async function stopServer (server) {
             server.close(err => {
                 if (err) {
                     debug(`Error server stopping: ${err.message}`);
-                    resultStop.error = 'Server is not running.';
+                    resultStop.error = new Error('Server is not running.');
                 }
                 else {
                     debug(`Server stop!`);
                     console.log(`${chalk.blue('Server stop!')}`);
-                    resultStop.server = null;
                 }
                 resolve(resultStop);
             });

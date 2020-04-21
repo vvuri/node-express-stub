@@ -64,7 +64,7 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping the server does not result in an error', async () => {
-            assert.equal(typeof result.server, 'object');
+            assert.equal(result.server, null);
             assert.equal(result.error, null);
         });
 

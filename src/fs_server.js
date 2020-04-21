@@ -35,7 +35,7 @@ export async function startServer (port = PORT) {
 }
 
 export async function stopServer (server) {
-    const resultStop = { error: null, server: null };
+    const resultStop = { error: null, server: server };
 
     if (!server) {
         resultStop.error = new Error(`Cannot read object 'server'`);
@@ -52,6 +52,7 @@ export async function stopServer (server) {
                 else {
                     debug(`Server stop!`);
                     console.log(`${chalk.blue('Server stop!')}`);
+                    resultStop.server = null;
                 }
                 resolve(resultStop);
             });

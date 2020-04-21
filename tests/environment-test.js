@@ -1,13 +1,14 @@
-const chai = require('chai');
-const proxyquire = require('proxyquire').noPreserveCache();
+import chai from 'chai';
+import proxyquire from 'proxyquire';
 
+proxyquire.noPreserveCache();
 const assert = chai.assert;
 
 describe('Environment variable should be set, if it is specified:', () => {
     const runs = [
-        { it: 'PORT', option: '8888', name: 'PORT' },
-        { it: 'HOST', option: '127.0.0.1', name: 'HOST' },
-        { it: 'ROOT_DIR', option: 'public', name: 'ROOT_DIR' }
+        { it: 'PORT', option: '8888' },
+        { it: 'HOST', option: '127.0.0.1' },
+        { it: 'ROOT_DIR', option: 'public' }
     ];
 
     runs.forEach( run => {

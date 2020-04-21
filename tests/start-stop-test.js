@@ -58,9 +58,15 @@ describe('Start/stop API', () => {
     });
 
     describe('Server stopping test', () => {
+        let resultStart;
+
         beforeEach(async () => {
-            result = await startServer();
-            result = await stopServer(result.server);
+            resultStart = await startServer();
+            result = await stopServer(resultStart.server);
+        });
+
+        it('After the server stops, the returned parameters contain a link to the server.', async () => {
+            assert.equal(result.server, resultStart.server);
         });
 
         it('Stopping the server does not result in an error', async () => {

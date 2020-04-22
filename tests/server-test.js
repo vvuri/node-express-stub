@@ -1,29 +1,21 @@
 import chai from 'chai';
-import { createRequester, getClearConfig } from './helper';
+import { createRequester, getClearConfig, testConfig } from './helper';
+import StaticServer from '../src/fs_server';
 
 const assert = chai.assert;
 
-let requester;
-let startServer;
-let stopServer;
-
 describe('Request chai-http test:', () => {
-    let server;
+    let srv;
+    let requester;
 
     before(async () => {
         getClearConfig();
-
         requester = createRequester();
+        srv = new StaticServer(testConfig);
 
-        const utils = require('../dist/fs_server');
+        const result = await srv.start();
 
-        startServer = utils.startServer;
-        stopServer  = utils.stopServer;
-
-        const result = await startServer();
-
-        server = result.server;
-        assert.equal(result.error, null);
+        assert.equal(result, null);
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -78,6 +70,6 @@ describe('Request chai-http test:', () => {
 
     after(async () => {
         requester.close();
-        await stopServer(server);
+        await srv.stop();
     });
 });

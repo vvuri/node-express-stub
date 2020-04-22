@@ -53,10 +53,8 @@ describe('Start/stop API', () => {
     });
 
     describe('Server stopping test', () => {
-        let resultStart;
-
         beforeEach(async () => {
-            resultStart = await srv.start();
+            result = await srv.start();
             result = await srv.stop(); //stopServer(resultStart.server);
         });
 

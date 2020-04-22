@@ -38,13 +38,8 @@ export default class StaticServer {
             fs.readdir(folder, enconding, (err, items) => {
                 if (err)
                     reject(err);
-                else {
-                    let data = '';
-
-                    for (const item of items)
-                        data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>) </li>`;
-                    resolve(data);
-                }
+                else
+                    resolve(items);
             });
         });
     }
@@ -52,11 +47,10 @@ export default class StaticServer {
     _getHTMLDirList (subdir, listFiles) {
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
 
-        data += `<ul> ${listFiles} </ul>`;
-
-        // for (const item of items)
-        //     data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>) </li>`;
-        // resolve(data);
+        data += `<ul>`;
+        for (const item of listFiles)
+            data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>) </li>`;
+        data += `</ul>`;
 
         return data;
     }
@@ -65,14 +59,14 @@ export default class StaticServer {
         let data;
 
         subdir = req.url;
+
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`);
         debug(`Dir: ${subdir}  req url: ${req.url}`);
         debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`);
+
         this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
             .then(files => {
                 data = this._getHTMLDirList(subdir, files);
-                //data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
-                //data += `<ul> ${files} </ul>`;
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);

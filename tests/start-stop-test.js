@@ -27,7 +27,7 @@ describe('Start/stop API', () => {
             await srv.stop();
         });
 
-        it.only('Server starting and response by HTTP', async () => {
+        it('Server starting and response by HTTP', async () => {
             assert.equal(result, null);
             const res = await requester.get('/');
 
@@ -60,18 +60,18 @@ describe('Start/stop API', () => {
             result = await srv.stop(); //stopServer(resultStart.server);
         });
 
-        it('After the server stops, the returned parameters contain a link to the server.', async () => {
-            assert.equal(result.server, resultStart.server);
-        });
+        // it('After the server stops, the returned parameters contain a link to the server.', async () => {
+        //     assert.equal(result.server, resultStart.server);
+        // });
 
         it('Stopping the server does not result in an error', async () => {
-            assert.equal(result.error, null);
+            assert.equal(result, null);
         });
 
         it('Stopping a stopped server results in an error', async () => {
             result = await srv.stop(); // stopServer(result.server);
 
-            assert.equal(result.error.message, 'Server is not running.');
+            assert.equal(result.message, 'Server is not running.');
         });
     });
 
@@ -80,15 +80,14 @@ describe('Start/stop API', () => {
             srv.port = 100500;
             result = await srv.start();
 
-            assert.equal(result.server, null);
-            assert.equal(result.error, 'options.port should be >= 0 and < 65536. Received 100500.');
+            assert.equal(result, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
         });
 
-        it(`Don't stop Server without parameter`, async () => {
-            const resultError = await srv.stop(); //stopServer();
-
-            assert.equal(resultError.error.message, `Cannot read object 'server'`);
-        });
+        // it(`Don't stop Server without parameter`, async () => {
+        //     const resultError = await srv.stop();
+        //
+        //     assert.equal(resultError.error.message, `Cannot read object 'server'`);
+        // });
 
         const runs = [
             { it: null, options: `Cannot read object 'server'` },
@@ -98,9 +97,10 @@ describe('Start/stop API', () => {
 
         runs.forEach(run => {
             it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
+                srv.server = run.it;
                 const resultError = await srv.stop(); // stopServer(run.it);
 
-                assert.equal(resultError.error.message, run.options);//`Error: Cannot read object 'server'`);
+                assert.equal(resultError.message, run.options);//`Error: Cannot read object 'server'`);
             });
         });
     });

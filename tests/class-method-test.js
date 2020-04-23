@@ -4,29 +4,30 @@ import StaticServer from '../dist/fs_server';
 import { testConfig } from './helper';
 
 chai.use(chaiHtml);
-//chai.use(require('chai-dom'));
 
-const assert = chai.assert;
 const expect = chai.expect;
 
-describe('class unit test', () => {
-    // _getHTMLDirList (subdir, listFiles)
-    // - формирование кода по шаблону
-    // - разбор что число открытых и закрытых теког соответсвует
-    // - запуск при пустом значении
+describe('StaticServer unit test for method _getHTMLDirList:', () => {
     let srv;
 
     before( () => {
         srv = new StaticServer(testConfig);
     });
 
-    it(`Запуск функции с пустыми параметрами`, () => {
-        const result = srv._getHTMLDirList('', '');
+    const runs = [
+        { it: 'Starting a method with empty parameters', subdir: '', listfiles: '', result: `<h2>List Files in <i>${testConfig.ROOT_DIR}</i>:</h2><ul></ul>` },
+        { it: 'Return empty list of files in subdirectory', subdir: '/private/', listfiles: [], result: `<h2>List Files in <i>${testConfig.ROOT_DIR}/private/</i>:</h2><ul></ul>` }
+    ];
 
-        expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.ROOT_DIR}</i>:</h2><ul></ul>`);
+    runs.forEach(run => {
+        it(run.it, () => {
+            const result = srv._getHTMLDirList(run.subdir, run.listfiles);
+
+            expect(result).html.to.equal(run.result);
+        });
     });
 
-    it(`Проверка списка для корневой директории`, () => {
+    it(`The method returns a list of three files for the root directory`, () => {
         const listAnchors = ['a11', 'a2', 'a3'];
         const result = srv._getHTMLDirList('/', listAnchors);
 
@@ -38,17 +39,4 @@ describe('class unit test', () => {
             expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
         }
     });
-
-    it(`Пустой список файлов`, () => {
-        const result = srv._getHTMLDirList('/private/', []);
-
-        console.log(result);
-    });
-
-    it(`субдиректораия  - формирование анкера`, () => {
-        const result = srv._getHTMLDirList('/private/', ['a1']);
-
-        console.log(result);
-    });
-
 });

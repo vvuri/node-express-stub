@@ -8,6 +8,7 @@ const _RootDir = 'public';
 const _dirPath = ['/', '/elements', '/elements/subelements'];
 
 export const testConfig = { HOST: _Host, PORT: _Port, ROOT_DIR: _RootDir, dirPath: _dirPath };
+export const testConfigSecond = { HOST: _Host, PORT: '9999', ROOT_DIR: '/element', dirPath: ['/', '/subelements'] };
 
 export function getClearConfig () {
     delete process.env.PORT;
@@ -19,11 +20,11 @@ export function getClearConfig () {
     process.env.ROOT_DIR = _RootDir;
 }
 
-export function createRequester () {
+export function createRequester (host = _Host, port = _Port) {
     chai.use(chaiHttp);
     chai.use(chaiAsPromised);
 
-    const url = `http://${_Host}:${_Port}`;
+    const url = `http://${host}:${port}`;
 
     return chai.request(url).keepOpen();
 }

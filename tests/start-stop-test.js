@@ -1,9 +1,10 @@
 import assert from 'assert';
-import { createRequester, getClearConfig, testConfig } from './helper';
+import { createRequester, getClearConfig, testConfig, testConfigSecond } from './helper';
 import StaticServer from '../src/fs_server';
 
 let srv;
 let requester;
+let requesterSecond;
 
 describe('Start/stop API', () => {
     let result;
@@ -101,5 +102,53 @@ describe('Start/stop API', () => {
                 assert.equal(resultError.message, run.options);//`Error: Cannot read object 'server'`);
             });
         });
+    });
+
+    describe.only(`Запуск двух серверов на разных портах и с разными путями`, () => {
+        before(async () => {
+            getClearConfig();
+            requester = createRequester();
+            requesterSecond = createRequester(testConfigSecond.HOST, testConfigSecond.PORT);
+
+            srv = { first: null, second: null };
+
+            srv.first = new StaticServer(testConfig);
+            srv.second = new StaticServer(testConfigSecond);
+        });
+
+        after(async () => {
+            await srv.first.stop();
+            await srv.second.stop();
+        });
+
+        it(`запустились без ошибок`, () => {
+            assert.equal(srv.first, null);
+            assert.equal(srv.second, null);
+        });
+
+        it(`отвечает на запрос 1 и 2`, async () => {
+            const resFirst = await requester.get('/');
+            const resSecond = await requesterSecond.get('/');
+
+            assert.equal(resFirst.status, 200);
+            assert.equal(resSecond.status, 200);
+        });
+
+        it(`подкаталог одного и основной каталог дурго выдаю список одних и тех же файлов`, () => {
+
+        });
+
+        it(`остановка одного не приводи к остановке другого`, () => {
+
+        });
+
+        it(`можно перезапустить сервер на том же порту`, () => {
+
+        });
+
+        it(`mock hostname`, async () => {
+
+        });
+
     });
 });

@@ -44,7 +44,7 @@ describe('Start/stop API', () => {
                     Promise.reject('Request should be rejected');
                 })
                 .catch(err => {
-                    assert.equal(err.message, `connect ECONNREFUSED ${testConfig.HOST}:${testConfig.PORT}`);
+                    assert.equal(err.message, `connect ECONNREFUSED ${testConfig.host}:${testConfig.port}`);
                 });
         }).timeout(5000);
 
@@ -104,7 +104,7 @@ describe('Start/stop API', () => {
         });
     });
 
-    describe.only(`Запуск двух серверов на разных портах и с разными путями`, () => {
+    describe.skip(`Запуск двух серверов на разных портах и с разными путями`, () => {
         before(async () => {
             getClearConfig();
             requester = createRequester();
@@ -114,6 +114,11 @@ describe('Start/stop API', () => {
 
             srv.first = new StaticServer(testConfig);
             srv.second = new StaticServer(testConfigSecond);
+
+            console.log(testConfig);
+            console.log(testConfigSecond);
+            console.log(srv.first.port);
+            console.log(srv.second.port);
         });
 
         after(async () => {
@@ -121,9 +126,12 @@ describe('Start/stop API', () => {
             await srv.second.stop();
         });
 
-        it(`запустились без ошибок`, () => {
-            assert.equal(srv.first, null);
-            assert.equal(srv.second, null);
+        it(`запустились без ошибок`, async () => {
+            result = await srv.first.start();
+            assert.equal(result, null);
+
+            result = await srv.second.start();
+            assert.equal(result, null);
         });
 
         it(`отвечает на запрос 1 и 2`, async () => {

@@ -8,7 +8,7 @@ const _RootDir = 'public';
 const _dirPath = ['/', '/elements', '/elements/subelements'];
 
 export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir, dirPath: _dirPath };
-export const testConfigSecond = { host: _Host, port: '9999', rootDir: '/element', dirPath: ['/', '/subelements'] };
+export const testConfigSecond = { host: _Host, port: '9999', rootDir: 'public/elements', dirPath: ['/', '/subelements'] };
 
 export function getClearConfig () {
     delete process.env.PORT;

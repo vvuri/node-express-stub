@@ -103,60 +103,76 @@ describe('Start/stop API', () => {
             });
         });
     });
+});
 
-    describe.skip(`Запуск двух серверов на разных портах и с разными путями`, () => {
-        before(async () => {
-            getClearConfig();
-            requester = createRequester();
-            requesterSecond = createRequester(testConfigSecond.HOST, testConfigSecond.PORT);
+describe.only(`Запуск двух серверов на разных портах и с разными путями`, () => {
+    let result;
 
-            srv = { first: null, second: null };
+    before(async () => {
+        getClearConfig();
+        requester = createRequester();
+        requesterSecond = createRequester(testConfigSecond.HOST, testConfigSecond.PORT);
 
-            srv.first = new StaticServer(testConfig);
-            srv.second = new StaticServer(testConfigSecond);
+        srv = { first: null, second: null };
 
-            console.log(testConfig);
-            console.log(testConfigSecond);
-            console.log(srv.first.port);
-            console.log(srv.second.port);
-        });
+        srv.first = new StaticServer(testConfig);
+        srv.second = new StaticServer(testConfigSecond);
+        //
+        // console.log(testConfig);
+        // console.log(testConfigSecond);
+        // console.log(srv.first.port);
+        // console.log(srv.second.port);
+    });
 
-        after(async () => {
-            await srv.first.stop();
-            await srv.second.stop();
-        });
+    after(async () => {
+        await srv.first.stop();
+        await srv.second.stop();
+    });
 
-        it(`запустились без ошибок`, async () => {
-            result = await srv.first.start();
-            assert.equal(result, null);
+    it(`запустились без ошибок`, async () => {
+        result = await srv.first.start();
+        assert.equal(result, null);
 
-            result = await srv.second.start();
-            assert.equal(result, null);
-        });
+        result = await srv.second.start();
+        assert.equal(result, null);
+    });
 
-        it(`отвечает на запрос 1 и 2`, async () => {
-            const resFirst = await requester.get('/');
-            const resSecond = await requesterSecond.get('/');
+    it(`отвечает на запрос 1 и 2`, async () => {
+        const resFirst = await requester.get('/');
+        const resSecond = await requesterSecond.get('/');
 
-            assert.equal(resFirst.status, 200);
-            assert.equal(resSecond.status, 200);
-        });
+        assert.equal(resFirst.status, 200);
+        assert.equal(resSecond.status, 200);
+    });
 
-        it(`подкаталог одного и основной каталог дурго выдаю список одних и тех же файлов`, () => {
+    it(`подкаталог одного и основной каталог дурго выдаю список одних и тех же файлов`, async () => {
+        const resFirst = await requester.get('/elements');
+        const resSecond = await requesterSecond.get('/');
 
-        });
+        console.log(resFirst.text);
+        console.log(resSecond.text);
 
-        it(`остановка одного не приводи к остановке другого`, () => {
-
-        });
-
-        it(`можно перезапустить сервер на том же порту`, () => {
-
-        });
-
-        it(`mock hostname`, async () => {
-
-        });
 
     });
+
+    it(`можно перезапустить сервер на том же порту`, async () => {
+        result = await srv.second.stop();
+        assert.equal(result, null, 'Server stopped without Error');
+
+        result = await srv.second.start();
+        assert.equal(result, null, 'Server Restarted without Error');
+    });
+
+    it(`остановка одного не приводи к остановке другого`, async () => {
+        result = await srv.second.stop();
+        assert.equal(result, null, 'Server stopped without Error');
+
+        result = await requester.get('/');
+        assert.equal(result.status, 200);
+    });
+
+    it(`mock hostname`, async () => {
+
+    });
+
 });

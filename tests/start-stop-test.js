@@ -56,15 +56,11 @@ describe('Start/stop API', () => {
     describe('Server stopping test', () => {
         beforeEach(async () => {
             result = await srv.start();
-            result = await srv.stop(); //stopServer(resultStart.server);
+            result = await srv.stop();
         });
 
-        // it('After the server stops, the returned parameters contain a link to the server.', async () => {
-        //     assert.equal(result.server, resultStart.server);
-        // });
-
         it('Stopping the server does not result in an error', async () => {
-            assert.equal(result, null);
+            assert.equal(result, null, 'The returned parameters error = null');
         });
 
         it('Stopping a stopped server results in an error', async () => {
@@ -81,12 +77,6 @@ describe('Start/stop API', () => {
 
             assert.equal(result, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
         });
-
-        // it(`Don't stop Server without parameter`, async () => {
-        //     const resultError = await srv.stop();
-        //
-        //     assert.equal(resultError.error.message, `Cannot read object 'server'`);
-        // });
 
         const runs = [
             { it: null, options: `Cannot read object 'server'` },

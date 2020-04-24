@@ -35,6 +35,7 @@ export default class StaticServer {
 
     _getDir ( folder, subdir, enconding ) {
         debug(`Folder: ${folder}, ${subdir}`, '_getDir');
+
         return new Promise((resolve, reject) => {
             fs.readdir(folder, enconding, (err, items) => {
                 if (err)
@@ -71,12 +72,14 @@ export default class StaticServer {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);
+
                 debug('Return:' + data, '_resDirListFiles');
             })
             .catch(error => {
-                debug(error, '_resDirListFiles');
                 res.statusCode = 404;
                 res.end('Dir Not Found');
+
+                debug(error, '_resDirListFiles');
             });
     }
 

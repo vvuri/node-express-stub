@@ -1,8 +1,8 @@
 import 'babel-polyfill';
-import express from 'express';
 import chalk from 'chalk';
-import fs from 'fs';
 import dotenv from 'dotenv';
+import express from 'express';
+import fs from 'fs';
 
 import config from '../config.json';
 import debug from './fs_logger';
@@ -13,6 +13,7 @@ export default class StaticServer {
         const { hostname, port, dirname } = config;
 
         dotenv.config();
+
         this.host = args.host || process.env.HOST || hostname;
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;

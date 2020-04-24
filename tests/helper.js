@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
+import DomParser from 'dom-parser';
 
 const _Host = '127.0.0.1';
 const _Port = '8888';
@@ -28,3 +29,14 @@ export function createRequester (host = _Host, port = _Port) {
 
     return chai.request(url).keepOpen();
 }
+
+export function parseLiList (text) {
+    const parser = new DomParser();
+    const parseDoc = parser.parseFromString(text, 'text/html');
+
+    return parseDoc.getElementsByTagName('li').map(
+        item => {
+            return item.innerHTML.trim().split(' ')[0];
+        });
+}
+

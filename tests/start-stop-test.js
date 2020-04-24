@@ -1,12 +1,6 @@
-// import chai from 'chai';
-// import chaiHtml from 'chai-html';
 import assert from 'assert';
-import { createRequester, getClearConfig, testConfig, testConfigSecond } from './helper';
-import DomParser from 'dom-parser';
+import { createRequester, getClearConfig, parseLiList, testConfig, testConfigSecond } from './helper';
 import StaticServer from '../src/fs_server';
-
-// chai.use(chaiHtml);
-// const expect = chai.expect;
 
 let srv;
 let requester;
@@ -117,7 +111,7 @@ describe.only(`Запуск двух серверов на разных порт
     before(async () => {
         getClearConfig();
         requester = createRequester();
-        requesterSecond = createRequester(testConfigSecond.HOST, testConfigSecond.PORT);
+        requesterSecond = createRequester(testConfigSecond.host, testConfigSecond.port);
 
         srv = { first: null, second: null };
 
@@ -153,20 +147,12 @@ describe.only(`Запуск двух серверов на разных порт
 
     it(`подкаталог одного и основной каталог дурго выдаю список одних и тех же файлов`, async () => {
         const resFirst = await requester.get('/elements');
-        // const resSecond = await requesterSecond.get('/');
+        const resSecond = await requesterSecond.get('/');
 
-        // console.log(resFirst.text);
-        // console.log(resSecond.text);
+        const docFirst = parseLiList(resFirst.text);
+        const docSecond = parseLiList(resSecond.text);
 
-        const parser = new DomParser();
-        const docFirst = parser.parseFromString(resFirst.text, 'text/html');
-        //const docSecond = parser.parseFromString(resSecond.text, 'text/html');
-
-        console.log(docFirst);
-        console.log(docFirst.getElementsByTagName('li'));
-        console.log(docFirst.getElementsByTagName('li'));
-
-
+        assert.equal(JSON.stringify(docFirst), JSON.stringify(docSecond));
     });
 
     it(`можно перезапустить сервер на том же порту`, async () => {

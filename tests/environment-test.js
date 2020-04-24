@@ -1,7 +1,6 @@
 import chai from 'chai';
 import proxyquire from 'proxyquire';
 
-import { getClearConfig } from './helper';
 import StaticServer from '../dist/fs_server';
 
 proxyquire.noPreserveCache();
@@ -9,9 +8,6 @@ proxyquire.noCallThru();
 const assert = chai.assert;
 
 describe('Environment tests:', () => {
-    before( () => {
-        getClearConfig();
-    });
 
     describe('Parameters passed to the class are more priority than env and file:', () => {
         const runs = [
@@ -47,11 +43,15 @@ describe('Environment tests:', () => {
         });
     });
 
-    describe.only('Load from file when environment undefined:', () => {
+    describe('Load from file when environment undefined:', () => {
         const config = {
             'hostname': '127.4.4.4',
             'port':     '4444',
             'dirname':  'test4'
+        };
+
+        const mockDotenv = {
+            config: () => {}
         };
 
         const runs = [
@@ -63,7 +63,8 @@ describe('Environment tests:', () => {
         runs.forEach( run => {
             it(`Read ${ run.it } from config.json if env port null`, async () => {
                 delete process.env[run.it];
-                const StaticServerTest = proxyquire('../dist/fs_server.js', { '../config.json': config }).default;
+                const StaticServerTest = proxyquire('../dist/fs_server.js',
+                    { '../config.json': config, 'dotenv': mockDotenv }).default;
                 const srv = new StaticServerTest({});
 
                 assert.equal(srv[run.srv], run.option);

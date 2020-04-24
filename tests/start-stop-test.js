@@ -119,17 +119,17 @@ describe(`Running two servers on different ports and with different paths`, () =
         srv.second = new StaticServer(testConfigSecond);
     });
 
-    after(async () => {
-        await srv.first.stop();
-        await srv.second.stop();
-    });
-
-    it(`Started without errors`, async () => {
+    beforeEach(`Started without errors`, async () => {
         result = await srv.first.start();
         assert.equal(result, null);
 
         result = await srv.second.start();
         assert.equal(result, null);
+    });
+
+    afterEach(async () => {
+        await srv.first.stop();
+        await srv.second.stop();
     });
 
     it(`Each server responds to a request`, async () => {

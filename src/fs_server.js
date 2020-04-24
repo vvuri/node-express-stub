@@ -18,10 +18,10 @@ export default class StaticServer {
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.dirPath = args.dirPath || '/';
 
-        debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`);
-        debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`);
-        debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`);
-        debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`);
+        debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
+        debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
+        debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
+        debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
 
         this.app = express();
         this.server = null;
@@ -33,7 +33,7 @@ export default class StaticServer {
     }
 
     _getDir ( folder, subdir, enconding ) {
-        debug(`Folder: ${folder}, ${subdir}`);
+        debug(`Folder: ${folder}, ${subdir}`, '_getDir');
         return new Promise((resolve, reject) => {
             fs.readdir(folder, enconding, (err, items) => {
                 if (err)
@@ -60,9 +60,9 @@ export default class StaticServer {
 
         subdir = req.url;
 
-        debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`);
-        debug(`Dir: ${subdir}  req url: ${req.url}`);
-        debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`);
+        debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');
+        debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
+        debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`, '_resDirListFiles');
 
         this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
             .then(files => {
@@ -70,10 +70,10 @@ export default class StaticServer {
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);
-                debug('Return:' + data);
+                debug('Return:' + data, '_resDirListFiles');
             })
             .catch(error => {
-                debug(error);
+                debug(error, '_resDirListFiles');
                 res.statusCode = 404;
                 res.end('Dir Not Found');
             });
@@ -101,18 +101,18 @@ export default class StaticServer {
             try {
                 this.server.close(err => {
                     if (err) {
-                        debug(`Error server stopping: ${err.message}`);
+                        debug(`Error server stopping: ${err.message}`, 'stop');
                         resolve( new Error('Server is not running.') );
                     }
                     else {
-                        debug(`Server stop!`);
+                        debug(`Server stop!`, 'stop');
                         console.log(`${chalk.blue('Server stop!')}`);
                         resolve();
                     }
                 });
             }
             catch (e) {
-                debug(`Error: Server NOT stopped!\n${e.message}`);
+                debug(`Error: Server NOT stopped!\n${e.message}`, 'stop');
                 resolve( new Error(`Error: Server NOT stopped!`) );
             }
         });

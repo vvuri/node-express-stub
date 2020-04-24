@@ -1,6 +1,12 @@
+// import chai from 'chai';
+// import chaiHtml from 'chai-html';
 import assert from 'assert';
 import { createRequester, getClearConfig, testConfig, testConfigSecond } from './helper';
+import DomParser from 'dom-parser';
 import StaticServer from '../src/fs_server';
+
+// chai.use(chaiHtml);
+// const expect = chai.expect;
 
 let srv;
 let requester;
@@ -147,10 +153,18 @@ describe.only(`Запуск двух серверов на разных порт
 
     it(`подкаталог одного и основной каталог дурго выдаю список одних и тех же файлов`, async () => {
         const resFirst = await requester.get('/elements');
-        const resSecond = await requesterSecond.get('/');
+        // const resSecond = await requesterSecond.get('/');
 
-        console.log(resFirst.text);
-        console.log(resSecond.text);
+        // console.log(resFirst.text);
+        // console.log(resSecond.text);
+
+        const parser = new DomParser();
+        const docFirst = parser.parseFromString(resFirst.text, 'text/html');
+        //const docSecond = parser.parseFromString(resSecond.text, 'text/html');
+
+        console.log(docFirst);
+        console.log(docFirst.getElementsByTagName('li'));
+        console.log(docFirst.getElementsByTagName('li'));
 
 
     });
@@ -172,7 +186,13 @@ describe.only(`Запуск двух серверов на разных порт
     });
 
     it(`mock hostname`, async () => {
+        // var os = require("os");
+        // os.hostname();
 
+        // req.hostname
+        // http://expressjs.com/en/api.html#req.hostname
+
+        // request.headers.host
     });
 
 });

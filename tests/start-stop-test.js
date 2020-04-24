@@ -105,7 +105,7 @@ describe('Start/stop API', () => {
     });
 });
 
-describe.only(`Запуск двух серверов на разных портах и с разными путями`, () => {
+describe(`Running two servers on different ports and with different paths`, () => {
     let result;
 
     before(async () => {
@@ -117,11 +117,6 @@ describe.only(`Запуск двух серверов на разных порт
 
         srv.first = new StaticServer(testConfig);
         srv.second = new StaticServer(testConfigSecond);
-        //
-        // console.log(testConfig);
-        // console.log(testConfigSecond);
-        // console.log(srv.first.port);
-        // console.log(srv.second.port);
     });
 
     after(async () => {
@@ -129,7 +124,7 @@ describe.only(`Запуск двух серверов на разных порт
         await srv.second.stop();
     });
 
-    it(`запустились без ошибок`, async () => {
+    it(`Started without errors`, async () => {
         result = await srv.first.start();
         assert.equal(result, null);
 
@@ -137,7 +132,7 @@ describe.only(`Запуск двух серверов на разных порт
         assert.equal(result, null);
     });
 
-    it(`отвечает на запрос 1 и 2`, async () => {
+    it(`Each server responds to a request`, async () => {
         const resFirst = await requester.get('/');
         const resSecond = await requesterSecond.get('/');
 
@@ -145,7 +140,7 @@ describe.only(`Запуск двух серверов на разных порт
         assert.equal(resSecond.status, 200);
     });
 
-    it(`подкаталог одного и основной каталог дурго выдаю список одних и тех же файлов`, async () => {
+    it(`The displayed lists of the subdirectory of one and the main directory of another are identical`, async () => {
         const resFirst = await requester.get('/elements');
         const resSecond = await requesterSecond.get('/');
 
@@ -155,7 +150,7 @@ describe.only(`Запуск двух серверов на разных порт
         assert.equal(JSON.stringify(docFirst), JSON.stringify(docSecond));
     });
 
-    it(`можно перезапустить сервер на том же порту`, async () => {
+    it(`Restarting the second server on the same port`, async () => {
         result = await srv.second.stop();
         assert.equal(result, null, 'Server stopped without Error');
 
@@ -163,22 +158,11 @@ describe.only(`Запуск двух серверов на разных порт
         assert.equal(result, null, 'Server Restarted without Error');
     });
 
-    it(`остановка одного не приводи к остановке другого`, async () => {
+    it(`Stopping one don't stop the other server`, async () => {
         result = await srv.second.stop();
         assert.equal(result, null, 'Server stopped without Error');
 
         result = await requester.get('/');
         assert.equal(result.status, 200);
     });
-
-    it(`mock hostname`, async () => {
-        // var os = require("os");
-        // os.hostname();
-
-        // req.hostname
-        // http://expressjs.com/en/api.html#req.hostname
-
-        // request.headers.host
-    });
-
 });

@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
+import multer from 'multer';
 
 import config from '../config.json';
 import debug from './fs_logger';
@@ -24,13 +25,25 @@ export default class StaticServer {
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
 
+        this.upload = multer({ dest: 'uploads/' });
+
         this.app = express();
         this.server = null;
+
+        this.app.post('/upload', this.upload.none(), this._upload);
 
         for (const path of this.dirPath) {
             this.app.use(path, express.static(this.rootDir + path));
             this.app.get(path, this._resDirListFiles.bind(this) );
         }
+    }
+
+    _upload (req, res, next) {
+        // req.file is the `avatar` file
+        // req.body will hold the text fields, if there were any
+        debug('Uploadfile', res.status, req.status, next.status);
+        debug(req.file, 'req.file');
+        debug(req.body, 'req.body');
     }
 
     _getDir ( folder, subdir, enconding ) {
@@ -81,6 +94,16 @@ export default class StaticServer {
                     `(<A href="http://${this.host}:${this.port}${subdir}${item}" download>download</A>)</li>`;
         }
         data += `</ul>`;
+
+        // Add Upload form
+        data += '<br>';
+        data += `
+        <form action="/upload" enctype="multipart/form-data" method="post">
+          <div class="form-group">
+            <input type="file" name="uploaded_file">
+            <input type="submit" value="Upload">
+          </div>
+        </form>`;
 
         return data;
     }

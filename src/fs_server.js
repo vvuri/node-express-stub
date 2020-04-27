@@ -37,21 +37,49 @@ export default class StaticServer {
         debug(`Folder: ${folder}, ${subdir}`, '_getDir');
 
         return new Promise((resolve, reject) => {
-            fs.readdir(folder, enconding, (err, items) => {
+            fs.readdir(folder, [enconding, true], (err, items) => {
                 if (err)
                     reject(err);
-                else
+                else {
+                    debug(items, '_getDir');
                     resolve(items);
+                }
             });
         });
+    }
+
+    _getListDirAndFiles (subdir, listFiles) {
+        const result = { dirs: [], files: [] };
+
+        listFiles.forEach( fileName => {
+            try {
+                const stats = fs.lstatSync(subdir + fileName);
+
+                if (stats.isDirectory())
+                    result.dirs.push(fileName);
+                if (stats.isFile())
+                    result.files.push(fileName);
+            }
+            catch (e) {
+                debug(`Error in fs.lstatSync: ${e.message}`, '_getListDirAndFiles');
+            }
+        });
+
+        debug(JSON.stringify(result), '_getListDirAndFiles');
+        return result;
     }
 
     _getHTMLDirList (subdir, listFiles) {
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
 
         data += `<ul>`;
-        for (const item of listFiles)
-            data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>) </li>`;
+        for (const item of listFiles.dirs)
+            data += `<li> <b>${item}</b>> (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>)</li>`;
+
+        for (const item of listFiles.files) {
+            data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>)` +
+                    `(<A href="http://${this.host}:${this.port}${subdir}${item}" download>download</A>)</li>`;
+        }
         data += `</ul>`;
 
         return data;
@@ -68,7 +96,9 @@ export default class StaticServer {
 
         this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
             .then(files => {
-                data = this._getHTMLDirList(subdir, files);
+                const listDirAndFiles = this._getListDirAndFiles(this.rootDir.concat(subdir), files);
+
+                data = this._getHTMLDirList(subdir, listDirAndFiles);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);

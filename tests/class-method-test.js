@@ -7,7 +7,7 @@ chai.use(chaiHtml);
 
 const expect = chai.expect;
 
-describe('StaticServer unit test for method _getHTMLDirList:', () => {
+describe.skip('StaticServer unit test for method _getHTMLDirList:', () => {
     let srv;
 
     before( () => {

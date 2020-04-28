@@ -25,15 +25,33 @@ export default class StaticServer {
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
 
+        this._configureApp();
+        this._configureUpload();
+    }
+
+    _configureApp () {
         this.app = express();
         this.server = null;
 
         for (const path of this.dirPath) {
             this.app.use(path, express.static(this.rootDir + path));
-            this.app.get(path, this._resDirListFiles.bind(this) );
+            this.app.get(path, this._resDirListFiles.bind(this));
         }
+    }
 
-        this.upload = multer({ dest: 'public/' });
+    _configureUpload () {
+        this.storage = multer.diskStorage({
+            destination: (req, file, cb) => {
+                cb(null, './public');
+            },
+            filename: (req, file, cb) => {
+                //if (файл существует)
+                //cb(null, file.originalname + '-' + Date.now();
+                //else
+                cb(null, file.originalname);
+            }
+        });
+        this.upload = multer({ storage: this.storage, limits: { fieldSize: 10000 } });
         this.app.post('/', this.upload.single('fileToUpload'), this._upload);
     }
 

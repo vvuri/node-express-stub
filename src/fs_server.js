@@ -25,25 +25,34 @@ export default class StaticServer {
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
 
-        this.upload = multer({ dest: 'uploads/' });
-
         this.app = express();
         this.server = null;
-
-        this.app.post('/upload', this.upload.none(), this._upload);
 
         for (const path of this.dirPath) {
             this.app.use(path, express.static(this.rootDir + path));
             this.app.get(path, this._resDirListFiles.bind(this) );
         }
+
+        this.upload = multer({ dest: 'public/' });
+        this.app.post('/', this.upload.single('fileToUpload'), this._upload);
     }
 
-    _upload (req, res, next) {
-        // req.file is the `avatar` file
-        // req.body will hold the text fields, if there were any
-        debug('Uploadfile', res.status, req.status, next.status);
-        debug(req.file, 'req.file');
-        debug(req.body, 'req.body');
+    _upload (req, res) {
+        debug('post input', 'POST');
+        debug(req.file, 'POST');
+        debug(req.body, 'POST');
+        // [POST] {
+        //     fieldname: 'fileToUpload',
+        //     originalname: 'simple',
+        //     encoding: '7bit',
+        //     mimetype: 'application/octet-stream',
+        //     destination: 'public/',
+        //     filename: 'cae7a1789954510f0d649eeade4902b4',
+        //     path: 'public\\cae7a1789954510f0d649eeade4902b4',
+        //     size: 9
+        // }
+
+        res.redirect('/');
     }
 
     _getDir ( folder, subdir, enconding ) {
@@ -98,11 +107,9 @@ export default class StaticServer {
         // Add Upload form
         data += '<br>';
         data += `
-        <form action="/upload" enctype="multipart/form-data" method="post">
-          <div class="form-group">
-            <input type="file" name="uploaded_file">
-            <input type="submit" value="Upload">
-          </div>
+        <form action="/" enctype="multipart/form-data" method="post">
+          <input type="file" name="fileToUpload" value="Select file">
+          <input type="submit" value="Upload to server">
         </form>`;
 
         return data;

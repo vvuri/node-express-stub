@@ -17,7 +17,11 @@ export default class StaticServer {
         this.host = args.host || process.env.HOST || hostname;
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
-        this.dirPath = args.dirPath || '/';
+        //this.dirPath = args.dirPath || '/';
+
+        this.dirPath = ['/'];
+        this._getListSubDirectories();
+        debug(this.dirPath, 'dirPath');
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
@@ -31,6 +35,28 @@ export default class StaticServer {
             this.app.use(path, express.static(this.rootDir + path));
             this.app.get(path, this._resDirListFiles.bind(this) );
         }
+    }
+
+    async _getListSubDirectories (subdir = '') {
+        await this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
+            .then( files => {
+                debug(JSON.stringify(files), '_getListSubDirectories');
+                files.forEach(fileName => {
+                    try {
+                        const curPath = `${subdir}/${fileName}`;
+                        const stats = fs.lstatSync(this.rootDir + curPath);
+
+                        if (stats.isDirectory()) {
+                            debug(curPath, '_getListSubDirectories');
+                            this.dirPath.push(curPath);
+                            this._getListSubDirectories(curPath);
+                        }
+                    }
+                    catch (e) {
+                        debug(`Error in fs.lstatSync: ${e.message}`, '_getListSubDirectories');
+                    }
+                });
+            });
     }
 
     _getDir ( folder, subdir, enconding ) {

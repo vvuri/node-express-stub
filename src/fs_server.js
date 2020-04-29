@@ -17,17 +17,25 @@ export default class StaticServer {
         this.host = args.host || process.env.HOST || hostname;
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
-        //this.dirPath = args.dirPath || '/';
-
         this.dirPath = ['/'];
-        this._getListSubDirectories();
-        debug(this.dirPath, 'dirPath');
+        //this.dirPath = args.dirPath || '/';
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
 
+        debug(this.dirPath, 'constructor');
+        this._getListSubDirectories()
+            .then( results => {
+                debug(results, 'init');
+                debug(this.dirPath, 'init');
+                this.initApp();//.bind(this);
+            });
+    }
+
+    initApp () {
+        debug(this, 'initApp');
         this.app = express();
         this.server = null;
 
@@ -37,39 +45,57 @@ export default class StaticServer {
         }
     }
 
-    async _getListSubDirectories (subdir = '') {
-        await this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
-            .then( files => {
-                debug(JSON.stringify(files), '_getListSubDirectories');
-                files.forEach(fileName => {
-                    try {
-                        const curPath = `${subdir}/${fileName}`;
-                        const stats = fs.lstatSync(this.rootDir + curPath);
+    _statDir (fileName) {
+        // debug(`FileName: ${fileName}`, '_statDir');
 
-                        if (stats.isDirectory()) {
-                            debug(curPath, '_getListSubDirectories');
-                            this.dirPath.push(curPath);
-                            this._getListSubDirectories(curPath);
-                        }
-                    }
-                    catch (e) {
-                        debug(`Error in fs.lstatSync: ${e.message}`, '_getListSubDirectories');
-                    }
-                });
+        return new Promise((resolve, reject) => {
+            fs.stat(fileName, (err, stat) => {
+                if (err) {
+                    debug(err, '_statDir.error');
+                    reject(err);
+                }
+                else
+                    resolve(stat);
             });
+        });
     }
 
     _getDir ( folder, subdir, enconding ) {
-        debug(`Folder: ${folder}, ${subdir}`, '_getDir');
+        // debug(`Folder: ${folder}, ${subdir}`, '_getDir');
 
         return new Promise((resolve, reject) => {
             fs.readdir(folder, enconding, (err, items) => {
-                if (err)
+                if (err) {
+                    debug(err, '_getDir.error');
                     reject(err);
+                }
                 else
                     resolve(items);
             });
         });
+    }
+
+    _getListSubDirectories (subdir = '') {
+        return this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
+            .then(files => {
+                // debug(files, '_getListSubDirectories.files');
+                return Promise.all(files.map(fileName => {
+                    // debug(fileName, '_getListSubDirectories.map');
+                    // eslint-disable-next-line
+                    return this._statDir(`${this.rootDir}${subdir}/${fileName}`).then( stat => {
+                        // debug(stat, '_getListSubDirectories.stat');
+                        if (stat.isDirectory()) {
+                            debug(fileName, '_getListSubDirectories.fileName');
+                            this.dirPath.push(`${subdir}/${fileName}`);
+                            return this._getListSubDirectories(`${subdir}/${fileName}`);
+                        }
+                    });
+                }));
+            })
+            .then( results => {
+                debug(results, '_getListSubDirectories.results');
+                return results;//Array.prototype.concat.apply([], results);
+            });
     }
 
     _getHTMLDirList (subdir, listFiles) {
@@ -110,6 +136,7 @@ export default class StaticServer {
     }
 
     async start () {
+        debug(`Server running at http://${this.host}:${this.port}/`, 'start');
         return new Promise( resolve => {
             try {
                 this.server = this.app.listen(this.port, () => {

@@ -9,7 +9,9 @@ const StartServer = async () => {
     };
     const srv = new StaticServer(args);
 
-    await srv.start();
+    setTimeout(async () => {
+        await srv.start();
+    }, 1000);
 };
 
 StartServer();

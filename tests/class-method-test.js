@@ -7,7 +7,7 @@ chai.use(chaiHtml);
 
 const expect = chai.expect;
 
-describe('StaticServer unit test for method _getHTMLDirList:', () => {
+describe('StaticServer unit test for methods:', () => {
     let srv;
 
     before( () => {
@@ -27,7 +27,7 @@ describe('StaticServer unit test for method _getHTMLDirList:', () => {
         });
     });
 
-    it(`The method returns a list of three files for the root directory`, () => {
+    it(`_getHTMLDirList returns a list of three files for the root directory`, () => {
         const listAnchors = ['a11', 'a2', 'a3'];
         const result = srv._getHTMLDirList('/', listAnchors);
 
@@ -39,4 +39,13 @@ describe('StaticServer unit test for method _getHTMLDirList:', () => {
             expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
         }
     });
+
+    it.only(`_getListSubDirectories set a list of subdirectories`, async () => {
+        // srv.dirPath = ['/'];
+        // await srv._getListSubDirectories();
+        console.log(srv.dirPath);
+        expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
+        expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);
+    });
 });
+

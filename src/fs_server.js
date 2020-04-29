@@ -25,20 +25,7 @@ export default class StaticServer {
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
     }
 
-    initApp () {
-        debug(this, 'initApp');
-        this.app = express();
-        this.server = null;
-
-        for (const path of this.dirPath) {
-            this.app.use(path, express.static(this.rootDir + path));
-            this.app.get(path, this._resDirListFiles.bind(this) );
-        }
-    }
-
     _statDir (fileName) {
-        // debug(`FileName: ${fileName}`, '_statDir');
-
         return new Promise((resolve, reject) => {
             fs.stat(fileName, (err, stat) => {
                 if (err) {
@@ -52,8 +39,6 @@ export default class StaticServer {
     }
 
     _getDir ( folder, subdir, enconding ) {
-        // debug(`Folder: ${folder}, ${subdir}`, '_getDir');
-
         return new Promise((resolve, reject) => {
             fs.readdir(folder, enconding, (err, items) => {
                 if (err) {
@@ -69,23 +54,16 @@ export default class StaticServer {
     _getListSubDirectories (subdir = '') {
         return this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
             .then(files => {
-                // debug(files, '_getListSubDirectories.files');
                 return Promise.all(files.map(fileName => {
-                    // debug(fileName, '_getListSubDirectories.map');
                     // eslint-disable-next-line
                     return this._statDir(`${this.rootDir}${subdir}/${fileName}`).then( stat => {
-                        // debug(stat, '_getListSubDirectories.stat');
                         if (stat.isDirectory()) {
-                            debug(fileName, '_getListSubDirectories.fileName');
+                            debug(`${subdir}/${fileName}`, '_getListSubDirectories');
                             this.dirPath.push(`${subdir}/${fileName}`);
                             return this._getListSubDirectories(`${subdir}/${fileName}`);
                         }
                     });
                 }));
-            })
-            .then( results => {
-                debug(results, '_getListSubDirectories.results');
-                return results;//Array.prototype.concat.apply([], results);
             });
     }
 
@@ -126,14 +104,23 @@ export default class StaticServer {
             });
     }
 
+    _initApp () {
+        debug(this, 'initApp');
+        this.app = express();
+        this.server = null;
+
+        for (const path of this.dirPath) {
+            this.app.use(path, express.static(this.rootDir + path));
+            this.app.get(path, this._resDirListFiles.bind(this) );
+        }
+    }
+
     async start () {
         return new Promise( resolve => {
             this._getListSubDirectories()
-                .then( results => {
-                    debug(results, 'init');
-                    debug(this.dirPath, 'init');
-
-                    this.initApp();
+                .then( () => {
+                    debug(this.dirPath, 'start');
+                    this._initApp();
 
                     debug(`Server running at http://${this.host}:${this.port}/`, 'start');
                     try {

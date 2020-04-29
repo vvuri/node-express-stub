@@ -116,7 +116,7 @@ export default class StaticServer {
     }
 
     async start () {
-        return new Promise( resolve => {
+        return new Promise( (resolve, reject) => {
             this._getListSubDirectories()
                 .then( () => {
                     debug(this.dirPath, 'start');
@@ -130,7 +130,7 @@ export default class StaticServer {
                         });
                     }
                     catch (e) {
-                        resolve( new Error(e.message) );
+                        reject( new Error(e.message) );
                     }
                 });
         });
@@ -140,7 +140,7 @@ export default class StaticServer {
         if (!this.server)
             return Promise.resolve( new Error(`Cannot read object 'server'`) );
 
-        return new Promise( resolve => {
+        return new Promise( (resolve, reject) => {
             try {
                 this.server.close(err => {
                     if (err) {
@@ -156,7 +156,7 @@ export default class StaticServer {
             }
             catch (e) {
                 debug(`Error: Server NOT stopped!\n${e.message}`, 'stop');
-                resolve( new Error(`Error: Server NOT stopped!`) );
+                reject( new Error(`Error: Server NOT stopped!`) );
             }
         });
     }

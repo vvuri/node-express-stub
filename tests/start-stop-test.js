@@ -16,7 +16,7 @@ describe('Start/stop API', () => {
     });
 
     after(async () => {
-        await srv.stop(); //stopServer(result.server);
+        await srv.stop();
     });
 
     describe('Positive: server running tests:', () => {
@@ -35,7 +35,7 @@ describe('Start/stop API', () => {
             assert.equal(res.status, 200);
         });
 
-        it('Server stopping and not a response by HTTP', async () => {
+        it.only('Server stopping and not a response by HTTP', async () => {
             await srv.stop();
 
             await requester

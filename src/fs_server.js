@@ -18,20 +18,11 @@ export default class StaticServer {
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.dirPath = ['/'];
-        //this.dirPath = args.dirPath || '/';
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
-
-        debug(this.dirPath, 'constructor');
-        this._getListSubDirectories()
-            .then( results => {
-                debug(results, 'init');
-                debug(this.dirPath, 'init');
-                this.initApp();//.bind(this);
-            });
     }
 
     initApp () {
@@ -136,17 +127,25 @@ export default class StaticServer {
     }
 
     async start () {
-        debug(`Server running at http://${this.host}:${this.port}/`, 'start');
         return new Promise( resolve => {
-            try {
-                this.server = this.app.listen(this.port, () => {
-                    console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
-                    resolve();
+            this._getListSubDirectories()
+                .then( results => {
+                    debug(results, 'init');
+                    debug(this.dirPath, 'init');
+
+                    this.initApp();
+
+                    debug(`Server running at http://${this.host}:${this.port}/`, 'start');
+                    try {
+                        this.server = this.app.listen(this.port, () => {
+                            console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
+                            resolve();
+                        });
+                    }
+                    catch (e) {
+                        resolve( new Error(e.message) );
+                    }
                 });
-            }
-            catch (e) {
-                resolve( new Error(e.message) );
-            }
         });
     }
 

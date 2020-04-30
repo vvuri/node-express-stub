@@ -140,12 +140,25 @@ describe(`Running two servers on different ports and with different paths`, () =
 
     afterEach(async () => {
         try {
-            await srv.first.stop();
-            await srv.second.stop();
+            if (srv.first.server._handle !== null) {
+                result = await srv.first.stop();
+                assert.equal(result, null, result.message);
+            }
         }
-        catch (e) {
-            // in test where server stopped
+        catch (error) {
+            assert.equal(JSON.stringify(error), '{}');
         }
+        try {
+            if (srv.second.server._handle !== null) {
+                result = await srv.second.stop();
+                assert.equal(result, null, result.message);
+            }
+        }
+        catch (error) {
+            assert.equal(JSON.stringify(error), '{}');
+        }
+        assert.equal(srv.first.server._handle, null);
+        assert.equal(srv.second.server._handle, null);
     });
 
     it(`Each server responds to a request`, async () => {

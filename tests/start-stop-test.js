@@ -30,7 +30,12 @@ describe('Start/stop API', () => {
         });
 
         afterEach(async () => {
-            await srv.stop();
+            try {
+                await srv.stop();
+            }
+            catch (e) {
+                // in test where server stopped
+            }
         });
 
         it('Server starting and response by HTTP', async () => {
@@ -69,9 +74,12 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping a stopped server results in an error', async () => {
-            result = await srv.stop();
-
-            assert.equal(result.message, 'Server is not running.');
+            try {
+                result = await srv.stop();
+            }
+            catch (error) {
+                assert.equal(error.message, 'Server is not running.');
+            }
         });
     });
 
@@ -129,8 +137,13 @@ describe(`Running two servers on different ports and with different paths`, () =
     });
 
     afterEach(async () => {
-        await srv.first.stop();
-        await srv.second.stop();
+        try {
+            await srv.first.stop();
+            await srv.second.stop();
+        }
+        catch (e) {
+            // in test where server stopped
+        }
     });
 
     it(`Each server responds to a request`, async () => {

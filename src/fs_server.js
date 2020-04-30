@@ -145,7 +145,7 @@ export default class StaticServer {
                 this.server.close(err => {
                     if (err) {
                         debug(`Error server stopping: ${err.message}`, 'stop');
-                        resolve( new Error('Server is not running.') );
+                        reject( new Error('Server is not running.') );
                     }
                     else {
                         debug(`Server stop!`, 'stop');

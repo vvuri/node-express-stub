@@ -1,6 +1,6 @@
 import StaticServer from './fs_server';
 
-const StartServer = async () => {
+const startServer = async () => {
     const args = {
         host:    '127.0.0.1',
         port:    '8888',
@@ -8,7 +8,7 @@ const StartServer = async () => {
     };
     const srv = new StaticServer(args);
 
-    await srv.start();
+    srv.start();
 };
 
-StartServer();
+startServer();

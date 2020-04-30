@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { createRequester, getClearConfig, parseLiList, testConfig, testConfigSecond } from './helper';
+import { createRequester, getClearConfig, parseLiList, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
 
 let srv;
@@ -118,6 +118,8 @@ describe(`Running two servers on different ports and with different paths`, () =
     let result;
 
     before(async () => {
+        const { testConfigSecond }  = require('./helper');
+
         getClearConfig();
         requester = createRequester();
         requesterSecond = createRequester(testConfigSecond.host, testConfigSecond.port);

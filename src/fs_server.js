@@ -10,6 +10,8 @@ import debug from './fs_logger';
 export default class StaticServer {
 
     constructor (args) {
+        this.state = false;
+
         const { hostname, port, dirname } = config;
 
         dotenv.config();
@@ -126,6 +128,7 @@ export default class StaticServer {
                     try {
                         this.server = this.app.listen(this.port, () => {
                             console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
+                            this.state = true;
                             resolve();
                         });
                     }
@@ -150,6 +153,7 @@ export default class StaticServer {
                     else {
                         debug(`Server stop!`, 'stop');
                         console.log(`${chalk.blue('Server stop!')}`);
+                        this.state = false;
                         resolve();
                     }
                 });

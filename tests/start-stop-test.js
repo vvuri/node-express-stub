@@ -16,12 +16,8 @@ describe('Start/stop API', () => {
     });
 
     after(async () => {
-        try {
+        if (srv.state)
             await srv.stop();
-        }
-        catch (e) {
-            // in test where server stopped
-        }
     });
 
     describe('Positive: server running tests:', () => {
@@ -30,12 +26,8 @@ describe('Start/stop API', () => {
         });
 
         afterEach(async () => {
-            try {
+            if (srv.state)
                 await srv.stop();
-            }
-            catch (e) {
-                // in test where server stopped
-            }
         });
 
         it('Server starting and response by HTTP', async () => {
@@ -130,68 +122,83 @@ describe(`Running two servers on different ports and with different paths`, () =
         srv.second = new StaticServer(testConfigSecond);
     });
 
-    beforeEach(`Started without errors`, async () => {
-        result = await srv.first.start();
-        assert.equal(result, null);
+    describe(`Started two servers without errors`, () => {
+        after(async () => {
+            if (srv.first.state)
+                await srv.first.stop();
+            if (srv.second.state)
+                await srv.second.stop();
+        });
 
-        result = await srv.second.start();
-        assert.equal(result, null);
+        it(`Started without errors`, async () => {
+            result = await srv.first.start();
+            assert.equal(result, null);
+            assert.equal(srv.first.state, true);
+
+            result = await srv.second.start();
+            assert.equal(result, null);
+            assert.equal(srv.second.state, true);
+        });
     });
 
-    afterEach(async () => {
-        try {
-            if (srv.first.server._handle !== null) {
-                result = await srv.first.stop();
-                assert.equal(result, null, result.message);
-            }
-        }
-        catch (error) {
-            assert.equal(JSON.stringify(error), '{}');
-        }
-        try {
-            if (srv.second.server._handle !== null) {
-                result = await srv.second.stop();
-                assert.equal(result, null, result.message);
-            }
-        }
-        catch (error) {
-            assert.equal(JSON.stringify(error), '{}');
-        }
-        assert.equal(srv.first.server._handle, null);
-        assert.equal(srv.second.server._handle, null);
+    describe(`Stopping one of two servers`, () => {
+        before(`Started without errors`, async () => {
+            await srv.first.start();
+            await srv.second.start();
+        });
+
+        after(async () => {
+            if (srv.first.state)
+                await srv.first.stop();
+        });
+
+        it(`Stopping one don't stop the other server`, async () => {
+            result = await srv.second.stop();
+            assert.equal(result, null, 'Server stopped without Error');
+
+            result = await requester.get('/');
+            assert.equal(result.status, 200);
+        });
     });
 
-    it(`Each server responds to a request`, async () => {
-        const resFirst = await requester.get('/');
-        const resSecond = await requesterSecond.get('/');
+    describe(`И запуск и остановка`, () => {
+        beforeEach(`Started without errors`, async () => {
+            await srv.first.start();
+            await srv.second.start();
+        });
 
-        assert.equal(resFirst.status, 200);
-        assert.equal(resSecond.status, 200);
+        afterEach(async () => {
+            if (srv.first.state)
+                await srv.first.stop();
+            if (srv.second.state)
+                await srv.second.stop();
+        });
+
+        it(`Each server responds to a request`, async () => {
+            const resFirst = await requester.get('/');
+            const resSecond = await requesterSecond.get('/');
+
+            assert.equal(resFirst.status, 200);
+            assert.equal(resSecond.status, 200);
+        });
+
+        it(`The displayed lists of the subdirectory of one and the main directory of another are identical`, async () => {
+            const resFirst = await requester.get('/elements');
+            const resSecond = await requesterSecond.get('/');
+
+            const docFirst = parseLiList(resFirst.text);
+            const docSecond = parseLiList(resSecond.text);
+
+            assert.equal(JSON.stringify(docFirst), JSON.stringify(docSecond));
+        });
+
+        it(`Restarting the second server on the same port`, async () => {
+            result = await srv.second.stop();
+            assert.equal(result, null, 'Server stopped without Error');
+
+            result = await srv.second.start();
+            assert.equal(result, null, 'Server Restarted without Error');
+        });
     });
 
-    it(`The displayed lists of the subdirectory of one and the main directory of another are identical`, async () => {
-        const resFirst = await requester.get('/elements');
-        const resSecond = await requesterSecond.get('/');
-
-        const docFirst = parseLiList(resFirst.text);
-        const docSecond = parseLiList(resSecond.text);
-
-        assert.equal(JSON.stringify(docFirst), JSON.stringify(docSecond));
-    });
-
-    it(`Restarting the second server on the same port`, async () => {
-        result = await srv.second.stop();
-        assert.equal(result, null, 'Server stopped without Error');
-
-        result = await srv.second.start();
-        assert.equal(result, null, 'Server Restarted without Error');
-    });
-
-    it(`Stopping one don't stop the other server`, async () => {
-        result = await srv.second.stop();
-        assert.equal(result, null, 'Server stopped without Error');
-
-        result = await requester.get('/');
-        assert.equal(result.status, 200);
-    });
 });

@@ -16,7 +16,7 @@ describe('Start/stop API', () => {
     });
 
     after(async () => {
-        if (srv.state)
+        if (srv.isRunning)
             await srv.stop();
     });
 
@@ -26,7 +26,7 @@ describe('Start/stop API', () => {
         });
 
         afterEach(async () => {
-            if (srv.state)
+            if (srv.isRunning)
                 await srv.stop();
         });
 
@@ -124,20 +124,20 @@ describe(`Running two servers on different ports and with different paths`, () =
 
     describe(`Started two servers without errors`, () => {
         after(async () => {
-            if (srv.first.state)
+            if (srv.first.isRunning)
                 await srv.first.stop();
-            if (srv.second.state)
+            if (srv.second.isRunning)
                 await srv.second.stop();
         });
 
         it(`Started without errors`, async () => {
             result = await srv.first.start();
             assert.equal(result, null);
-            assert.equal(srv.first.state, true);
+            assert.equal(srv.first.isRunning, true);
 
             result = await srv.second.start();
             assert.equal(result, null);
-            assert.equal(srv.second.state, true);
+            assert.equal(srv.second.isRunning, true);
         });
     });
 
@@ -148,7 +148,7 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         after(async () => {
-            if (srv.first.state)
+            if (srv.first.isRunning)
                 await srv.first.stop();
         });
 
@@ -168,9 +168,9 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         afterEach(async () => {
-            if (srv.first.state)
+            if (srv.first.isRunning)
                 await srv.first.stop();
-            if (srv.second.state)
+            if (srv.second.isRunning)
                 await srv.second.stop();
         });
 

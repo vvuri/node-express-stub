@@ -16,7 +16,12 @@ describe('Start/stop API', () => {
     });
 
     after(async () => {
-        await srv.stop();
+        try {
+            await srv.stop();
+        }
+        catch (e) {
+            // in test where server stopped
+        }
     });
 
     describe('Positive: server running tests:', () => {
@@ -35,7 +40,7 @@ describe('Start/stop API', () => {
             assert.equal(res.status, 200);
         });
 
-        it.only('Server stopping and not a response by HTTP', async () => {
+        it('Server stopping and not a response by HTTP', async () => {
             await srv.stop();
 
             await requester
@@ -64,7 +69,7 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping a stopped server results in an error', async () => {
-            result = await srv.stop(); // stopServer(result.server);
+            result = await srv.stop();
 
             assert.equal(result.message, 'Server is not running.');
         });
@@ -73,9 +78,12 @@ describe('Start/stop API', () => {
     describe('Negative server running tests:', () => {
         it('Don`t run Server if incorrect port', async () => {
             srv.port = 100500;
-            result = await srv.start();
-
-            assert.equal(result, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
+            try {
+                result = await srv.start();
+            }
+            catch (error) {
+                assert.equal(error, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
+            }
         });
 
         const runs = [
@@ -86,10 +94,13 @@ describe('Start/stop API', () => {
 
         runs.forEach(run => {
             it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
-                srv.server = run.it;
-                const resultError = await srv.stop(); // stopServer(run.it);
-
-                assert.equal(resultError.message, run.options);//`Error: Cannot read object 'server'`);
+                try {
+                    srv.server = run.it;
+                    result = await srv.stop();
+                }
+                catch (error) {
+                    assert.equal(error.message, run.options);
+                }
             });
         });
     });

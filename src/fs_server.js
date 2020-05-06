@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
+//mport util from 'util';
 
 import config from '../config.json';
 import debug from './fs_logger';
@@ -28,6 +29,7 @@ export default class StaticServer {
     }
 
     _statDir (fileName) {
+
         return new Promise((resolve, reject) => {
             fs.stat(fileName, (err, stat) => {
                 if (err) {
@@ -118,24 +120,22 @@ export default class StaticServer {
     }
 
     async start () {
-        return new Promise( (resolve, reject) => {
-            this._getListSubDirectories()
-                .then( () => {
-                    debug(this.dirPath, 'start');
-                    this._initApp();
+        this.dirPathes = await this._getListSubDirectories();
+        this._initApp();
+        debug(this.dirPath, 'start');
 
-                    debug(`Server running at http://${this.host}:${this.port}/`, 'start');
-                    try {
-                        this.server = this.app.listen(this.port, () => {
-                            console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
-                            this.isRunning = true;
-                            resolve();
-                        });
-                    }
-                    catch (e) {
-                        reject( new Error(e.message) );
-                    }
+        return new Promise( (resolve, reject) => {
+            debug(`Server running at http://${this.host}:${this.port}/`, 'start');
+            try {
+                this.server = this.app.listen(this.port, () => {
+                    console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
+                    this.isRunning = true;
+                    resolve();
                 });
+            }
+            catch (e) {
+                reject( new Error(e.message) );
+            }
         });
     }
 

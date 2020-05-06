@@ -13,8 +13,8 @@ const statDir = fileName => {
         });
 };
 
-export const getDir = ( folder, subdir, enconding ) => {
-    return fsReaddir(folder, enconding)
+export const getDir = ( folder, enconding ) => {
+    return fsReaddir( folder, enconding )
         .catch( err => {
             debug(err, 'getDir.error');
             return err;
@@ -22,18 +22,24 @@ export const getDir = ( folder, subdir, enconding ) => {
 };
 
 export const getListSubDirectories = (rootDir, dirPath, subdir = '') => {
-    return getDir(rootDir.concat(subdir), subdir, 'utf-8')
+    return getDir(rootDir.concat(subdir), 'utf-8')
         .then(files => {
             return Promise.all(files.map(fileName => {
                 return statDir(`${rootDir}${subdir}/${fileName}`)
                     .then( stat => {
+                        let findSub = null;
+
                         if (stat.isDirectory()) {
                             debug(`${subdir}/${fileName}`, 'getListSubDirectories');
                             dirPath.push(`${subdir}/${fileName}`);
-                            return getListSubDirectories(rootDir, dirPath, `${subdir}/${fileName}`);
+                            findSub = getListSubDirectories(rootDir, dirPath, `${subdir}/${fileName}`);
                         }
-                        return null;
+                        return findSub;
                     });
-            }));
+            }))
+                .catch( err => {
+                    debug(err, 'getListSubDirectories.Promise.all');
+                    return err;
+                });
         });
 };

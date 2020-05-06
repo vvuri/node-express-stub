@@ -47,7 +47,7 @@ export default class StaticServer {
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
         debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`, '_resDirListFiles');
 
-        getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
+        getDir(this.rootDir.concat(subdir), 'utf-8')
             .then(files => {
                 data = this._getHTMLDirList(subdir, files);
                 res.statusCode = 200;

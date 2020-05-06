@@ -76,6 +76,9 @@ export default class StaticServer {
     }
 
     async start () {
+        if (this.isRunning)
+            return Promise.resolve( new Error(`Server is already running.`) );
+
         this.dirPathes = await getListSubDirectories(this.rootDir, this.dirPath);
         this._initApp();
         debug(this.dirPath, 'start');
@@ -98,6 +101,9 @@ export default class StaticServer {
     async stop () {
         if (!this.server)
             return Promise.resolve( new Error(`Cannot read object 'server'`) );
+
+        if (!this.isRunning)
+            return Promise.resolve( new Error(`Server is not running.`) );
 
         return new Promise( (resolve, reject) => {
             try {

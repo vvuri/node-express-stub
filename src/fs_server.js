@@ -2,9 +2,8 @@ import 'babel-polyfill';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import express from 'express';
-import fs from 'fs';
-//mport util from 'util';
 
+import { getDir, getListSubDirectories } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -28,49 +27,6 @@ export default class StaticServer {
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
     }
 
-    _statDir (fileName) {
-
-        return new Promise((resolve, reject) => {
-            fs.stat(fileName, (err, stat) => {
-                if (err) {
-                    debug(err, '_statDir.error');
-                    reject(err);
-                }
-                else
-                    resolve(stat);
-            });
-        });
-    }
-
-    _getDir ( folder, subdir, enconding ) {
-        return new Promise((resolve, reject) => {
-            fs.readdir(folder, enconding, (err, items) => {
-                if (err) {
-                    debug(err, '_getDir.error');
-                    reject(err);
-                }
-                else
-                    resolve(items);
-            });
-        });
-    }
-
-    _getListSubDirectories (subdir = '') {
-        return this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
-            .then(files => {
-                return Promise.all(files.map(fileName => {
-                    // eslint-disable-next-line
-                    return this._statDir(`${this.rootDir}${subdir}/${fileName}`).then( stat => {
-                        if (stat.isDirectory()) {
-                            debug(`${subdir}/${fileName}`, '_getListSubDirectories');
-                            this.dirPath.push(`${subdir}/${fileName}`);
-                            return this._getListSubDirectories(`${subdir}/${fileName}`);
-                        }
-                    });
-                }));
-            });
-    }
-
     _getHTMLDirList (subdir, listFiles) {
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
 
@@ -91,7 +47,7 @@ export default class StaticServer {
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
         debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`, '_resDirListFiles');
 
-        this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
+        getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
             .then(files => {
                 data = this._getHTMLDirList(subdir, files);
                 res.statusCode = 200;
@@ -120,7 +76,7 @@ export default class StaticServer {
     }
 
     async start () {
-        this.dirPathes = await this._getListSubDirectories();
+        this.dirPathes = await getListSubDirectories(this.rootDir, this.dirPath);
         this._initApp();
         debug(this.dirPath, 'start');
 

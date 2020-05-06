@@ -2,6 +2,7 @@ import chai from 'chai';
 import chaiHtml from 'chai-html';
 import StaticServer from '../dist/fs_server';
 import { testConfig } from './helper';
+import { getListSubDirectories } from '../dist/fs_helper';
 
 chai.use(chaiHtml);
 
@@ -40,8 +41,8 @@ describe('StaticServer unit test for methods:', () => {
         }
     });
 
-    it(`_getListSubDirectories set a list of subdirectories`, async () => {
-        await srv._getListSubDirectories();
+    it(`getListSubDirectories set a list of subdirectories`, async () => {
+        await getListSubDirectories(srv.rootDir, srv.dirPath);
         expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
         expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);
     });

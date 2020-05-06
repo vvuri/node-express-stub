@@ -85,24 +85,6 @@ describe('Start/stop API', () => {
                 assert.equal(error, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
             }
         });
-
-        const runs = [
-            { it: null, options: `Cannot read object 'server'` },
-            { it: 'foo', options: `Error: Server NOT stopped!` },
-            { it: { foo: 'bar' }, options: `Error: Server NOT stopped!` }
-        ];
-
-        runs.forEach(run => {
-            it(`Don't stop Server with unacceptable parameter: ${run.it}`, async () => {
-                try {
-                    srv.server = run.it;
-                    result = await srv.stop();
-                }
-                catch (error) {
-                    assert.equal(error.message, run.options);
-                }
-            });
-        });
     });
 });
 

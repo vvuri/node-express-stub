@@ -15,11 +15,6 @@ describe('Start/stop API', () => {
         srv = new StaticServer(testConfig);
     });
 
-    after(async () => {
-        if (srv.isRunning)
-            await srv.stop();
-    });
-
     describe('Positive: server running tests:', () => {
         beforeEach(async () => {
             result = await srv.start();
@@ -83,6 +78,10 @@ describe('Start/stop API', () => {
             }
             catch (error) {
                 assert.equal(error, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
+            }
+            finally {
+                if (srv.isRunning)
+                    await srv.stop();
             }
         });
     });

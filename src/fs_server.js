@@ -19,7 +19,7 @@ export default class StaticServer {
         this.host = args.host || process.env.HOST || hostname;
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
-        this.dirPath = ['/'];
+        this.dirPath = [];
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
@@ -65,7 +65,6 @@ export default class StaticServer {
     }
 
     _initApp () {
-        debug(this, 'initApp');
         this.app = express();
         this.server = null;
 
@@ -79,7 +78,7 @@ export default class StaticServer {
         if (this.isRunning)
             return Promise.resolve( new Error(`Server is already running.`) );
 
-        this.dirPathes = await getListSubDirectories(this.rootDir, this.dirPath);
+        this.dirPath = await getListSubDirectories(this.rootDir);
         this._initApp();
         debug(this.dirPath, 'start');
 

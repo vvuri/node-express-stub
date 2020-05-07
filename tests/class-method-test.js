@@ -42,7 +42,8 @@ describe('StaticServer unit test for methods:', () => {
     });
 
     it(`getListSubDirectories set a list of subdirectories`, async () => {
-        await getListSubDirectories(srv.rootDir, srv.dirPath);
+        srv.dirPath = await getListSubDirectories(srv.rootDir);//, srv.dirPath);
+
         expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
         expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);
     });

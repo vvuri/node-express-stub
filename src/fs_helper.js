@@ -21,25 +21,26 @@ export const getDir = ( folder, enconding ) => {
         });
 };
 
-export const getListSubDirectories = async (rootDir, dirPath, subdir = '') => {
-    return await getDir( rootDir.concat(subdir), 'utf-8' )
-        .then( files => {
-            return Promise.all( files.map( fileName => {
-                return statDir(`${rootDir}${subdir}/${fileName}` )
-                    .then( stat => {
-                        let findSub = null;
+const dirPath = ['/'];
 
-                        if ( stat.isDirectory() ) {
-                            debug(`${subdir}/${fileName}`, 'getListSubDirectories');
-                            dirPath.push( `${subdir}/${fileName}` );
-                            findSub = getListSubDirectories( rootDir, dirPath, `${subdir}/${fileName}` );
-                        }
-                        return findSub;
-                    });
-            }))
-                .catch( err => {
-                    debug( err, 'getListSubDirectories.Promise.all' );
-                    return err;
-                });
+export const getListSubDirectories = async (rootDir, subdir = '') => {
+    debug(`rootDir: ${rootDir}, subdir: ${subdir}`, 'getListSubDirectories');
+    const files = await getDir( rootDir.concat(subdir), 'utf-8');
+
+    await Promise.all( files.map( async fileName => {
+        const stat = await statDir(`${rootDir}${subdir}/${fileName}`);
+
+        if ( stat.isDirectory() ) {
+            dirPath.push( `${subdir}/${fileName}` );
+            await getListSubDirectories( rootDir, `${subdir}/${fileName}` );
+        }
+
+        return true;
+    }))
+        .catch( err => {
+            debug( err, 'getListSubDirectories.Promise.all' );
+            return err;
         });
+
+    return dirPath;
 };

@@ -92,7 +92,7 @@ describe(`Running two servers on different ports and with different paths`, () =
     let result;
 
     before(async () => {
-        const { testConfigSecond }  = require('./helper');
+        const testConfigSecond = { host: testConfig.host, port: '9999', rootDir: 'public/elements' };
 
         getClearConfig();
         requester = createRequester();

@@ -8,7 +8,6 @@ const _Port = '8888';
 const _RootDir = 'public';
 
 export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir };
-export const testConfigSecond = { host: _Host, port: '9999', rootDir: 'public/elements' };
 
 export function getClearConfig () {
     delete process.env.PORT;

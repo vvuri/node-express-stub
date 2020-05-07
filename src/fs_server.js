@@ -19,6 +19,7 @@ export default class StaticServer {
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.dirPath = args.dirPath || '/';
+        this.currentDir = ``;
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
@@ -52,7 +53,7 @@ export default class StaticServer {
                 //     mimetype: 'image/jpeg'
 
                 // передать текущий каталог
-                cb(null, './public/subdir');
+                cb(null, `./${this.rootDir}${this.currentDir}`);
                 //cb(null, './public');
             },
             filename: (req, file, cb) => {
@@ -70,26 +71,14 @@ export default class StaticServer {
     }
 
     _upload (req, res) {
-        debug('post input', 'POST');
-        debug(req.headers, 'POST.headers');
         debug(req.file, 'POST.file');
-        debug(req.body, 'POST.body');
-        // [POST] {
-        //     fieldname: 'fileToUpload',
-        //     originalname: 'simple',
-        //     encoding: '7bit',
-        //     mimetype: 'application/octet-stream',
-        //     destination: 'public/',
-        //     filename: 'cae7a1789954510f0d649eeade4902b4',
-        //     path: 'public\\cae7a1789954510f0d649eeade4902b4',
-        //     size: 9
-        // }
 
-        res.redirect('/');
+        res.redirect(req.get('referer'));
     }
 
     _getDir ( folder, subdir, enconding ) {
         debug(`Folder: ${folder}, ${subdir}`, '_getDir');
+        this.currentDir = subdir;
 
         return new Promise((resolve, reject) => {
             fs.readdir(folder, [enconding, true], (err, items) => {

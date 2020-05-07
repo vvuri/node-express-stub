@@ -42,12 +42,26 @@ export default class StaticServer {
     _configureUpload () {
         this.storage = multer.diskStorage({
             destination: (req, file, cb) => {
-                cb(null, './public');
+                // debug(req.headers, '_configureUpload.destination.headers');
+                debug(req.headers.referer, '_configureUpload.destination');
+                // http://127.0.0.1:8888/subdir/
+                debug(file, '_configureUpload.destination.file');
+                //     fieldname: 'fileToUpload',
+                //     originalname: 'b1-1.JPG',
+                //     encoding: '7bit',
+                //     mimetype: 'image/jpeg'
+
+                // передать текущий каталог
+                cb(null, './public/subdir');
+                //cb(null, './public');
             },
             filename: (req, file, cb) => {
                 //if (файл существует)
                 //cb(null, file.originalname + '-' + Date.now();
                 //else
+                debug(file, '_configureUpload.filename');
+                debug(file.originalname, '_configureUpload.filename');
+
                 cb(null, file.originalname);
             }
         });
@@ -57,8 +71,9 @@ export default class StaticServer {
 
     _upload (req, res) {
         debug('post input', 'POST');
-        debug(req.file, 'POST');
-        debug(req.body, 'POST');
+        debug(req.headers, 'POST.headers');
+        debug(req.file, 'POST.file');
+        debug(req.body, 'POST.body');
         // [POST] {
         //     fieldname: 'fileToUpload',
         //     originalname: 'simple',

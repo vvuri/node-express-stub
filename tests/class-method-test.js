@@ -15,37 +15,40 @@ describe('StaticServer unit test for methods:', () => {
         srv = new StaticServer(testConfig);
     });
 
-    const runs = [
-        { it: 'Starting a method with empty parameters', subdir: '', listfiles: '', result: `<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>` },
-        { it: 'Return empty list of files in subdirectory', subdir: '/private/', listfiles: [], result: `<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>` }
-    ];
+    describe('_getHTMLDirList()', () => {
+        it('should return an empty list if called without arguments', () => {
+            const result = srv._getHTMLDirList('', '');
 
-    runs.forEach(run => {
-        it(run.it, () => {
-            const result = srv._getHTMLDirList(run.subdir, run.listfiles);
+            expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>`);
+        });
 
-            expect(result).html.to.equal(run.result);
+        it('should return an empty list of files for an empty directory', () => {
+            const result = srv._getHTMLDirList('/private/', []);
+
+            expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>`);
+        });
+
+        it(`should return a list of files for the root directory`, () => {
+            const listAnchors = ['a11', 'a2', 'a3'];
+            const result = srv._getHTMLDirList('/', listAnchors);
+
+            expect(result).html.to.contain('<h2>List Files', 'Header as H2');
+            expect(result).html.to.contain(`<i>${testConfig.rootDir}/</i>`, 'Header contains name of root directory');
+
+            for (const anchor of listAnchors) {
+                expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
+                expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
+            }
         });
     });
 
-    it(`_getHTMLDirList returns a list of three files for the root directory`, () => {
-        const listAnchors = ['a11', 'a2', 'a3'];
-        const result = srv._getHTMLDirList('/', listAnchors);
+    describe('getListSubDirectories()', () => {
+        it(`should return a list of subdirectories`, async () => {
+            srv.dirPath = await getListSubDirectories(srv.rootDir);//, srv.dirPath);
 
-        expect(result).html.to.contain('<h2>List Files', 'Header as H2');
-        expect(result).html.to.contain(`<i>${testConfig.rootDir}/</i>`, 'Header contains name of root directory');
-
-        for (const anchor of listAnchors) {
-            expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
-            expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
-        }
-    });
-
-    it(`getListSubDirectories set a list of subdirectories`, async () => {
-        srv.dirPath = await getListSubDirectories(srv.rootDir);//, srv.dirPath);
-
-        expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
-        expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);
+            expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
+            expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);
+        });
     });
 });
 

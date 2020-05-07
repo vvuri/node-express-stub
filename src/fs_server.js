@@ -70,7 +70,7 @@ export default class StaticServer {
         this.app.post('/', this.upload.single('fileToUpload'), this._upload);
     }
 
-    _upload (req, res) {
+    _upload (req, res ) { // , err => {}
         debug(req.file, 'POST.file');
 
         res.redirect(req.get('referer'));

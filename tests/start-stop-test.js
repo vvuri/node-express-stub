@@ -143,7 +143,7 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
     });
 
-    describe(`И запуск и остановка`, () => {
+    describe(`Starting and stopping each test`, () => {
         beforeEach(`Started without errors`, async () => {
             await srv.first.start();
             await srv.second.start();

@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -76,7 +75,7 @@ export default class StaticServer {
 
     async start () {
         if (this.isRunning)
-            return Promise.resolve( new Error(`Server is already running.`) );
+            return Promise.reject( new Error(`Server is already running.`) );
 
         this.dirPath = await getListSubDirectories(this.rootDir);
         this._initApp();
@@ -99,10 +98,10 @@ export default class StaticServer {
 
     async stop () {
         if (!this.server)
-            return Promise.resolve( new Error(`Cannot read object 'server'`) );
+            return Promise.reject( new Error(`Cannot read object 'server'`) );
 
         if (!this.isRunning)
-            return Promise.resolve( new Error(`Server is not running.`) );
+            return Promise.reject( new Error(`Server is not running.`) );
 
         return new Promise( (resolve, reject) => {
             try {

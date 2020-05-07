@@ -97,10 +97,10 @@ describe(`Running two servers on different ports and with different paths`, () =
         requester = createRequester();
         requesterSecond = createRequester(testConfigSecond.host, testConfigSecond.port);
 
-        srv = { first: null, second: null };
-
-        srv.first = new StaticServer(testConfig);
-        srv.second = new StaticServer(testConfigSecond);
+        srv = {
+            first:  new StaticServer(testConfig),
+            second: new StaticServer(testConfigSecond)
+        };
     });
 
     describe(`Started two servers without errors`, () => {

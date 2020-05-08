@@ -4,10 +4,8 @@ import StaticServer from '../src/fs_server';
 
 let srv;
 let requester;
-let requesterSecond;
 
 describe('Start/stop API', () => {
-
     before(async () => {
         getClearConfig();
         requester = createRequester();
@@ -91,6 +89,7 @@ describe('Start/stop API', () => {
 });
 
 describe(`Running two servers on different ports and with different paths`, () => {
+    let requesterSecond;
 
     before(async () => {
         const testConfigSecond = { host: testConfig.host, port: '9999', rootDir: 'public/elements' };
@@ -182,5 +181,4 @@ describe(`Running two servers on different ports and with different paths`, () =
             );
         });
     });
-
 });

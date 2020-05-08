@@ -7,7 +7,6 @@ let requester;
 let requesterSecond;
 
 describe('Start/stop API', () => {
-    let result;
 
     before(async () => {
         getClearConfig();
@@ -17,7 +16,7 @@ describe('Start/stop API', () => {
 
     describe('Positive: server running tests:', () => {
         beforeEach(async () => {
-            result = await srv.start();
+            await srv.start();
         });
 
         afterEach(async () => {
@@ -26,7 +25,6 @@ describe('Start/stop API', () => {
         });
 
         it('Server starting and response by HTTP', async () => {
-            assert.equal(result, null);
             const res = await requester.get('/');
 
             assert.equal(res.status, 200);
@@ -52,7 +50,7 @@ describe('Start/stop API', () => {
 
     describe('Server stopping test', () => {
         beforeEach(async () => {
-            result = await srv.start();
+            await srv.start();
         });
 
         it('Stopping the server does not result in an error', async () => {
@@ -65,13 +63,15 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping a stopped server results in an error', async () => {
-            result = await srv.stop();
-            try {
-                result = await srv.stop();
-            }
-            catch (error) {
-                assert.equal(error.message, 'Server is not running.');
-            }
+            await srv.stop();
+            await assert.rejects(
+                async () => {
+                    await srv.stop();
+                },
+                {
+                    name:    'Error',
+                    message: 'Server is not running.'
+                });
         });
     });
 
@@ -79,7 +79,7 @@ describe('Start/stop API', () => {
         it('Don`t run Server if incorrect port', async () => {
             srv.port = 100500;
             try {
-                result = await srv.start();
+                await srv.start();
             }
             catch (error) {
                 assert.equal(error, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
@@ -93,7 +93,6 @@ describe('Start/stop API', () => {
 });
 
 describe(`Running two servers on different ports and with different paths`, () => {
-    let result;
 
     before(async () => {
         const testConfigSecond = { host: testConfig.host, port: '9999', rootDir: 'public/elements' };
@@ -117,12 +116,20 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         it(`Started without errors`, async () => {
-            result = await srv.first.start();
-            assert.equal(result, null);
+            await assert.doesNotReject(
+                async () => {
+                    await srv.first.start();
+                },
+                SyntaxError
+            );
             assert.equal(srv.first.isRunning, true);
 
-            result = await srv.second.start();
-            assert.equal(result, null);
+            await assert.doesNotReject(
+                async () => {
+                    await srv.second.start();
+                },
+                SyntaxError
+            );
             assert.equal(srv.second.isRunning, true);
         });
     });
@@ -139,10 +146,15 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         it(`Stopping one don't stop the other server`, async () => {
-            result = await srv.second.stop();
-            assert.equal(result, null, 'Server stopped without Error');
+            await assert.doesNotReject(
+                async () => {
+                    await srv.second.stop();
+                },
+                SyntaxError
+            );
 
-            result = await requester.get('/');
+            const result = await requester.get('/');
+
             assert.equal(result.status, 200);
         });
     });
@@ -179,11 +191,13 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         it(`Restarting the second server on the same port`, async () => {
-            result = await srv.second.stop();
-            assert.equal(result, null, 'Server stopped without Error');
-
-            result = await srv.second.start();
-            assert.equal(result, null, 'Server Restarted without Error');
+            await srv.second.stop();
+            await assert.doesNotReject(
+                async () => {
+                    await srv.second.start();
+                },
+                SyntaxError
+            );
         });
     });
 

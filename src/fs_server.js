@@ -43,31 +43,42 @@ export default class StaticServer {
     _configureUpload () {
         this.storage = multer.diskStorage({
             destination: (req, file, cb) => {
-                // debug(req.headers, '_configureUpload.destination.headers');
-                debug(req.headers.referer, '_configureUpload.destination');
+                // debug(req.headers.referer, '_configureUpload.destination');
                 // http://127.0.0.1:8888/subdir/
-                debug(file, '_configureUpload.destination.file');
+                // debug(file, '_configureUpload.destination.file');
                 //     fieldname: 'fileToUpload',
                 //     originalname: 'b1-1.JPG',
                 //     encoding: '7bit',
                 //     mimetype: 'image/jpeg'
 
                 // передать текущий каталог
+                debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination.cb');
                 cb(null, `./${this.rootDir}${this.currentDir}`);
                 //cb(null, './public');
             },
             filename: (req, file, cb) => {
-                //if (файл существует)
-                //cb(null, file.originalname + '-' + Date.now();
-                //else
                 debug(file, '_configureUpload.filename');
                 debug(file.originalname, '_configureUpload.filename');
+                debug(this._getNewName(file.originalname), '_configureUpload.getNewName');
 
-                cb(null, file.originalname);
+                cb(null, file.originalname);//this._getNewName(file.originalname));
             }
         });
-        this.upload = multer({ storage: this.storage, limits: { fieldSize: 10000 } });
+        this.upload = multer({ storage: this.storage});//, limits: { fieldSize: 10000 } });
         this.app.post('/', this.upload.single('fileToUpload'), this._upload);
+    }
+
+    async _getNewName (fileName) {
+        debug(fileName, '_getNewName');
+        const isFileNameMatch = await this._getDir( this.rootDir, this.currentDir )
+            .some( file => {
+                return file === fileName;
+            });
+
+        debug(isFileNameMatch, '_getNewName');
+        debug(`${Math.random().toString(36).substring(7)}_${fileName}`, '_getNewName');
+
+        return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
     }
 
     _upload (req, res ) { // , err => {}

@@ -128,9 +128,17 @@ describe(`Running two servers on different ports and with different paths`, () =
             );
             assert.equal(srv.second.isRunning, true);
         });
+
+        it(`Each server responds to a request`, async () => {
+            const resFirst = await requester.get('/');
+            const resSecond = await requesterSecond.get('/');
+
+            assert.equal(resFirst.status, 200);
+            assert.equal(resSecond.status, 200);
+        });
     });
 
-    describe(`Stopping one of two servers`, () => {
+    describe(`Stopping one of servers`, () => {
         beforeEach(`Started without errors`, async () => {
             await srv.first.start();
             await srv.second.start();
@@ -152,14 +160,6 @@ describe(`Running two servers on different ports and with different paths`, () =
             const result = await requester.get('/');
 
             assert.equal(result.status, 200);
-        });
-
-        it(`Each server responds to a request`, async () => {
-            const resFirst = await requester.get('/');
-            const resSecond = await requesterSecond.get('/');
-
-            assert.equal(resFirst.status, 200);
-            assert.equal(resSecond.status, 200);
         });
 
         it(`The displayed lists of the subdirectory of one and the main directory of another are identical`, async () => {

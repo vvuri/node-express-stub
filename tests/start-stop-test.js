@@ -53,14 +53,19 @@ describe('Start/stop API', () => {
     describe('Server stopping test', () => {
         beforeEach(async () => {
             result = await srv.start();
-            result = await srv.stop();
         });
 
         it('Stopping the server does not result in an error', async () => {
-            assert.equal(result, null, 'The returned parameters error = null');
+            await assert.doesNotReject(
+                async () => {
+                    await srv.stop();
+                },
+                SyntaxError
+            );
         });
 
         it('Stopping a stopped server results in an error', async () => {
+            result = await srv.stop();
             try {
                 result = await srv.stop();
             }

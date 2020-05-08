@@ -131,13 +131,14 @@ describe(`Running two servers on different ports and with different paths`, () =
     });
 
     describe(`Stopping one of two servers`, () => {
-        before(`Started without errors`, async () => {
+        beforeEach(`Started without errors`, async () => {
             await srv.first.start();
             await srv.second.start();
         });
 
-        after(async () => {
+        afterEach(async () => {
             await stopSrv(srv.first);
+            await stopSrv(srv.second);
         });
 
         it(`Stopping one don't stop the other server`, async () => {
@@ -151,18 +152,6 @@ describe(`Running two servers on different ports and with different paths`, () =
             const result = await requester.get('/');
 
             assert.equal(result.status, 200);
-        });
-    });
-
-    describe(`Starting and stopping each test`, () => {
-        beforeEach(`Started without errors`, async () => {
-            await srv.first.start();
-            await srv.second.start();
-        });
-
-        afterEach(async () => {
-            await stopSrv(srv.first);
-            await stopSrv(srv.second);
         });
 
         it(`Each server responds to a request`, async () => {

@@ -38,7 +38,7 @@ export function parseLiList (text) {
         });
 }
 
-export function stopSrv (srv) {
+export async function stopSrv (srv) {
     if (srv.isRunning)
-        srv.stop();
+        await srv.stop();
 }

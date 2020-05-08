@@ -20,7 +20,7 @@ describe('Start/stop API', () => {
         });
 
         afterEach(async () => {
-            await stopSrv(srv);
+            stopSrv(srv);
         });
 
         it('Server starting and response by HTTP', async () => {
@@ -84,7 +84,7 @@ describe('Start/stop API', () => {
                 assert.equal(error, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
             }
             finally {
-                await stopSrv(srv);
+                stopSrv(srv);
             }
         });
     });
@@ -106,9 +106,9 @@ describe(`Running two servers on different ports and with different paths`, () =
     });
 
     describe(`Started two servers without errors`, () => {
-        after(async () => {
-            await stopSrv(srv.first);
-            await stopSrv(srv.second);
+        after( () => {
+            stopSrv(srv.first);
+            stopSrv(srv.second);
         });
 
         it(`Started without errors`, async () => {
@@ -144,9 +144,9 @@ describe(`Running two servers on different ports and with different paths`, () =
             await srv.second.start();
         });
 
-        afterEach(async () => {
-            await stopSrv(srv.first);
-            await stopSrv(srv.second);
+        afterEach( () => {
+            stopSrv(srv.first);
+            stopSrv(srv.second);
         });
 
         it(`Stopping one don't stop the other server`, async () => {

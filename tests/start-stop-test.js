@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { createRequester, getClearConfig, parseLiList, testConfig } from './helper';
+import { createRequester, getClearConfig, parseLiList, stopSrv, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
 
 let srv;
@@ -20,8 +20,7 @@ describe('Start/stop API', () => {
         });
 
         afterEach(async () => {
-            if (srv.isRunning)
-                await srv.stop();
+            await stopSrv(srv);
         });
 
         it('Server starting and response by HTTP', async () => {
@@ -85,8 +84,7 @@ describe('Start/stop API', () => {
                 assert.equal(error, 'Error: options.port should be >= 0 and < 65536. Received 100500.');
             }
             finally {
-                if (srv.isRunning)
-                    await srv.stop();
+                await stopSrv(srv);
             }
         });
     });
@@ -109,10 +107,8 @@ describe(`Running two servers on different ports and with different paths`, () =
 
     describe(`Started two servers without errors`, () => {
         after(async () => {
-            if (srv.first.isRunning)
-                await srv.first.stop();
-            if (srv.second.isRunning)
-                await srv.second.stop();
+            await stopSrv(srv.first);
+            await stopSrv(srv.second);
         });
 
         it(`Started without errors`, async () => {
@@ -141,8 +137,7 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         after(async () => {
-            if (srv.first.isRunning)
-                await srv.first.stop();
+            await stopSrv(srv.first);
         });
 
         it(`Stopping one don't stop the other server`, async () => {
@@ -166,10 +161,8 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         afterEach(async () => {
-            if (srv.first.isRunning)
-                await srv.first.stop();
-            if (srv.second.isRunning)
-                await srv.second.stop();
+            await stopSrv(srv.first);
+            await stopSrv(srv.second);
         });
 
         it(`Each server responds to a request`, async () => {

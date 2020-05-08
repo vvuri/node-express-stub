@@ -38,3 +38,7 @@ export function parseLiList (text) {
         });
 }
 
+export function stopSrv (srv) {
+    if (srv.isRunning)
+        srv.stop();
+}

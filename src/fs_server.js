@@ -88,10 +88,15 @@ export default class StaticServer {
                     console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
                     this.isRunning = true;
                     resolve();
-                });
+                })
+                    .on('error', err => {
+                        debug(err.message, 'start.listen.error');
+                        reject( new Error(err.message) );
+                    });
             }
-            catch (e) {
-                reject( new Error(e.message) );
+            catch (err) {
+                debug(err.message, 'start.reject');
+                reject( new Error(err.message) );
             }
         });
     }

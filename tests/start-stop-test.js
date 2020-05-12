@@ -193,7 +193,7 @@ describe(`Running two servers on different ports and with different paths`, () =
     });
 });
 
-describe.only('Negative two server running tests:', () => {
+describe('Negative two server running tests:', () => {
     before(async () => {
         srv = {
             first:  new StaticServer(testConfig),
@@ -207,31 +207,11 @@ describe.only('Negative two server running tests:', () => {
     });
 
     it('Don`t run second Server on the same port', async () => {
-        await assert.rejects(
-            () => srv.second.start(),
-            {
-                name:    'Error',
-                message: ' listen EADDRINUSE: address already in use :::8888'
-            });
-
-        // try {
-        //     console.log('>>Start');
-        //     await srv.second.start();
-        //     // .then( rez => {
-        //     //     console.log('>>1');
-        //     //     console.log(rez);
-        //     // })
-        //     // .catch( err => {
-        //     //     console.log('>>2');
-        //     //     console.log(err);
-        //     // });
-        //     console.log('>>Stop');
-        // }
-        // catch (error) {
-        //     console.log('>>Error');
-        //     console.log(error);
-        //     //assert.equal(error, 'Error: listen EADDRINUSE: address already in use :::8888');
-        // }
-        console.log('>>5');
+        try {
+            await srv.second.start();
+        }
+        catch (error) {
+            assert.equal(error, `Error: listen EADDRINUSE: address already in use :::${testConfig.port}`);
+        }
     });
 });

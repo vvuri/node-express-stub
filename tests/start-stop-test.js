@@ -90,9 +90,7 @@ describe('Start/stop API', () => {
                 await srv.start();
             }
             catch (error) {
-                const path = require('path');
-
-                assert.equal(error, `Error: ENOENT: no such file or directory, scandir '${path.join(__dirname, '..', 'private')}'`);
+                assert.equal(error.message.substr(0, 33), 'ENOENT: no such file or directory');
             }
         });
     });

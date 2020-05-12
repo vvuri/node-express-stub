@@ -17,7 +17,7 @@ export const getDir = ( folder, enconding ) => {
     return fsReaddir( folder, enconding )
         .catch( err => {
             debug(err, 'getDir.error');
-            return err;
+            throw err;
         });
 };
 

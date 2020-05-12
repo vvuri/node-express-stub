@@ -83,6 +83,18 @@ describe('Start/stop API', () => {
                 stopSrv(srv);
             }
         });
+
+        it('Don`t run Server on nonexistent directory', async () => {
+            srv.rootDir = 'private';
+            try {
+                await srv.start();
+            }
+            catch (error) {
+                const path = require('path');
+
+                assert.equal(error, `Error: ENOENT: no such file or directory, scandir '${path.join(__dirname, '..', 'private')}'`);
+            }
+        });
     });
 });
 
@@ -133,6 +145,16 @@ describe(`Running two servers on different ports and with different paths`, () =
             assert.equal(resFirst.status, 200);
             assert.equal(resSecond.status, 200);
         });
+
+        it(`The displayed lists of the subdirectory of one and the main directory of another are identical`, async () => {
+            const resFirst = await requester.get('/elements');
+            const resSecond = await requesterSecond.get('/');
+
+            const docFirst = parseLiList(resFirst.text);
+            const docSecond = parseLiList(resSecond.text);
+
+            assert.equal(JSON.stringify(docFirst), JSON.stringify(docSecond));
+        });
     });
 
     describe(`Stopping one of servers`, () => {
@@ -159,16 +181,6 @@ describe(`Running two servers on different ports and with different paths`, () =
             assert.equal(result.status, 200);
         });
 
-        it(`The displayed lists of the subdirectory of one and the main directory of another are identical`, async () => {
-            const resFirst = await requester.get('/elements');
-            const resSecond = await requesterSecond.get('/');
-
-            const docFirst = parseLiList(resFirst.text);
-            const docSecond = parseLiList(resSecond.text);
-
-            assert.equal(JSON.stringify(docFirst), JSON.stringify(docSecond));
-        });
-
         it(`Restarting the second server on the same port`, async () => {
             await srv.second.stop();
             await assert.doesNotReject(
@@ -178,5 +190,48 @@ describe(`Running two servers on different ports and with different paths`, () =
                 SyntaxError
             );
         });
+    });
+});
+
+describe.only('Negative two server running tests:', () => {
+    before(async () => {
+        srv = {
+            first:  new StaticServer(testConfig),
+            second: new StaticServer(testConfig)
+        };
+        await srv.first.start();
+    });
+
+    after( () => {
+        stopSrv(srv.first);
+    });
+
+    it('Don`t run second Server on the same port', async () => {
+        await assert.rejects(
+            () => srv.second.start(),
+            {
+                name:    'Error',
+                message: ' listen EADDRINUSE: address already in use :::8888'
+            });
+
+        // try {
+        //     console.log('>>Start');
+        //     await srv.second.start();
+        //     // .then( rez => {
+        //     //     console.log('>>1');
+        //     //     console.log(rez);
+        //     // })
+        //     // .catch( err => {
+        //     //     console.log('>>2');
+        //     //     console.log(err);
+        //     // });
+        //     console.log('>>Stop');
+        // }
+        // catch (error) {
+        //     console.log('>>Error');
+        //     console.log(error);
+        //     //assert.equal(error, 'Error: listen EADDRINUSE: address already in use :::8888');
+        // }
+        console.log('>>5');
     });
 });

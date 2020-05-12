@@ -34,8 +34,6 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
             dirPaths.push( `${subdir}/${fileName}` );
             await getListSubDirectories( rootDir, `${subdir}/${fileName}` );
         }
-
-        return true;
     }))
         .catch( err => {
             debug( err, 'getListSubDirectories.Promise.all' );

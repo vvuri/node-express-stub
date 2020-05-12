@@ -21,7 +21,7 @@ export const getDir = ( folder, enconding ) => {
         });
 };
 
-const dirPath = ['/'];
+const dirPaths = ['/'];
 
 export const getListSubDirectories = async (rootDir, subdir = '') => {
     debug(`rootDir: ${rootDir}, subdir: ${subdir}`, 'getListSubDirectories');
@@ -31,7 +31,7 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
         const stat = await statDir(`${rootDir}${subdir}/${fileName}`);
 
         if ( stat.isDirectory() ) {
-            dirPath.push( `${subdir}/${fileName}` );
+            dirPaths.push( `${subdir}/${fileName}` );
             await getListSubDirectories( rootDir, `${subdir}/${fileName}` );
         }
 
@@ -42,5 +42,5 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
             return err;
         });
 
-    return dirPath;
+    return dirPaths;
 };

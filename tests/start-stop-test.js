@@ -62,9 +62,7 @@ describe('Start/stop API', () => {
         it('Stopping a stopped server results in an error', async () => {
             await srv.stop();
             await assert.rejects(
-                async () => {
-                    await srv.stop();
-                },
+                async () => await srv.stop(),
                 {
                     name:    'Error',
                     message: 'Server is not running.'

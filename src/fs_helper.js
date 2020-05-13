@@ -9,7 +9,7 @@ const statDir = fileName => {
     return fsStat( fileName )
         .catch( err => {
             debug( err, 'statDir.error' );
-            return err;
+            console.log(`Error getting information about a file:${fileName}: ${err.message}`);
         });
 };
 
@@ -41,7 +41,8 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
     }))
         .catch( err => {
             debug( err, 'getListSubDirectories.Promise.all' );
-            return err;
+            console.log(`Error read subdirectories in ${rootDir.concat(subdir)}: ${err.message}`);
+            throw err.message;
         });
 
     return dirPaths;

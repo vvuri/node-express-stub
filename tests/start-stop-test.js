@@ -90,7 +90,7 @@ describe('Start/stop API', () => {
                 await srv.start();
             }
             catch (error) {
-                assert.equal(error.message.substr(0, 33), 'ENOENT: no such file or directory');
+                assert.equal(error.substr(0, 33), 'ENOENT: no such file or directory');
             }
         });
     });

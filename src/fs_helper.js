@@ -17,7 +17,7 @@ export const getDir = ( folder, enconding ) => {
     return fsReaddir( folder, enconding )
         .catch( err => {
             debug(err, 'getDir.error');
-            throw err;
+            throw err.message;
         });
 };
 
@@ -25,7 +25,11 @@ const dirPaths = ['/'];
 
 export const getListSubDirectories = async (rootDir, subdir = '') => {
     debug(`rootDir: ${rootDir}, subdir: ${subdir}`, 'getListSubDirectories');
-    const files = await getDir( rootDir.concat(subdir), 'utf-8');
+    const files = await getDir( rootDir.concat(subdir), 'utf-8')
+        .catch( err => {
+            console.log(`Error read ${rootDir.concat(subdir)}: ${err}`);
+            throw err;
+        });
 
     await Promise.all( files.map( async fileName => {
         const stat = await statDir(`${rootDir}${subdir}/${fileName}`);

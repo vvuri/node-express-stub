@@ -119,20 +119,10 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         it(`Started without errors`, async () => {
-            await assert.doesNotReject(
-                async () => {
-                    await srv.first.start();
-                },
-                SyntaxError
-            );
+            await srv.first.start();
             assert.equal(srv.first.isRunning, true);
 
-            await assert.doesNotReject(
-                async () => {
-                    await srv.second.start();
-                },
-                SyntaxError
-            );
+            await srv.second.start();
             assert.equal(srv.second.isRunning, true);
         });
 

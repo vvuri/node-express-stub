@@ -12,10 +12,7 @@ describe('Request chai-http test:', () => {
         getClearConfig();
         requester = createRequester();
         srv = new StaticServer(testConfig);
-
-        const result = await srv.start();
-
-        assert.equal(result, null);
+        await srv.start();
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {

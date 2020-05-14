@@ -51,12 +51,8 @@ describe('Start/stop API', () => {
         });
 
         it('Stopping the server does not result in an error', async () => {
-            await assert.doesNotReject(
-                async () => {
-                    await srv.stop();
-                },
-                SyntaxError
-            );
+            await srv.stop();
+            assert.equal(srv.isRunning, false);
         });
 
         it('Stopping a stopped server results in an error', async () => {
@@ -157,13 +153,8 @@ describe(`Running two servers on different ports and with different paths`, () =
         });
 
         it(`Stopping one don't stop the other server`, async () => {
-            await assert.doesNotReject(
-                async () => {
-                    await srv.second.stop();
-                },
-                SyntaxError
-            );
-
+            await srv.second.stop();
+            assert.equal(srv.second.isRunning, false);
             const result = await requester.get('/');
 
             assert.equal(result.status, 200);
@@ -171,12 +162,8 @@ describe(`Running two servers on different ports and with different paths`, () =
 
         it(`Restarting the second server on the same port`, async () => {
             await srv.second.stop();
-            await assert.doesNotReject(
-                async () => {
-                    await srv.second.start();
-                },
-                SyntaxError
-            );
+            await srv.second.start();
+            assert.equal(srv.second.isRunning, true);
         });
     });
 });

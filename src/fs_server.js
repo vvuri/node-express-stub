@@ -46,15 +46,13 @@ export default class StaticServer {
                 debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination');
                 cb(null, `./${this.rootDir}${this.currentDir}`);
             },
-            filename: async (req, file, cb) => {
-                debug(file, '_configureUpload.filename');
+            filename: (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
-
-                const newName = await this._getNewName(file.originalname);
+                const newName = `${Math.random().toString(36).substring(7)}_${file.originalname}`;
+                //await this._getNewName(file.originalname);
 
                 debug(newName, '_configureUpload.getNewName');
-
-                cb(null, file.originalname); //newName);
+                cb(null, newName);
             }
         });
         debug(this.storage, '_configureUpload');
@@ -62,18 +60,18 @@ export default class StaticServer {
         this.app.post('/', this.upload.single('fileToUpload'), this._upload);
     }
 
-    async _getNewName (fileName) {
-        debug(fileName, '_getNewName');
-        const listDirFiles = await this._getDir( this.rootDir, this.currentDir, 'utf-8' );
-
-        debug(listDirFiles, '_getNewName.listDirFiles');
-        const isFileNameMatch = listDirFiles.files.some( file => {
-            return file === fileName;
-        });
-
-        debug(isFileNameMatch, '_getNewName');
-        return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
-    }
+    // async _getNewName (fileName) {
+    //     // debug(fileName, '_getNewName');
+    //     // const listDirFiles = await this._getDir( this.rootDir, this.currentDir, 'utf-8' );
+    //
+    //     // debug(listDirFiles, '_getNewName.listDirFiles');
+    //     // const isFileNameMatch = listDirFiles.files.some( file => {
+    //     //     return file === fileName;
+    //     // });
+    //     //
+    //     // debug(isFileNameMatch, '_getNewName');
+    //     // return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
+    // }
 
     _upload (req, res ) { // , err => {}
         debug(req.file, 'POST.file');

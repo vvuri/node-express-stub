@@ -89,6 +89,54 @@ describe('Start/stop API', () => {
                 assert.equal(error.substr(0, 33), 'ENOENT: no such file or directory');
             }
         });
+
+        it.only('fs.stat error', async () => {
+            const proxyquire = require('proxyquire');
+
+            proxyquire.noPreserveCache();
+            try {
+                const { statDir } = proxyquire('../dist/fs_helper', { 'fs': { stat: () => {
+                    throw new Error('Run mock statDir()');
+                } } });
+
+                await statDir(testConfig.rootDir)
+                    .catch( err => {
+                        console.log('Catch in:');
+                        console.log(err);
+                        // сдда не возващается
+                    });
+            }
+            catch (err) {
+                console.log('Catch:');
+                console.log(err.message);
+                // асерт тут какой если мы не возвращем ошибку?
+            }
+            // замокал - в консоли ошибку вижу, но сам метод ничего не передает
+        });
+
+        it.skip('Promise.all error', async () => {
+            const proxyquire = require('proxyquire');
+
+            proxyquire.noPreserveCache();
+            // proxyquire.noCallThru();
+            const fakeStarDir = () => {
+                console.log('Run mock statDir()');
+                // throw new Error('Mock error');
+            };
+
+            try {
+                const { getListSubDirectories } = proxyquire('../dist/fs_helper', { 'fs': { stat: fakeStarDir } });
+
+                // await myMock.getDir(testConfig.rootDir, 'utf-8');
+                const result = await getListSubDirectories(testConfig.rootDir);
+
+                console.log(result);
+            }
+            catch (err) {
+                console.log('Catch:');
+                console.log(err.message);
+            }
+        });
     });
 });
 

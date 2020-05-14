@@ -5,7 +5,7 @@ import util from 'util';
 const fsStat = util.promisify(fs.stat);
 const fsReaddir = util.promisify(fs.readdir);
 
-const statDir = fileName => {
+export const statDir = fileName => {
     return fsStat( fileName )
         .catch( err => {
             debug( err, 'statDir.error' );

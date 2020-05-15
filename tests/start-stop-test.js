@@ -90,31 +90,17 @@ describe('Start/stop API', () => {
             }
         });
 
-        it.skip('fs.stat error', async () => {
-            const proxyquire = require('proxyquire');
+        it('Return error message in statDir() if we can not read information about a file', async () => {
+            const proxyquire = require('proxyquire').noPreserveCache();
+            const { statDir } = proxyquire('../dist/fs_helper', { 'fs': { stat: () => {
+                throw new Error('Run mock statDir()');
+            } } });
+            const error = await statDir(testConfig.rootDir);
 
-            proxyquire.noPreserveCache();
-            try {
-                const { statDir } = proxyquire('../dist/fs_helper', { 'fs': { stat: () => {
-                    throw new Error('Run mock statDir()');
-                } } });
-
-                await statDir(testConfig.rootDir)
-                    .catch( err => {
-                        console.log('Catch in:');
-                        console.log(err);
-                        // сдда не возващается
-                    });
-            }
-            catch (err) {
-                console.log('Catch:');
-                console.log(err.message);
-                // асерт тут какой если мы не возвращем ошибку?
-            }
-            // замокал - в консоли ошибку вижу, но сам метод ничего не передает
+            assert(error.message, 'Error getting information about a file:public: Run mock statDir()');
         });
 
-        it('Promise.all error', async () => {
+        it('Interrupt execution if directory tree traversal error', async () => {
             const proxyquire = require('proxyquire').noPreserveCache();
             const fakeStarDir = file => {
                 throw new Error(`Mock error ${file}`);

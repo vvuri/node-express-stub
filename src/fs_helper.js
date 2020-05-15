@@ -10,6 +10,7 @@ export const statDir = fileName => {
         .catch( err => {
             debug( err, 'statDir.error' );
             console.log(`Error getting information about a file:${fileName}: ${err.message}`);
+            return new Error(`Error getting information about a file:${fileName}: ${err.message}`);
         });
 };
 

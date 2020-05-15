@@ -1,10 +1,9 @@
-import 'babel-polyfill';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 import express from 'express';
-import fs from 'fs';
 import multer from 'multer';
 
+import { getDir, getListSubDirectories } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -18,26 +17,13 @@ export default class StaticServer {
         this.host = args.host || process.env.HOST || hostname;
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
-        this.dirPath = args.dirPath || '/';
-        this.currentDir = ``;
+        this.dirPath = [];
+        this.currentDir = ``; // убрать - замена на hidden
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
-
-        this._configureApp();
-        this._configureUpload();
-    }
-
-    _configureApp () {
-        this.app = express();
-        this.server = null;
-
-        for (const path of this.dirPath) {
-            this.app.use(path, express.static(this.rootDir + path));
-            this.app.get(path, this._resDirListFiles.bind(this));
-        }
     }
 
     _configureUpload () {
@@ -75,45 +61,7 @@ export default class StaticServer {
 
     _upload (req, res ) { // , err => {}
         debug(req.file, 'POST.file');
-
         res.redirect(req.get('referer'));
-    }
-
-    _getDir ( folder, subdir, enconding ) {
-        debug(`Folder: ${folder}, ${subdir}`, '_getDir');
-        this.currentDir = subdir;
-
-        return new Promise((resolve, reject) => {
-            fs.readdir(folder, [enconding, true], (err, items) => {
-                if (err)
-                    reject(err);
-                else {
-                    debug(items, '_getDir');
-                    resolve(items);
-                }
-            });
-        });
-    }
-
-    _getListDirAndFiles (subdir, listFiles) {
-        const result = { dirs: [], files: [] };
-
-        listFiles.forEach( fileName => {
-            try {
-                const stats = fs.lstatSync(subdir + fileName);
-
-                if (stats.isDirectory())
-                    result.dirs.push(fileName);
-                if (stats.isFile())
-                    result.files.push(fileName);
-            }
-            catch (e) {
-                debug(`Error in fs.lstatSync: ${e.message}`, '_getListDirAndFiles');
-            }
-        });
-
-        debug(JSON.stringify(result), '_getListDirAndFiles');
-        return result;
     }
 
     _getHTMLDirList (subdir, listFiles) {
@@ -133,6 +81,7 @@ export default class StaticServer {
         data += '<br>';
         data += `
         <form action="/" enctype="multipart/form-data" method="post">
+          <input type="hidden" name="subdir" value="${subdir}"">
           <input type="file" name="fileToUpload" value="Select file">
           <input type="submit" value="Upload to server">
         </form>`;
@@ -149,60 +98,87 @@ export default class StaticServer {
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
         debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`, '_resDirListFiles');
 
-        this._getDir(this.rootDir.concat(subdir), subdir, 'utf-8')
+        getDir(this.rootDir.concat(subdir), 'utf-8')
             .then(files => {
-                const listDirAndFiles = this._getListDirAndFiles(this.rootDir.concat(subdir), files);
-
-                data = this._getHTMLDirList(subdir, listDirAndFiles);
+                data = this._getHTMLDirList(subdir, files);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);
 
-                debug('Return:' + data, '_resDirListFiles');
+                debug('Return:' + data, '_resDirListFiles.then');
             })
             .catch(error => {
                 res.statusCode = 404;
                 res.end('Dir Not Found');
 
-                debug(error, '_resDirListFiles');
+                debug(error, '_resDirListFiles.catch');
             });
     }
 
+    _initApp () {
+        this.app = express();
+        this.server = null;
+
+        for (const path of this.dirPaths) {
+            this.app.use(path, express.static(this.rootDir + path));
+            this.app.get(path, this._resDirListFiles.bind(this) );
+        }
+    }
+
     async start () {
-        return new Promise( resolve => {
+        if (this.isRunning)
+            return Promise.reject( new Error(`Server is already running.`) );
+
+        this.dirPaths = await getListSubDirectories(this.rootDir);
+        this._initApp();
+        this._configureUpload();
+        debug(this.dirPaths, 'start');
+
+        return new Promise( (resolve, reject) => {
+            debug(`Server running at http://${this.host}:${this.port}/`, 'start');
             try {
                 this.server = this.app.listen(this.port, () => {
                     console.log(chalk.blue(`Server running at http://${this.host}:${this.port}/`));
+                    this.isRunning = true;
                     resolve();
-                });
+                })
+                    .on('error', err => {
+                        debug(err.message, 'start.listen.error');
+                        reject( new Error(err.message) );
+                    });
             }
-            catch (e) {
-                resolve( new Error(e.message) );
+            catch (err) {
+                debug(err.message, 'start.reject');
+                reject( new Error(err.message) );
             }
         });
     }
 
     async stop () {
         if (!this.server)
-            return Promise.resolve( new Error(`Cannot read object 'server'`) );
+            return Promise.reject( new Error(`Cannot read object 'server'`) );
 
-        return new Promise( resolve => {
+        if (!this.isRunning)
+            return Promise.reject( new Error(`Server is not running.`) );
+
+        return new Promise( (resolve, reject) => {
             try {
                 this.server.close(err => {
                     if (err) {
                         debug(`Error server stopping: ${err.message}`, 'stop');
-                        resolve( new Error('Server is not running.') );
+                        reject( new Error('Server is not running.') );
                     }
                     else {
                         debug(`Server stop!`, 'stop');
                         console.log(`${chalk.blue('Server stop!')}`);
+                        this.isRunning = false;
                         resolve();
                     }
                 });
             }
             catch (e) {
                 debug(`Error: Server NOT stopped!\n${e.message}`, 'stop');
-                resolve( new Error(`Error: Server NOT stopped!`) );
+                reject( new Error(`Error: Server NOT stopped!`) );
             }
         });
     }

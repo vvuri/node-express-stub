@@ -5,7 +5,6 @@ const startServer = async () => {
         host:    '127.0.0.1',
         port:    '8888',
         rootDir: 'public',
-        dirPath: ['/', '/subdir']
     };
     const srv = new StaticServer(args);
 

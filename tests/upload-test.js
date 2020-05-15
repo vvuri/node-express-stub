@@ -2,7 +2,7 @@ import chai from 'chai';
 import { createRequester, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
 
-const assert = chai.assert;
+const expect = chai.expect;
 
 describe.only('Upload tests', () => {
     // upload
@@ -32,13 +32,19 @@ describe.only('Upload tests', () => {
 
     after(async () => {
         requester.close();
-        //await srv.stop();
+        await srv.stop();
     });
 
     it('Загрузка тестового файла в root', async () => {
-        const res = await requester.get('/');
+        await requester
+            .post('/')
+            //.field('fileToUpload', 'customValue')
+            .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
+            .then( result => {
+                expect(result).to.have.status(200);
+                expect(result.body[0].location).to.include('/line.png');
+            });
 
-        assert.equal(res.header['content-length'] > 550, true);
         requester.close();
     });
 

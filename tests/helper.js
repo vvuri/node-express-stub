@@ -5,7 +5,7 @@ import DomParser from 'dom-parser';
 
 const _Host = '127.0.0.1';
 const _Port = '8888';
-const _RootDir = 'test/public';
+const _RootDir = 'tests/public';
 const _dirPath = ['/', '/elements', '/elements/subelements'];
 
 export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir, dirPath: _dirPath };

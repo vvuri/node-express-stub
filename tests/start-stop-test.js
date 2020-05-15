@@ -1,9 +1,12 @@
 import assert from 'assert';
 import { createRequester, getClearConfig, parseLiList, stopSrv, testConfig } from './helper';
+import proxyquire from 'proxyquire';
 import StaticServer from '../src/fs_server';
 
 let srv;
 let requester;
+
+proxyquire.noPreserveCache();
 
 describe('Start/stop API', () => {
     before(async () => {
@@ -91,7 +94,6 @@ describe('Start/stop API', () => {
         });
 
         it('Return error message in statDir() if we can not read information about a file', async () => {
-            const proxyquire = require('proxyquire').noPreserveCache();
             const { statDir } = proxyquire('../dist/fs_helper', { 'fs': { stat: () => {
                 throw new Error('Run mock statDir()');
             } } });
@@ -101,7 +103,6 @@ describe('Start/stop API', () => {
         });
 
         it('Interrupt execution if directory tree traversal error', async () => {
-            const proxyquire = require('proxyquire').noPreserveCache();
             const fakeStarDir = file => {
                 throw new Error(`Mock error ${file}`);
             };

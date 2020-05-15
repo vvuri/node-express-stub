@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { createRequester, getClearConfig, parseLiList, stopSrv, testConfig } from './helper';
+import fs from 'fs';
 import proxyquire from 'proxyquire';
 import StaticServer from '../src/fs_server';
 
@@ -13,6 +14,33 @@ describe('Start/stop API', () => {
         getClearConfig();
         requester = createRequester();
         srv = new StaticServer(testConfig);
+    });
+
+    describe('Negative: server running tests:', () => {
+
+        it.only('Error when deleted dir after start server', async () => {
+            const newdir = testConfig.rootDir.concat('/elements/newdir');
+
+            fs.mkdirSync(newdir, '0744');
+            await srv.start();
+            fs.rmdirSync(newdir, { recursive: true });
+
+            const res = await requester.get('/elementas/newdir');
+
+            assert.equal(res.status, 404);
+            assert.equal(srv.isRunning, true);
+            await stopSrv(srv);
+        });
+
+        it.skip('try to test', async () => {
+            try {
+                await srv.start();
+            }
+            catch (error) {
+                console.log(error);
+            }
+            console.log(srv.isRunning);
+        });
     });
 
     describe('Positive: server running tests:', () => {

@@ -65,6 +65,14 @@ describe('Request chai-http test:', () => {
         requester.close();
     });
 
+    it('Negative: notexist directory not found', async () => {
+        const res = await requester.get('/elementas/notexist/');
+
+        assert.equal(res.status, 404);
+        assert.equal(srv.isRunning, true);
+        requester.close();
+    });
+
     after(async () => {
         requester.close();
         await srv.stop();

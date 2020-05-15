@@ -90,7 +90,7 @@ describe('Start/stop API', () => {
             }
         });
 
-        it.only('fs.stat error', async () => {
+        it.skip('fs.stat error', async () => {
             const proxyquire = require('proxyquire');
 
             proxyquire.noPreserveCache();
@@ -114,27 +114,19 @@ describe('Start/stop API', () => {
             // замокал - в консоли ошибку вижу, но сам метод ничего не передает
         });
 
-        it.skip('Promise.all error', async () => {
-            const proxyquire = require('proxyquire');
-
-            proxyquire.noPreserveCache();
-            // proxyquire.noCallThru();
-            const fakeStarDir = () => {
-                console.log('Run mock statDir()');
-                // throw new Error('Mock error');
+        it.only('Promise.all error', async () => {
+            const proxyquire = require('proxyquire').noPreserveCache();
+            const fakeStarDir = file => {
+                throw new Error(`Mock error ${file}`);
             };
 
             try {
                 const { getListSubDirectories } = proxyquire('../dist/fs_helper', { 'fs': { stat: fakeStarDir } });
 
-                // await myMock.getDir(testConfig.rootDir, 'utf-8');
-                const result = await getListSubDirectories(testConfig.rootDir);
-
-                console.log(result);
+                await getListSubDirectories(testConfig.rootDir);
             }
             catch (err) {
-                console.log('Catch:');
-                console.log(err.message);
+                assert(err, `Cannot read property 'isDirectory' of undefined`);
             }
         });
     });

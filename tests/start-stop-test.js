@@ -114,14 +114,14 @@ describe('Start/stop API', () => {
             // замокал - в консоли ошибку вижу, но сам метод ничего не передает
         });
 
-        it.only('Promise.all error', async () => {
+        it('Promise.all error', async () => {
             const proxyquire = require('proxyquire').noPreserveCache();
             const fakeStarDir = file => {
                 throw new Error(`Mock error ${file}`);
             };
 
             try {
-                const { getListSubDirectories } = proxyquire('../dist/fs_helper', { 'fs': { stat: fakeStarDir } });
+                const { getListSubDirectories } = proxyquire('../dist/fs_helper', { 'fs': { stat: { isDirectory: fakeStarDir } } });
 
                 await getListSubDirectories(testConfig.rootDir);
             }

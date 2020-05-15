@@ -10,6 +10,8 @@ import debug from './fs_logger';
 export default class StaticServer {
 
     constructor (args) {
+        this.isRunning = false;
+
         const { hostname, port, dirname } = config;
 
         dotenv.config();
@@ -46,6 +48,11 @@ export default class StaticServer {
         this.app.post('/', this.upload.single('fileToUpload'), this._upload);
     }
 
+    _upload (req, res ) { // , err => {}
+        debug(req.file, 'POST.file');
+        res.redirect(req.get('referer'));
+    }
+
     // async _getNewName (fileName) {
     //     // debug(fileName, '_getNewName');
     //     // const listDirFiles = await this._getDir( this.rootDir, this.currentDir, 'utf-8' );
@@ -59,12 +66,8 @@ export default class StaticServer {
     //     // return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
     // }
 
-    _upload (req, res ) { // , err => {}
-        debug(req.file, 'POST.file');
-        res.redirect(req.get('referer'));
-    }
-
     _getHTMLDirList (subdir, listFiles) {
+        debug(listFiles, '_getHTMLDirList');
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
 
         data += `<ul>`;

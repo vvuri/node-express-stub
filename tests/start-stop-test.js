@@ -17,8 +17,7 @@ describe('Start/stop API', () => {
     });
 
     describe('Negative: server running tests:', () => {
-
-        it.only('Error when deleted dir after start server', async () => {
+        it('Error when deleted dir after start server', async () => {
             const newdir = testConfig.rootDir.concat('/elements/newdir');
 
             fs.mkdirSync(newdir, '0744');
@@ -30,16 +29,6 @@ describe('Start/stop API', () => {
             assert.equal(res.status, 404);
             assert.equal(srv.isRunning, true);
             await stopSrv(srv);
-        });
-
-        it.skip('try to test', async () => {
-            try {
-                await srv.start();
-            }
-            catch (error) {
-                console.log(error);
-            }
-            console.log(srv.isRunning);
         });
     });
 

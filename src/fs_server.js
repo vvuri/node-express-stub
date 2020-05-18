@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import multer from 'multer';
 
-import { getDir, getListSubDirectories } from './fs_helper';
+import { getDir, getListDirAndFiles, getListSubDirectories } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -70,10 +70,12 @@ export default class StaticServer {
         debug(listFiles, '_getHTMLDirList');
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
 
+        debug(listFiles.dirs, '_getHTMLDirList.dir');
         data += `<ul>`;
         for (const item of listFiles.dirs)
             data += `<li> <b>${item}</b>> (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>)</li>`;
 
+        debug(listFiles.files, '_getHTMLDirList.files');
         for (const item of listFiles.files) {
             data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>)` +
                     `(<A href="http://${this.host}:${this.port}${subdir}${item}" download>download</A>)</li>`;
@@ -103,7 +105,9 @@ export default class StaticServer {
 
         getDir(this.rootDir.concat(subdir), 'utf-8')
             .then(files => {
-                data = this._getHTMLDirList(subdir, files);
+                const listDirAndFiles = getListDirAndFiles(this.rootDir.concat(subdir), files);
+
+                data = this._getHTMLDirList(subdir, listDirAndFiles);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);
@@ -135,7 +139,6 @@ export default class StaticServer {
         this.dirPaths = await getListSubDirectories(this.rootDir);
         this._initApp();
         this._configureUpload();
-        debug(this.dirPaths, 'start');
 
         return new Promise( (resolve, reject) => {
             debug(`Server running at http://${this.host}:${this.port}/`, 'start');

@@ -48,3 +48,24 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
 
     return dirPaths;
 };
+
+export const getListDirAndFiles = (subdir, listFiles) => {
+    const result = { dirs: [], files: [] };
+
+    listFiles.forEach( fileName => {
+        try {
+            const stats = fs.lstatSync(subdir + fileName);
+
+            if (stats.isDirectory())
+                result.dirs.push(fileName);
+            if (stats.isFile())
+                result.files.push(fileName);
+        }
+        catch (e) {
+            debug(`Error in fs.lstatSync: ${e.message}`, 'getListDirAndFiles');
+        }
+    });
+
+    debug(JSON.stringify(result), 'getListDirAndFiles');
+    return result;
+};

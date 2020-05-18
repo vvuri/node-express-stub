@@ -25,7 +25,7 @@ describe.only('Upload tests', () => {
     before(async () => {
         requester = createRequester();
         testConfig.rootDir = 'tests/upload';
-        testConfig.dirPath = ['/', '/subdir1', '/subdir2'];
+        //testConfig.dirPath = ['/', '/subdir', '/subdir2'];
         srv = new StaticServer(testConfig);
         await srv.start();
     });
@@ -38,24 +38,29 @@ describe.only('Upload tests', () => {
     it('Загрузка тестового файла в root', async () => {
         await requester
             .post('/')
-            //.field('fileToUpload', 'customValue')
             .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
             .then( result => {
-                expect(result).to.have.status(200);
-                expect(result.body[0].location).to.include('/line.png');
+                expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
             });
 
+        // проверка появления файла в списке
         requester.close();
     });
 
-    it('Загрузка файла c тем же миением в root', async () => {
+    it('Загрузка файла c тем же именем в root', async () => {
 
     });
 
     it('Загрузка тестового файла в подкаталог', async () => {
-
+        // await requester
+        //     .post('/subdir')
+        //     //.field('fileToUpload', 'customValue')
+        //     .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
+        //     .then( result => {
+        // expect(result).to.have.status(200);
+        // expect(result.body[0].location).to.include('/line.png');
+        // });
     });
-
 });
 
 describe('Download tests', () => {

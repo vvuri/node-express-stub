@@ -31,6 +31,8 @@ export default class StaticServer {
     _configureUpload () {
         this.storage = multer.diskStorage({
             destination: (req, file, cb) => {
+                debug(file, '_configureUpload.destination.file');
+                debug(req.body, '_configureUpload.destination.body');
                 debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination');
                 cb(null, `./${this.rootDir}${this.currentDir}`);
             },
@@ -50,7 +52,7 @@ export default class StaticServer {
 
     _upload (req, res ) { // , err => {}
         debug(req.file, 'POST.file');
-        res.redirect(req.get('referer'));
+        res.redirect(req.get('Referer') || '/');
     }
 
     // async _getNewName (fileName) {
@@ -86,7 +88,7 @@ export default class StaticServer {
         data += '<br>';
         data += `
         <form action="/" enctype="multipart/form-data" method="post">
-          <input type="hidden" name="subdir" value="${subdir}"">
+          <input type="hidden" id="savePath" name="savePath" value="${subdir}"">
           <input type="file" name="fileToUpload" value="Select file">
           <input type="submit" value="Upload to server">
         </form>`;

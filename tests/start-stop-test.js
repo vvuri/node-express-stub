@@ -116,7 +116,7 @@ describe('Start/stop API', () => {
             } } });
             const error = await statDir(testConfig.rootDir);
 
-            assert(error.message, 'Error getting information about a file:public: Run mock statDir()');
+            assert(error.error, 'Error getting information about a file:public: Run mock statDir()');
         });
 
         it('Interrupt execution if directory tree traversal error', async () => {

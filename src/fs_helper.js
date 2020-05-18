@@ -10,23 +10,12 @@ export const statDir = fileName => {
         .catch( err => {
             debug( err, 'statDir.error' );
             console.log(`Error getting information about a file:${fileName}: ${err.message}`);
-            return new Error(`Error getting information about a file:${fileName}: ${err.message}`);
+            return { isDirectory: () => {
+                return false;
+            }, error: new Error(`Error getting information about a file:${fileName}: ${err.message}`)
+            };
         });
 };
-
-// export const statDir = fileName => {
-//     return fsStat(fileName)
-//         .then( res => {
-//             if (fileName === 'public/elements/subelements')
-//                 throw new Error('OPA statDir');
-//             return res;
-//         })
-//         .catch( err => {
-//             debug(err, 'statDir.error');
-//             console.log(`Error getting information about a file:${fileName}: ${err.message}`);
-//             return new Error(`Error getting information about a file:${fileName}: ${err.message}`);
-//         });
-// };
 
 export const getDir = ( folder, enconding ) => {
     return fsReaddir( folder, enconding )

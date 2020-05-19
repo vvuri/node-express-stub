@@ -54,7 +54,7 @@ export const getListDirAndFiles = (subdir, listFiles) => {
 
     listFiles.forEach( fileName => {
         try {
-            const stats = fs.lstatSync(subdir + fileName);
+            const stats = fs.lstatSync(`${subdir}/${fileName}`);
 
             if (stats.isDirectory())
                 result.dirs.push(fileName);

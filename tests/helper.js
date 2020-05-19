@@ -2,14 +2,16 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
 import DomParser from 'dom-parser';
+import fs from 'fs';
+import { getDir, getListDirAndFiles } from '../dist/fs_helper';
 
 const _Host = '127.0.0.1';
 const _Port = '8888';
 const _RootDir = 'tests/public';
-const _dirPath = ['/', '/elements', '/elements/subelements'];
+// const _dirPath = ['/', '/elements', '/elements/subelements'];
 
-export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir, dirPath: _dirPath };
-export const testConfigSecond = { host: _Host, port: '9999', rootDir: 'public/elements', dirPath: ['/', '/subelements'] };
+export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir }; //, dirPath: _dirPath };
+export const testConfigSecond = { host: _Host, port: '9999', rootDir: 'public/elements' }; //, dirPath: ['/', '/subelements'] };
 
 export function getClearConfig () {
     delete process.env.PORT;
@@ -40,3 +42,20 @@ export function parseLiList (text) {
         });
 }
 
+export async function clearDir (subdir, recursive = false) {
+    const list = await getDir( subdir, 'utf-8' );
+    const listFileDir = getListDirAndFiles( subdir, list);
+
+    listFileDir.files.map( file => {
+        fs.unlink(`${subdir}/${file}`, err => {
+            if (err)
+                console.log(`Error deleted file: ${file}, err.message`);
+        });
+    });
+
+    if (recursive) {
+        listFileDir.dirs.map( dir => {
+            clearDir(`${subdir}/${dir}`, recursive);
+        });
+    }
+}

@@ -40,7 +40,7 @@ export default class StaticServer {
                 debug(file.originalname, '_configureUpload.filename');
                 debug(req.body.savePath, '_configureUpload.filename.body.savePath');
                 //const newName = `${Math.random().toString(36).substring(7)}_${file.originalname}`;
-                const newName = await this._getNewName(file.originalname);
+                const newName = await this._getNewFileName(file.originalname);
 
                 debug(newName, '_configureUpload.getNewName');
                 cb(null, newName);
@@ -56,7 +56,7 @@ export default class StaticServer {
         res.redirect(req.get('Referer') || '/');
     }
 
-    async _getNewName (fileName) {
+    async _getNewFileName (fileName) {
         debug(fileName, '_getNewName');
         const listDirFiles = await getDir( this.rootDir, this.currentDir, 'utf-8' );
 

@@ -1,8 +1,7 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
-import { createRequester, testConfig } from './helper';
+import { clearDir, createRequester, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
-
 
 const expect = chai.expect;
 
@@ -27,8 +26,7 @@ describe.only('Upload tests', () => {
     before(async () => {
         requester = createRequester();
         testConfig.rootDir = 'tests/upload';
-        // Clear Upload dir
-
+        await clearDir(testConfig.rootDir, true);
         srv = new StaticServer(testConfig);
         await srv.start();
     });
@@ -36,17 +34,23 @@ describe.only('Upload tests', () => {
     after(async () => {
         requester.close();
         await srv.stop();
+        await clearDir(testConfig.rootDir, true);
     });
 
-    it('Загрузка тестового файла в root', async () => {
+    it('Загрузка тестового файла line.png в root', async () => {
         await requester
             .post('/')
             .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-            .then( result => {
+            .then(result => {
                 expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
             });
         requester.close();
 
+        // проверяем директорий на предмет наличия файла там
+
+    });
+
+    it('Проверка что текстовый файл line.png отображается при запросе get', async () => {
         // проверка появления файла в списке
         const text = await requester.get('/').content;
 

@@ -5,7 +5,7 @@ import StaticServer from '../src/fs_server';
 
 const expect = chai.expect;
 
-describe.only('Upload tests', () => {
+describe('Upload tests', () => {
     // upload
     // - в / загрузить - появился
     // - с тем же именем - новое имя
@@ -28,13 +28,14 @@ describe.only('Upload tests', () => {
         testConfig.rootDir = 'tests/upload';
         await clearDir(testConfig.rootDir, true);
         srv = new StaticServer(testConfig);
+        srv.currentDir = '/';
         await srv.start();
     });
 
     after(async () => {
         requester.close();
         await srv.stop();
-        await clearDir(testConfig.rootDir, true);
+        // await clearDir(testConfig.rootDir, true);
     });
 
     it('Загрузка тестового файла line.png в root', async () => {
@@ -65,7 +66,7 @@ describe.only('Upload tests', () => {
 
     });
 
-    it('Загрузка тестового файла в подкаталог', async () => {
+    it.only('Загрузка тестового файла в подкаталог', async () => {
         // await requester
         //     .post('/subdir')
         //     //.field('fileToUpload', 'customValue')
@@ -74,6 +75,20 @@ describe.only('Upload tests', () => {
         // expect(result).to.have.status(200);
         // expect(result.body[0].location).to.include('/line.png');
         // });
+        const text = await requester.get('/').content;
+
+        console.log(text);
+
+        await requester
+            .post('/subdir')
+            .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
+            .then(result => {
+                expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/subdir`);
+            })
+            .catch(err => {
+                console.log(err.message);
+            });
+        requester.close();
     });
 });
 

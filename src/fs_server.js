@@ -31,15 +31,12 @@ export default class StaticServer {
     _configureUpload () {
         this.storage = multer.diskStorage({
             destination: (req, file, cb) => {
-                debug(file, '_configureUpload.destination.file');
-                debug(req.body.savePath, '_configureUpload.destination.body.savePath');
+                this.currentDir = req.body.savePath;
                 debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination');
                 cb(null, `./${this.rootDir}${this.currentDir}`);
             },
             filename: async (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
-                debug(req.body.savePath, '_configureUpload.filename.body.savePath');
-                //const newName = `${Math.random().toString(36).substring(7)}_${file.originalname}`;
                 const newName = await this._getNewFileName(file.originalname);
 
                 debug(newName, '_configureUpload.getNewName');
@@ -52,13 +49,14 @@ export default class StaticServer {
     }
 
     _upload (req, res ) { // , err => {}
-        debug(req.file, 'POST.file');
+        debug(req.file.destination, 'POST.file.destination');
         res.redirect(req.get('Referer') || '/');
     }
 
     async _getNewFileName (fileName) {
         debug(fileName, '_getNewName');
-        const listDirFiles = await getDir( this.rootDir, this.currentDir, 'utf-8' );
+        debug(this.rootDir + this.currentDir, '_getNewName');
+        const listDirFiles = await getDir( this.rootDir + this.currentDir, 'utf-8' );
 
         debug(listDirFiles, '_getNewName.listDirFiles');
         const isFileNameMatch = listDirFiles.some( file => {
@@ -104,7 +102,7 @@ export default class StaticServer {
 
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
-        debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)} )`, '_resDirListFiles');
+        debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)}),  currentDir:${this.currentDir}`, '_resDirListFiles');
 
         getDir(this.rootDir.concat(subdir), 'utf-8')
             .then(files => {

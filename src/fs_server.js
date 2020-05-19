@@ -82,7 +82,6 @@ export default class StaticServer {
         }
         data += `</ul>`;
 
-        // Add Upload form
         data += '<br>';
         data += `
         <form action="/" enctype="multipart/form-data" method="post">

@@ -8,10 +8,9 @@ import { getDir, getListDirAndFiles } from '../dist/fs_helper';
 const _Host = '127.0.0.1';
 const _Port = '8888';
 const _RootDir = 'tests/public';
-// const _dirPath = ['/', '/elements', '/elements/subelements'];
 
-export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir }; //, dirPath: _dirPath };
-export const testConfigSecond = { host: _Host, port: '9999', rootDir: 'public/elements' }; //, dirPath: ['/', '/subelements'] };
+export const testConfig = { host: _Host, port: _Port, rootDir: _RootDir };
+export const testConfigSecond = { host: _Host, port: '9999', rootDir: 'public/elements' };
 
 export function getClearConfig () {
     delete process.env.PORT;

@@ -43,7 +43,7 @@ export function parseLiList (text) {
 
 export async function clearDir (subdir, recursive = false) {
     const list = await getDir( subdir, 'utf-8' );
-    const listFileDir = getListDirAndFiles( subdir, list);
+    const listFileDir = getListDirAndFiles( subdir.concat('/'), list );
 
     listFileDir.files.map( file => {
         fs.unlink(`${subdir}/${file}`, err => {

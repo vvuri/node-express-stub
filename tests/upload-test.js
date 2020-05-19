@@ -7,7 +7,10 @@ const expect = chai.expect;
 
 describe('Upload tests', () => {
     // upload
-    // - в / загрузить - появился
+    // - в / загрузить
+    // -- проверка на редирек
+    // -- появился в каталоге
+    // -- появился при запросе http
     // - с тем же именем - новое имя
     // - в подкаталог - появился
     // имя файла
@@ -17,6 +20,7 @@ describe('Upload tests', () => {
     // - с пробелами
     // форматы
     // - набор файлов из public загрузить
+    // - проверить что все загрузились успешно
     // негативные
     // - лимит размера
     // - сообщение об ошибке
@@ -108,13 +112,13 @@ describe('Download tests', () => {
     // - на каталоге нет подписи
     it('Проверка что у файла есть  (open)(download)', async () => {
         // проверка появления файла в списке
-        await requester.get('/')
-            .then(res => {
-                const $ = cheerio.load(res.text);
-
-                $('li').each( (index, elem) => {
-                    console.log(index, $(elem).text());
-                });
-            });
+        // await requester.get('/')
+        //     .then(res => {
+        //         const $ = cheerio.load(res.text);
+        //
+        //         $('li').each( (index, elem) => {
+        //             console.log(index, $(elem).text());
+        //         });
+        //     });
     });
 });

@@ -20,7 +20,7 @@ export default class StaticServer {
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.dirPath = [];
-        this.currentDir = ``; // убрать - замена на hidden
+        this.currentDir = ``;
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
@@ -98,7 +98,6 @@ export default class StaticServer {
         let data;
 
         subdir = req.url;
-        this.currentDir = subdir;
 
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');

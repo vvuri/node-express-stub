@@ -38,35 +38,38 @@ describe('Upload tests', () => {
         // await clearDir(testConfig.rootDir, true);
     });
 
-    it('Загрузка тестового файла line.png в root', async () => {
+    it.only('Загрузка тестового файла line.png в root', async () => {
         await requester
             .post('/')
+            .field({ savePath: '/' })
             .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
             .then(result => {
                 expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
             });
         requester.close();
 
-        // проверяем директорий на предмет наличия файла там
+        // 1. Attach hidden field
+        // 2. проверяем директорий на предмет наличия файла там
 
     });
 
-    it('Проверка что текстовый файл line.png отображается при запросе get', async () => {
+    it.only('Проверка что текстовый файл line.png отображается при запросе get', async () => {
         // проверка появления файла в списке
-        const text = await requester.get('/').content;
+        await requester.get('/')
+            .then(res => {
+                const $ = cheerio.load(res.text);
 
-        console.log(text);
-        const $ = cheerio.load(text);
-
-        console.log($('li'));
-        requester.close();
+                $('li').each( (index, elem) => {
+                    console.log(index, $(elem).text());
+                });
+            });
     });
 
     it('Загрузка файла c тем же именем в root', async () => {
 
     });
 
-    it.only('Загрузка тестового файла в подкаталог', async () => {
+    it('Загрузка тестового файла в подкаталог', async () => {
         // await requester
         //     .post('/subdir')
         //     //.field('fileToUpload', 'customValue')
@@ -75,20 +78,27 @@ describe('Upload tests', () => {
         // expect(result).to.have.status(200);
         // expect(result.body[0].location).to.include('/line.png');
         // });
-        const text = await requester.get('/').content;
-
-        console.log(text);
-
         await requester
             .post('/subdir')
+            .field({ savePath: '/subdir' })
             .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-            .then(result => {
-                expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/subdir`);
-            })
+            // .then(result => {
+            //     expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/subdir`);
+            // })
             .catch(err => {
                 console.log(err.message);
             });
-        requester.close();
+
+        // 1. нет файла в директории subdir
+        // 2. необходимо распарсить список файлов
+
+        await requester.get('/subdir')
+            .then(res => {
+                // res.should.have.status(200);
+                // res.body.should.be.a('array');
+                // res.body.length.should.be.eql(0);
+                console.log(res.text);
+            });
     });
 });
 
@@ -96,5 +106,15 @@ describe('Download tests', () => {
     // - появилась надпись
     // - можно скачать
     // - на каталоге нет подписи
+    it('Проверка что у файла есть  (open)(download)', async () => {
+        // проверка появления файла в списке
+        await requester.get('/')
+            .then(res => {
+                const $ = cheerio.load(res.text);
 
+                $('li').each( (index, elem) => {
+                    console.log(index, $(elem).text());
+                });
+            });
+    });
 });

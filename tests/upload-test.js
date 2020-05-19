@@ -1,6 +1,8 @@
 import chai from 'chai';
+import cheerio from 'cheerio';
 import { createRequester, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
+
 
 const expect = chai.expect;
 
@@ -25,7 +27,8 @@ describe.only('Upload tests', () => {
     before(async () => {
         requester = createRequester();
         testConfig.rootDir = 'tests/upload';
-        //testConfig.dirPath = ['/', '/subdir', '/subdir2'];
+        // Clear Upload dir
+
         srv = new StaticServer(testConfig);
         await srv.start();
     });
@@ -42,8 +45,15 @@ describe.only('Upload tests', () => {
             .then( result => {
                 expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
             });
+        requester.close();
 
         // проверка появления файла в списке
+        const text = await requester.get('/').content;
+
+        console.log(text);
+        const $ = cheerio.load(text);
+
+        console.log($('li'));
         requester.close();
     });
 

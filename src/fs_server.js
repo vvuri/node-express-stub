@@ -32,14 +32,15 @@ export default class StaticServer {
         this.storage = multer.diskStorage({
             destination: (req, file, cb) => {
                 debug(file, '_configureUpload.destination.file');
-                debug(req.body, '_configureUpload.destination.body');
+                debug(req.body.savePath, '_configureUpload.destination.body.savePath');
                 debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination');
                 cb(null, `./${this.rootDir}${this.currentDir}`);
             },
-            filename: (req, file, cb) => {
+            filename: async (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
-                const newName = `${Math.random().toString(36).substring(7)}_${file.originalname}`;
-                //await this._getNewName(file.originalname);
+                debug(req.body.savePath, '_configureUpload.filename.body.savePath');
+                //const newName = `${Math.random().toString(36).substring(7)}_${file.originalname}`;
+                const newName = await this._getNewName(file.originalname);
 
                 debug(newName, '_configureUpload.getNewName');
                 cb(null, newName);
@@ -55,18 +56,17 @@ export default class StaticServer {
         res.redirect(req.get('Referer') || '/');
     }
 
-    // async _getNewName (fileName) {
-    //     // debug(fileName, '_getNewName');
-    //     // const listDirFiles = await this._getDir( this.rootDir, this.currentDir, 'utf-8' );
-    //
-    //     // debug(listDirFiles, '_getNewName.listDirFiles');
-    //     // const isFileNameMatch = listDirFiles.files.some( file => {
-    //     //     return file === fileName;
-    //     // });
-    //     //
-    //     // debug(isFileNameMatch, '_getNewName');
-    //     // return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
-    // }
+    async _getNewName (fileName) {
+        debug(fileName, '_getNewName');
+        const listDirFiles = await getDir( this.rootDir, this.currentDir, 'utf-8' );
+
+        debug(listDirFiles, '_getNewName.listDirFiles');
+        const isFileNameMatch = listDirFiles.some( file => {
+            return file === fileName;
+        });
+
+        return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
+    }
 
     _getHTMLDirList (subdir, listFiles) {
         debug(listFiles, '_getHTMLDirList');
@@ -100,6 +100,7 @@ export default class StaticServer {
         let data;
 
         subdir = req.url;
+        this.currentDir = subdir;
 
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');

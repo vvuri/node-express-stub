@@ -120,17 +120,24 @@ describe('Start/stop API', () => {
         });
 
         it('Interrupt execution if directory tree traversal error', async () => {
-            const fakeStarDir = file => {
-                throw new Error(`Mock error ${file}`);
-            };
-
             try {
-                const { getListSubDirectories } = proxyquire('../dist/fs_helper', { 'fs': { stat: { isDirectory: fakeStarDir } } });
+                const { getListSubDirectories } = proxyquire('../dist/fs_helper', {
+                    'fs': {
+                        'stat': ( path, callback ) => {
+                            const mStats = {};
+
+                            mStats.isDirectory = () => {
+                                throw new Error(`Mock error`);
+                            };
+                            callback(null, mStats);
+                        }
+                    }
+                });
 
                 await getListSubDirectories(testConfig.rootDir);
             }
             catch (err) {
-                assert(err, `Cannot read property 'isDirectory' of undefined`);
+                assert.equal(err, `Mock error`);
             }
         });
     });

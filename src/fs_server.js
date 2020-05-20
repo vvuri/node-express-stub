@@ -43,7 +43,6 @@ export default class StaticServer {
                 cb(null, newName);
             }
         });
-        debug(this.storage, '_configureUpload');
         this.upload = multer({ storage: this.storage });//, limits: { fieldSize: 10000 } });
         this.app.post('/', this.upload.single('fileToUpload'), this._upload);
     }

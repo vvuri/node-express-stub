@@ -8,11 +8,11 @@ const expect = chai.expect;
 
 describe('Upload tests', () => {
     // upload
-    // - в / загрузить
-    // -- проверка на редирек
-    // -- появился в каталоге
-    // -- появился при запросе http
-    // - с тем же именем - новое имя
+    // +- в / загрузить
+    // +-- проверка на редирек
+    // +-- появился в каталоге
+    // +-- появился при запросе http
+    // +- с тем же именем - новое имя
     // - в подкаталог - появился
     // имя файла
     // - один символ
@@ -43,74 +43,75 @@ describe('Upload tests', () => {
         // await clearDir(testConfig.rootDir, true);
     });
 
-    describe.only('Цепочка связанных тестов', () => {
-        it('Загрузка тестового файла line.png в root', async () => {
-            await requester
-                .post('/')
-                .field({ savePath: '/' })
-                .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-                .then(result => {
-                    expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
-                });
-        });
+    const runs = [
+        { it: 'root', path: '/' },
+        { it: 'subdir', path: '/subdir/' }
+    ];
 
-        it('Загруженный файл line.png записался на диск ', async () => {
-            const listFiles = await getDir(`${testConfig.rootDir}/`, 'utf-8');
-
-            expect(listFiles.some(file => {
-                return file === 'line.png';
-            })).to.eql(true);
-        });
-
-        it('Загруженный файл line.png отдается в запросе get', async () => {
-            let isAvailabile = false;
-
-            await requester.get('/')
-                .then(res => {
-                    const $ = cheerio.load(res.text);
-
-                    $('li').each((index, elem) => {
-                        if ($(elem).text().includes('line.png (open)(download)'))
-                            isAvailabile = true;
+    runs.forEach( run => {
+        describe.only(`Цепочка связанных тестов Загрузка файла в ${ run.it }`, () => {
+            it('Загрузка тестового файла line.png', async () => {
+                // srv.currentDir = run.path;
+                await requester
+                    .post('/')
+                    .field({ savePath: run.path })
+                    .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
+                    .then(result => {
+                        expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
                     });
-                });
-            expect(isAvailabile).to.eql(true);
-        });
+            });
 
-        it('Загрузка файла c тем же именем в root', async () => {
+            it('Загруженный файл line.png записался на диск ', async () => {
+                const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
+                expect(listFiles.some(file => {
+                    return file === 'line.png';
+                })).to.eql(true);
+            });
+
+            it('Загруженный файл line.png отдается в запросе get', async () => {
+                let isAvailabile = false;
+
+                await requester.get(run.path)
+                    .then(res => {
+                        const $ = cheerio.load(res.text);
+
+                        $('li').each((index, elem) => {
+                            if ($(elem).text().includes('line.png (open)(download)'))
+                                isAvailabile = true;
+                        });
+                    });
+                expect(isAvailabile).to.eql(true);
+            });
+
+            it('Загрузка файла c тем же именем', async () => {
+                await requester
+                    .post('/')
+                    .field({ savePath: run.path })
+                    .attach('fileToUpload', './tests/public/elements/line.png', 'line.png');
+
+                const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+
+                expect(listFiles.some(file => {
+                    return file.includes('_line.png');
+                })).to.eql(true);
+            });
         });
     });
 
+
     it('Загрузка тестового файла в подкаталог', async () => {
-        // await requester
-        //     .post('/subdir')
-        //     //.field('fileToUpload', 'customValue')
-        //     .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-        //     .then( result => {
-        // expect(result).to.have.status(200);
-        // expect(result.body[0].location).to.include('/line.png');
-        // });
         await requester
-            .post('/subdir')
-            .field({ savePath: '/subdir' })
+            .post('/')
+            .field({ savePath: '/subdir/' })
             .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-            // .then(result => {
-            //     expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/subdir`);
-            // })
+            .then(result => {
+                // console.log(result);
+                expect(result).to.have.status(200);
+                expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/subdir/`);
+            })
             .catch(err => {
                 console.log(err.message);
-            });
-
-        // 1. нет файла в директории subdir
-        // 2. необходимо распарсить список файлов
-
-        await requester.get('/subdir')
-            .then(res => {
-                // res.should.have.status(200);
-                // res.body.should.be.a('array');
-                // res.body.length.should.be.eql(0);
-                console.log(res.text);
             });
     });
 });

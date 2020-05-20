@@ -6,12 +6,7 @@ import { getDir } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
-describe.only('Upload tests', () => {
-    // 2. Download
-    // 3. to English
-    // 4. негативные
-    // - лимит размера
-    // - сообщение об ошибке
+describe.only('Upload file tests:', () => {
     let srv;
     let requester;
 
@@ -36,8 +31,8 @@ describe.only('Upload tests', () => {
     ];
 
     runs.forEach( run => {
-        describe(`Цепочка связанных тестов Загрузка файла в ${ run.it }`, () => {
-            it('Загрузка тестового файла line.png', async () => {
+        describe(`A chain of related tests. Upload file to ${ run.it }`, () => {
+            it('Upload test file line.png and redirect', async () => {
                 // srv.currentDir = run.path;
                 await requester
                     .post('/')
@@ -48,7 +43,7 @@ describe.only('Upload tests', () => {
                     });
             });
 
-            it('Загруженный файл line.png записался на диск ', async () => {
+            it('The uploaded file line.png was written to disk', async () => {
                 const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
                 expect(listFiles.some(file => {
@@ -56,7 +51,7 @@ describe.only('Upload tests', () => {
                 })).to.eql(true);
             });
 
-            it('Загруженный файл line.png отдается в запросе get', async () => {
+            it('The uploaded file line.png was given in get request', async () => {
                 let isAvailabile = false;
 
                 await requester.get(run.path)
@@ -71,7 +66,7 @@ describe.only('Upload tests', () => {
                 expect(isAvailabile).to.eql(true);
             });
 
-            it('Загрузка файла c тем же именем', async () => {
+            it('Rename a file with the same name', async () => {
                 await requester
                     .post('/')
                     .field({ savePath: run.path })
@@ -95,7 +90,7 @@ describe.only('Upload tests', () => {
     ];
 
     runs.forEach( run => {
-        it(`Различные имена ${run.it}файлов`, async () => {
+        it(`Uploaded file names with ${run.it} name`, async () => {
             await requester
                 .post('/')
                 .field({ savePath: run.path })
@@ -122,7 +117,7 @@ describe.only('Upload tests', () => {
     ];
 
     runs.forEach( run => {
-        it(`Различные форматы файлов загружаются ${run.it}`, async () => {
+        it(`Uploaded format file - ${run.it}`, async () => {
             await requester
                 .post('/')
                 .field({ savePath: run.path })
@@ -136,21 +131,23 @@ describe.only('Upload tests', () => {
         });
     });
 
-});
+    describe.only('Download tests', () => {
+        it('Проверка что у файла есть  (open)(download)', async () => {
+        });
 
-describe('Download tests', () => {
-    // - появилась надпись
-    // - можно скачать
-    // - на каталоге нет подписи
-    it('Проверка что у файла есть  (open)(download)', async () => {
-        // проверка появления файла в списке
-        // await requester.get('/')
-        //     .then(res => {
-        //         const $ = cheerio.load(res.text);
-        //
-        //         $('li').each( (index, elem) => {
-        //             console.log(index, $(elem).text());
-        //         });
-        //     });
+        it('Проверка что у каталога только (open)', async () => {
+        });
+
+        it('Есть линк на скачивание', async () => {
+        });
+
+        it('Можно скачать', async () => {
+        });
     });
 });
+
+// 2. Download
+// 3. to English
+// 4. негативные
+// - лимит размера
+// - сообщение об ошибке

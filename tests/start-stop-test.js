@@ -124,9 +124,11 @@ describe('Start/stop API', () => {
                 const { getListSubDirectories } = proxyquire('../dist/fs_helper', {
                     'fs': {
                         'stat': ( path, callback ) => {
-                            callback(null, { isDirectory: () => {
-                                throw new Error(`Mock error`);
-                            } });
+                            callback(null, {
+                                isDirectory: () => {
+                                    throw new Error(`Mock error`);
+                                }
+                            });
                         }
                     }
                 });

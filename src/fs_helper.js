@@ -10,9 +10,11 @@ export const statDir = fileName => {
         .catch( err => {
             debug( err, 'statDir.error' );
             console.log(`Error getting information about a file:${fileName}: ${err.message}`);
-            return { isDirectory: () => {
-                return false;
-            }, error: new Error(`Error getting information about a file:${fileName}: ${err.message}`)
+            return {
+                isDirectory: () => {
+                    return false;
+                },
+                error: new Error(`Error getting information about a file:${fileName}: ${err.message}`)
             };
         });
 };

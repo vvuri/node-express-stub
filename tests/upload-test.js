@@ -6,14 +6,14 @@ import { getDir } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
-describe('Upload tests', () => {
+describe.only('Upload tests', () => {
     // upload
     // +- в / загрузить
     // +-- проверка на редирек
     // +-- появился в каталоге
     // +-- появился при запросе http
     // +- с тем же именем - новое имя
-    // - в подкаталог - появился
+    // +- в подкаталог - появился
     // имя файла
     // - один символ
     // - русские буквы
@@ -43,13 +43,13 @@ describe('Upload tests', () => {
         // await clearDir(testConfig.rootDir, true);
     });
 
-    const runs = [
+    let runs = [
         { it: 'root', path: '/' },
         { it: 'subdir', path: '/subdir/' }
     ];
 
     runs.forEach( run => {
-        describe.only(`Цепочка связанных тестов Загрузка файла в ${ run.it }`, () => {
+        describe(`Цепочка связанных тестов Загрузка файла в ${ run.it }`, () => {
             it('Загрузка тестового файла line.png', async () => {
                 // srv.currentDir = run.path;
                 await requester
@@ -99,20 +99,29 @@ describe('Upload tests', () => {
         });
     });
 
+    runs = [
+        { it: 'One symbol', fileName: '1', path: '/subdir/subsubdir/' },
+        { it: 'long', fileName: 'VeryLongNameOfFileDownloadOnServer.txt', path: '/' },
+        { it: 'Cyrillic', fileName: 'Название файла на русском языке.doc', path: '/subdir/subsubdir/' },
+        { it: 'Space', fileName: 'Test file 2 download.txt', path: '/subdir/subsubdir/' },
+        { it: 'Dots', fileName: 'File.with.dots', path: '/subdir/' }
+    ];
 
-    it('Загрузка тестового файла в подкаталог', async () => {
-        await requester
-            .post('/')
-            .field({ savePath: '/subdir/' })
-            .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-            .then(result => {
-                // console.log(result);
-                expect(result).to.have.status(200);
-                expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/subdir/`);
-            })
-            .catch(err => {
-                console.log(err.message);
-            });
+    runs.forEach( run => {
+        it(`Различные имена ${run.it}файлов`, async () => {
+            await requester
+                .post('/')
+                .field({ savePath: run.path })
+                .attach('fileToUpload', './tests/public/elements/text.txt', run.fileName)
+                .then(result => {
+                    expect(result).to.have.status(200);
+                });
+            const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+
+            expect(listFiles.some(file => {
+                return file === run.fileName;
+            })).to.eql(true);
+        });
     });
 });
 

@@ -58,3 +58,12 @@ export async function clearDir (subdir, recursive = false) {
         });
     }
 }
+
+export function getMD5sum (filePath) {
+    const md5File = require('md5-file');
+
+    md5File(filePath)
+        .then( hash => {
+            return hash;
+        });
+}

@@ -1,28 +1,15 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
-import { clearDir, createRequester, testConfig } from './helper';
+import { clearDir, createRequester, getMD5sum, testConfig } from './helper';
 import StaticServer from '../dist/fs_server';
 import { getDir } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
 describe.only('Upload tests', () => {
-    // upload
-    // +- в / загрузить
-    // +-- проверка на редирек
-    // +-- появился в каталоге
-    // +-- появился при запросе http
-    // +- с тем же именем - новое имя
-    // +- в подкаталог - появился
-    // имя файла
-    // - один символ
-    // - русские буквы
-    // - длинное название
-    // - с пробелами
-    // форматы
-    // - набор файлов из public загрузить
-    // - проверить что все загрузились успешно
-    // негативные
+    // 2. Download
+    // 3. to English
+    // 4. негативные
     // - лимит размера
     // - сообщение об ошибке
     let srv;
@@ -123,6 +110,32 @@ describe.only('Upload tests', () => {
             })).to.eql(true);
         });
     });
+
+    runs = [
+        { it: 'TXT', sourceDir: './tests/public/elements/', fileName: 'text.txt', path: '/' },
+        { it: 'PDF', sourceDir: './tests/public/', fileName: 'sample.pdf', path: '/' },
+        { it: 'HTML', sourceDir: './tests/public/', fileName: 'Table_htm.htm', path: '/subdir/' },
+        { it: 'JPEG', sourceDir: './tests/public/elements/', fileName: 'zond.jpeg', path: '/subdir/' },
+        { it: 'PNG', sourceDir: './tests/public/elements/', fileName: 'line.png', path: '/subdir/subsubdir/' },
+        { it: 'SVG', sourceDir: './tests/public/elements/subelements/', fileName: 'logo2.svg', path: '/subdir/subsubdir/' },
+        { it: 'MP4', sourceDir: './tests/public/elements/', fileName: 'file_example_MP4_640_3MG.mp4', path: '/subdir/subsubdir/' }
+    ];
+
+    runs.forEach( run => {
+        it(`Различные форматы файлов загружаются ${run.it}`, async () => {
+            await requester
+                .post('/')
+                .field({ savePath: run.path })
+                .attach('fileToUpload', `${run.sourceDir}${run.fileName}`, run.fileName)
+                .then(result => {
+                    expect(result).to.have.status(200);
+                });
+
+            expect(getMD5sum(`${run.sourceDir}${run.fileName}`))
+                .to.eql(getMD5sum(`${testConfig.rootDir}${run.path}${run.fileName}`));
+        });
+    });
+
 });
 
 describe('Download tests', () => {

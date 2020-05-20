@@ -59,6 +59,7 @@
     "chalk": "^4.0.0",
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
+    "md5-file": "^5.0.0",
     "mime-types": "^2.1.26",
     "multer": "^1.4.2"
   }

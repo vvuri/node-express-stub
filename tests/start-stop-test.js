@@ -119,6 +119,7 @@ describe('Start/stop API', () => {
             assert(error.error, 'Error getting information about a file:public: Run mock statDir()');
         });
 
+        // TODO: Modify the test when calling srv.start. Use mock-require
         it('Interrupt execution if directory tree traversal error', async () => {
             try {
                 const { getListSubDirectories } = proxyquire('../dist/fs_helper', {

@@ -63,7 +63,12 @@ export function getMD5sum (filePath) {
     const md5File = require('md5-file');
 
     md5File(filePath)
-        .then( hash => {
+        .then(hash => {
             return hash;
         });
+}
+
+export async function stopSrv (srv) {
+    if (srv.isRunning)
+        await srv.stop();
 }

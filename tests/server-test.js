@@ -13,9 +13,7 @@ describe('Request chai-http test:', () => {
         requester = createRequester();
         srv = new StaticServer(testConfig);
 
-        const result = await srv.start();
-
-        assert.equal(result, null);
+        await srv.start();
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -65,6 +63,14 @@ describe('Request chai-http test:', () => {
         const res = await requester.get('/Table.html');
 
         assert.equal(res.status, 404);
+        requester.close();
+    });
+
+    it('Negative: notexist directory not found', async () => {
+        const res = await requester.get('/elementas/notexist/');
+
+        assert.equal(res.status, 404);
+        assert.equal(srv.isRunning, true);
         requester.close();
     });
 

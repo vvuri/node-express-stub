@@ -2,52 +2,52 @@ import chai from 'chai';
 import chaiHtml from 'chai-html';
 import StaticServer from '../dist/fs_server';
 import { testConfig } from './helper';
+import { getListSubDirectories } from '../dist/fs_helper';
 
 chai.use(chaiHtml);
 
 const expect = chai.expect;
 
-describe('StaticServer unit test for method _getHTMLDirList:', () => {
+describe('StaticServer unit test for methods:', () => {
     let srv;
 
     before( () => {
         srv = new StaticServer(testConfig);
     });
 
-    const runs = [
-        { it: 'Starting a method with empty parameters', subdir: '', listfiles: { dirs: '', files: '' }, result: `<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>` },
-        { it: 'Return empty list of files in subdirectory', subdir: '/private/', listfiles: { dirs: '', files: [] }, result: `<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>` },
-        { it: 'Return empty list of files in subdirectory', subdir: '/private/', listfiles: { dirs: [], files: [] }, result: `<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>` }
-    ];
+    describe('_getHTMLDirList()', () => {
+        it('should return an empty list if called without arguments', () => {
+            const result = srv._getHTMLDirList('', '');
 
-    runs.forEach(run => {
-        it.skip(run.it, () => {
-            const result = srv._getHTMLDirList(run.subdir, run.listfiles);
+            expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>`);
+        });
 
-            expect(result).html.to.equal(run.result);
+        it('should return an empty list of files for an empty directory', () => {
+            const result = srv._getHTMLDirList('/private/', []);
+
+            expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>`);
+        });
+
+        it(`should return a list of files for the root directory`, () => {
+            const listAnchors = ['a11', 'a2', 'a3'];
+            const result = srv._getHTMLDirList('/', listAnchors);
+
+            expect(result).html.to.contain('<h2>List Files', 'Header as H2');
+            expect(result).html.to.contain(`<i>${testConfig.rootDir}/</i>`, 'Header contains name of root directory');
+
+            for (const anchor of listAnchors) {
+                expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
+                expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
+            }
         });
     });
 
-    it(`The method returns a list of three files for the root directory`, () => {
-        const listAnchors = { dirs: ['d1', 'd2'], files: ['a11', 'a2', 'a3'] };
-        const result = srv._getHTMLDirList('/', listAnchors);
+    describe('getListSubDirectories()', () => {
+        it(`should return a list of subdirectories`, async () => {
+            srv.dirPath = await getListSubDirectories(srv.rootDir);
 
-        expect(result).html.to.contain('<h2>List Files', 'Header as H2');
-        expect(result).html.to.contain(`<i>${testConfig.rootDir}/</i>`, 'Header contains name of root directory');
-
-        for (const anchor of listAnchors.files) {
-            expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
-            expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
-        }
-    });
-
-    it(`The method returns a list of two sub directories with tag <b>`, () => {
-        const listAnchors = { dirs: ['d1', 'd2'], files: [] };
-        const result = srv._getHTMLDirList('/', listAnchors);
-
-        for (const anchor of listAnchors.dirs) {
-            expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
-            expect(result).html.to.contain(`<li> <b>${anchor}</b>`, `List file contain a name file`);
-        }
+            expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
+            expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);
+        });
     });
 });

@@ -6,7 +6,7 @@ import { getDir } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
-describe.only('Upload file tests:', () => {
+describe('Upload file tests:', () => {
     let srv;
     let requester;
 
@@ -131,7 +131,7 @@ describe.only('Upload file tests:', () => {
         });
     });
 
-    describe.only('Download tests', () => {
+    describe('Download tests', () => {
         it('Проверка что у файла есть  (open)(download)', async () => {
         });
 

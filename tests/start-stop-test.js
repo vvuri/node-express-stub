@@ -112,8 +112,8 @@ describe('Start/stop API', () => {
 
         it('Return error message in statDir() if we can not read information about a file', async () => {
             const { statDir } = proxyquire('../dist/fs_helper', { 'fs': { stat: () => {
-                        throw new Error('Run mock statDir()');
-                    } } });
+                throw new Error('Run mock statDir()');
+            } } });
             const error = await statDir(testConfig.rootDir);
 
             assert(error.error, 'Error getting information about a file:public: Run mock statDir()');

@@ -130,24 +130,4 @@ describe('Upload file tests:', () => {
                 .to.eql(getMD5sum(`${testConfig.rootDir}${run.path}${run.fileName}`));
         });
     });
-
-    describe('Download tests', () => {
-        it('Проверка что у файла есть  (open)(download)', async () => {
-        });
-
-        it('Проверка что у каталога только (open)', async () => {
-        });
-
-        it('Есть линк на скачивание', async () => {
-        });
-
-        it('Можно скачать', async () => {
-        });
-    });
 });
-
-// 2. Download
-// 3. to English
-// 4. негативные
-// - лимит размера
-// - сообщение об ошибке

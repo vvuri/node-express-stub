@@ -3,6 +3,7 @@ import { createRequester, getClearConfig, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
 
 const assert = chai.assert;
+const expect = chai.expect;
 
 describe('Request chai-http test:', () => {
     let srv;
@@ -77,5 +78,25 @@ describe('Request chai-http test:', () => {
     after(async () => {
         requester.close();
         await srv.stop();
+    });
+
+    describe.only('Download tests', () => {
+        let result;
+
+        before(async () => {
+            result = await requester.get('/elements');
+            console.log(result.text);
+        });
+
+        it('File "styles.css" have links (open)(download) and anchor for download', async () => {
+            expect(result.text).to.contain(`<li> styles.css (<A href="http://${testConfig.host}:${testConfig.port}/elements/styles.css">open</A>)(<A href="http://${testConfig.host}:${testConfig.port}/elements/styles.css" download>download</A>)</li>`);
+        });
+
+        it('Directory "subelements" have only link (open)', async () => {
+            expect(result.text).to.contain(`<li> <b>subelements</b> (<A href="http://${testConfig.host}:${testConfig.port}/elements/subelements">open</A>)</li>`);
+        });
+
+        it('File can be downloaded via link (download)', async () => {
+        });
     });
 });

@@ -17,25 +17,25 @@ describe('StaticServer unit test for methods:', () => {
 
     describe('_getHTMLDirList()', () => {
         it('should return an empty list if called without arguments', () => {
-            const result = srv._getHTMLDirList('', '');
+            const result = srv._getHTMLDirList('', { dirs: '', files: '' });
 
-            expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>`);
+            expect(result).html.to.contain(`<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>`);
         });
 
         it('should return an empty list of files for an empty directory', () => {
-            const result = srv._getHTMLDirList('/private/', []);
+            const result = srv._getHTMLDirList('/private/', { dirs: [], files: [] });
 
-            expect(result).html.to.equal(`<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>`);
+            expect(result).html.to.contain(`<h2>List Files in <i>${testConfig.rootDir}/private/</i>:</h2><ul></ul>`);
         });
 
         it(`should return a list of files for the root directory`, () => {
-            const listAnchors = ['a11', 'a2', 'a3'];
+            const listAnchors = { dirs: '', files: ['a11', 'a2', 'a3'] };
             const result = srv._getHTMLDirList('/', listAnchors);
 
             expect(result).html.to.contain('<h2>List Files', 'Header as H2');
             expect(result).html.to.contain(`<i>${testConfig.rootDir}/</i>`, 'Header contains name of root directory');
 
-            for (const anchor of listAnchors) {
+            for (const anchor of listAnchors.files) {
                 expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
                 expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
             }

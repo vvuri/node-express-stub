@@ -80,12 +80,11 @@ describe('Request chai-http test:', () => {
         await srv.stop();
     });
 
-    describe.only('Download tests', () => {
+    describe('Download tests', () => {
         let result;
 
         before(async () => {
             result = await requester.get('/elements');
-            console.log(result.text);
         });
 
         it('File "styles.css" have links (open)(download) and anchor for download', async () => {
@@ -94,9 +93,6 @@ describe('Request chai-http test:', () => {
 
         it('Directory "subelements" have only link (open)', async () => {
             expect(result.text).to.contain(`<li> <b>subelements</b> (<A href="http://${testConfig.host}:${testConfig.port}/elements/subelements">open</A>)</li>`);
-        });
-
-        it('File can be downloaded via link (download)', async () => {
         });
     });
 });

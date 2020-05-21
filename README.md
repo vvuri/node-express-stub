@@ -32,3 +32,15 @@ PORT=8888
 ROOT_DIR=public
 ```
 or rename .vue_simple to .vue
+
+#### Example run Server in code
+```javascript
+const args = {
+    host:    '127.0.0.1',
+    port:    '8888',
+    rootDir: 'public',
+};
+const srv = new StaticServer(args);
+
+await srv.start();
+```

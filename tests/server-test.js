@@ -1,29 +1,18 @@
 import chai from 'chai';
-import { createRequester, getClearConfig } from './helper';
+import { createRequester, getClearConfig, testConfig } from './helper';
+import StaticServer from '../src/fs_server';
 
 const assert = chai.assert;
 
-let requester;
-let startServer;
-let stopServer;
-
 describe('Request chai-http test:', () => {
-    let server;
+    let srv;
+    let requester;
 
     before(async () => {
         getClearConfig();
-
         requester = createRequester();
-
-        const utils = require('../dist/fs_server');
-
-        startServer = utils.startServer;
-        stopServer  = utils.stopServer;
-
-        const result = await startServer();
-
-        server = result.server;
-        assert.equal(result.error, null);
+        srv = new StaticServer(testConfig);
+        await srv.start();
     });
 
     it('Positive: Get root list of files - body size 553 bytes', async () => {
@@ -76,8 +65,16 @@ describe('Request chai-http test:', () => {
         requester.close();
     });
 
+    it('Negative: notexist directory not found', async () => {
+        const res = await requester.get('/elementas/notexist/');
+
+        assert.equal(res.status, 404);
+        assert.equal(srv.isRunning, true);
+        requester.close();
+    });
+
     after(async () => {
         requester.close();
-        await stopServer(server);
+        await srv.stop();
     });
 });

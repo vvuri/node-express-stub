@@ -1,6 +1,6 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
-import { clearDir, createRequester, getMD5sum, testConfig } from './helper';
+import { clearDir, createRequester, createTestUploadDir, getMD5sum, testConfig } from './helper';
 import StaticServer from '../dist/fs_server';
 import { getDir } from '../dist/fs_helper';
 
@@ -13,6 +13,7 @@ describe('Upload file tests:', () => {
     before(async () => {
         requester = createRequester();
         testConfig.rootDir = 'tests/upload';
+        await createTestUploadDir(['/tests/upload', '/tests/upload/subdir', '/tests/upload/subsubdir']);
         await clearDir(testConfig.rootDir, true);
         srv = new StaticServer(testConfig);
         srv.currentDir = '/';

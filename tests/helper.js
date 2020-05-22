@@ -58,6 +58,12 @@ export async function clearDir (subdir, recursive = false) {
     }
 }
 
+export async function createTestUploadDir (listDir) {
+    await Promise.all(listDir.map( async path => {
+        await fs.mkdir(path, () => {});
+    }));
+}
+
 export function getMD5sum (filePath) {
     const md5File = require('md5-file');
 

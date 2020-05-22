@@ -6,14 +6,18 @@ import { getDir } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
-describe('Upload file tests:', () => {
+describe.only('Upload file tests:', () => {
     let srv;
     let requester;
 
     before(async () => {
         requester = createRequester();
         testConfig.rootDir = 'tests/upload';
-        await createTestUploadDir(['/tests/upload', '/tests/upload/subdir', '/tests/upload/subsubdir']);
+        await createTestUploadDir([
+            `./${testConfig.rootDir}`,
+            `./${testConfig.rootDir}/subdir`,
+            `./${testConfig.rootDir}/subdir/subsubdir`
+        ]);
         await clearDir(testConfig.rootDir, true);
         srv = new StaticServer(testConfig);
         srv.currentDir = '/';

@@ -1,6 +1,6 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
-import { clearDir, createRequester, createTestUploadDir, getMD5sum, testConfig } from './helper';
+import { clearDir, createRequester, createTestUploadDir, getMD5sum, stopSrv, testConfig } from './helper';
 import StaticServer from '../dist/fs_server';
 import { getDir } from '../dist/fs_helper';
 
@@ -35,10 +35,9 @@ describe('Upload file tests:', () => {
         { it: 'subdir', path: '/subdir/' }
     ];
 
-    runs.forEach( run => {
-        describe(`A chain of related tests. Upload file to ${ run.it }`, () => {
+    runs.forEach(run => {
+        describe(`A chain of related tests. Upload file to ${run.it}`, () => {
             it('Upload test file line.png and redirect', async () => {
-                // srv.currentDir = run.path;
                 await requester
                     .post('/')
                     .field({ savePath: run.path })
@@ -94,7 +93,7 @@ describe('Upload file tests:', () => {
         { it: 'Dots', fileName: 'File.with.dots', path: '/subdir/' }
     ];
 
-    runs.forEach( run => {
+    runs.forEach(run => {
         it(`Uploaded file names with ${run.it} name`, async () => {
             await requester
                 .post('/')
@@ -121,7 +120,7 @@ describe('Upload file tests:', () => {
         { it: 'MP4', sourceDir: './tests/public/elements/', fileName: 'file_example_MP4_640_3MG.mp4', path: '/subdir/subsubdir/' }
     ];
 
-    runs.forEach( run => {
+    runs.forEach(run => {
         it(`Uploaded format file - ${run.it}`, async () => {
             await requester
                 .post('/')
@@ -133,6 +132,22 @@ describe('Upload file tests:', () => {
 
             expect(getMD5sum(`${run.sourceDir}${run.fileName}`))
                 .to.eql(getMD5sum(`${testConfig.rootDir}${run.path}${run.fileName}`));
+        });
+    });
+
+    describe(`Negative Upload file`, () => {
+        it('Response Error if file size > limited', async () => {
+            await stopSrv(srv);
+            srv.maxUploadSize = 1024;
+            await srv.start();
+
+            await requester
+                .post('/')
+                .field({ savePath: '/' })
+                .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
+                .then(result => {
+                    expect(result.text).to.eql('Choosen file size is greater than 1024');
+                });
         });
     });
 });

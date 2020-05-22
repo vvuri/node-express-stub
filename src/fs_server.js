@@ -21,6 +21,7 @@ export default class StaticServer {
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.dirPath = [];
         this.currentDir = ``;
+        this.maxUploadSize = 10 * 1024 * 1024;
 
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
@@ -43,11 +44,35 @@ export default class StaticServer {
                 cb(null, newName);
             }
         });
-        this.upload = multer({ storage: this.storage });//, limits: { fieldSize: 10000 } });
-        this.app.post('/', this.upload.single('fileToUpload'), this._upload);
+
+        this.upload = multer({
+            storage: this.storage,
+            limits:  { fileSize: this.maxUploadSize }
+        }).single('fileToUpload');
+
+        this.app.post('/', (req, res) => {
+            this.upload( req, res, err => {
+                if (err) {
+                    debug(`${req.file} ${err.code}`, '_updateError');
+                    switch (err.code) {
+                        case 'LIMIT_FILE_SIZE':
+                            res.end('Choosen file size is greater than ' + this.maxUploadSize);
+                            break;
+                        case 'INVALID_FILE_TYPE':
+                            res.end('Choosen file is of invalid type');
+                            break;
+                        case 'ENOENT':
+                            res.end('Unable to store the file');
+                            break;
+                    }
+                }
+                else
+                    res.redirect(req.get('Referer') || '/');
+            });
+        }, this._upload);
     }
 
-    _upload (req, res ) { // , err => {}
+    _upload (req, res) {
         debug(req.file.destination, 'POST.file.destination');
         res.redirect(req.get('Referer') || '/');
     }

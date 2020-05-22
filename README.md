@@ -1,5 +1,8 @@
 # nodejs-stub
 Simple static server on Node.js
+- View a list of files and directories
+- Ability to open or download a file
+- Ability to upload a file to the current directory
 
 ### Build
 ```bash

@@ -2,7 +2,6 @@ import chai from 'chai';
 import { createRequester, getClearConfig, testConfig } from './helper';
 import StaticServer from '../src/fs_server';
 
-const assert = chai.assert;
 const expect = chai.expect;
 
 describe('Request chai-http test:', () => {
@@ -20,7 +19,7 @@ describe('Request chai-http test:', () => {
     it('Positive: Get root list of files - body size 553 bytes', async () => {
         const res = await requester.get('/');
 
-        assert.equal(res.header['content-length'] > 550, true);
+        expect(res.header['content-length'] > 550).to.eql(true);
         requester.close();
     });
 
@@ -34,8 +33,8 @@ describe('Request chai-http test:', () => {
         it(`Positive: Get sub directory ${run.it} list of files`, async () => {
             const res = await requester.get(run.options.dir);
 
-            assert.equal(res.status, 200);
-            assert.equal(res.header['content-type'], 'text/html');
+            expect(res.status).to.eql(200);
+            expect(res.header['content-type']).to.eql('text/html');
             requester.close();
         });
     });
@@ -54,8 +53,8 @@ describe('Request chai-http test:', () => {
         it(`Positive: Get file ${run.it} from ${run.options.dir}`, async () => {
             const res = await requester.get(run.options.dir + run.options.name);
 
-            assert.equal(res.status, 200);
-            assert.equal(res.header['content-type'], run.options.contenttype);
+            expect(res.status).to.eql(200);
+            expect(res.header['content-type']).to.eql(run.options.contenttype);
             requester.close();
         });
     });
@@ -63,15 +62,15 @@ describe('Request chai-http test:', () => {
     it('Negative: File Table.html not found', async () => {
         const res = await requester.get('/Table.html');
 
-        assert.equal(res.status, 404);
+        expect(res.status).to.eql(404);
         requester.close();
     });
 
     it('Negative: notexist directory not found', async () => {
         const res = await requester.get('/elementas/notexist/');
 
-        assert.equal(res.status, 404);
-        assert.equal(srv.isRunning, true);
+        expect(res.status).to.eql(404);
+        expect(srv.isRunning).to.eql(true);
         requester.close();
     });
 

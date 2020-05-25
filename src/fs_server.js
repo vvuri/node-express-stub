@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import dotenv from 'dotenv';
 import express from 'express';
 import multer from 'multer';
+import path from 'path';
 
 import { getDir, getListDirAndFiles, getListSubDirectories } from './fs_helper';
 import config from '../config.json';
@@ -36,8 +37,10 @@ export default class StaticServer {
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
                 this.currentDir = req.body.savePath;
-                debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination');
-                cb(null, `./${this.rootDir}${this.currentDir}`);
+                const localPath = path.join('./', this.rootDir, this.currentDir);
+
+                debug(localPath, '_configureUpload.destination');
+                cb(null, localPath);
             },
             filename: async (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
@@ -124,14 +127,15 @@ export default class StaticServer {
         let data;
 
         subdir = req.url;
+        const currentPath = path.join(this.rootDir, subdir);
 
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
-        debug(`#getDir( ${this.rootDir} + ${subdir} = ${this.rootDir.concat(subdir)}),  currentDir:${this.currentDir}`, '_resDirListFiles');
+        debug(`#getDir( ${this.rootDir} + ${subdir} = ${currentPath}),  currentDir:${this.currentDir}`, '_resDirListFiles');
 
-        getDir(this.rootDir.concat(subdir), 'utf-8')
+        getDir(currentPath, 'utf-8')
             .then(files => {
-                const listDirAndFiles = getListDirAndFiles(this.rootDir.concat(subdir), files);
+                const listDirAndFiles = getListDirAndFiles(currentPath, files);
 
                 data = this._getHTMLDirList(subdir, listDirAndFiles);
                 res.statusCode = 200;
@@ -150,10 +154,11 @@ export default class StaticServer {
 
     _initApp () {
         this.app = express();
+        debug(this.dirPaths, '_initApp');
 
-        for (const path of this.dirPaths) {
-            this.app.use(path, express.static(this.rootDir + path));
-            this.app.get(path, this._resDirListFiles.bind(this) );
+        for (const dirPath of this.dirPaths) {
+            this.app.use(dirPath, express.static(path.join(this.rootDir, dirPath)));
+            this.app.get(dirPath, this._resDirListFiles.bind(this) );
         }
     }
 

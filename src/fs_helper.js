@@ -1,5 +1,6 @@
 import fs from 'fs';
 import debug from './fs_logger';
+import path from 'path';
 import util from 'util';
 
 const fsStat = util.promisify(fs.stat);
@@ -30,24 +31,28 @@ export const getDir = ( folder, enconding ) => {
 const dirPaths = ['/'];
 
 export const getListSubDirectories = async (rootDir, subdir = '') => {
-    debug(`rootDir: ${rootDir}, subdir: ${subdir}`, 'getListSubDirectories');
-    const files = await getDir( rootDir.concat(subdir), 'utf-8')
+    const currentPath = path.join(rootDir, subdir);
+
+    debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
+    const files = await getDir( currentPath, 'utf-8')
         .catch( err => {
-            console.log(`Error read ${rootDir.concat(subdir)}: ${err}`);
+            console.log(`Error read ${currentPath}: ${err}`);
             throw err;
         });
 
     await Promise.all( files.map( async fileName => {
-        const stat = await statDir(`${rootDir}${subdir}/${fileName}`);
+        const stat = await statDir(path.join(rootDir, subdir, fileName));
 
         if ( stat.isDirectory() ) {
-            dirPaths.push( `${subdir}/${fileName}` );
-            await getListSubDirectories( rootDir, `${subdir}/${fileName}` );
+            const currentSubPath = `${subdir}/${fileName}`;
+
+            dirPaths.push( currentSubPath );
+            await getListSubDirectories( rootDir, currentSubPath );
         }
     }))
         .catch( err => {
             debug( err, 'getListSubDirectories.Promise.all' );
-            console.log(`Error read subdirectories in ${rootDir.concat(subdir)}: ${err.message}`);
+            console.log(`Error read subdirectories in ${currentPath}: ${err.message}`);
             throw err.message;
         });
 
@@ -59,9 +64,10 @@ export const getListDirAndFiles = (subdir, listFiles) => {
 
     listFiles.forEach( fileName => {
         try {
-            const stats = fs.lstatSync(`${subdir}${fileName}`);
+            const currentPath = path.join(subdir, fileName);
+            const stats = fs.lstatSync(currentPath);
 
-            debug(`${subdir}${fileName}`, 'getListDirAndFiles');
+            debug(currentPath, 'getListDirAndFiles');
             if (stats.isDirectory())
                 result.dirs.push(fileName);
             if (stats.isFile())

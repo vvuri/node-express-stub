@@ -23,6 +23,9 @@ export default class StaticServer {
         this.currentDir = ``;
         this.maxUploadSize = 10 * 1024 * 1024;
 
+        this.app = null;
+        this.server = null;
+
         debug(`ClassInit::     HOST: ${args.host}  PORT: ${args.port}  ROOT_DIR: ${args.rootDir}`, 'constructor');
         debug(`Environment::   HOST: ${process.env.HOST}  PORT: ${process.env.PORT}  ROOT_DIR: ${process.env.ROOT_DIR}`, 'constructor');
         debug(`Config.json::   HOST: ${hostname}  PORT: ${port}  ROOT_DIR: ${dirname}`, 'constructor');
@@ -30,7 +33,7 @@ export default class StaticServer {
     }
 
     _configureUpload () {
-        this.storage = multer.diskStorage({
+        const storage = multer.diskStorage({
             destination: (req, file, cb) => {
                 this.currentDir = req.body.savePath;
                 debug(`./${this.rootDir}${this.currentDir}`, '_configureUpload.destination');
@@ -45,13 +48,13 @@ export default class StaticServer {
             }
         });
 
-        this.upload = multer({
-            storage: this.storage,
+        const upload = multer({
+            storage: storage,
             limits:  { fileSize: this.maxUploadSize }
         }).single('fileToUpload');
 
         this.app.post('/', (req, res) => {
-            this.upload( req, res, err => {
+            upload( req, res, err => {
                 if (err) {
                     debug(`${req.file} ${err.code}`, '_updateError');
                     switch (err.code) {
@@ -147,7 +150,6 @@ export default class StaticServer {
 
     _initApp () {
         this.app = express();
-        this.server = null;
 
         for (const path of this.dirPaths) {
             this.app.use(path, express.static(this.rootDir + path));

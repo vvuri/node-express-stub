@@ -63,7 +63,7 @@ describe('Upload file tests:', () => {
                         const $ = cheerio.load(res.text);
 
                         $('li').each((index, elem) => {
-                            if ($(elem).text().includes('line.png (open)(download)'))
+                            if ($(elem).text().includes('line.png (download)'))
                                 isAvailabile = true;
                         });
                     });

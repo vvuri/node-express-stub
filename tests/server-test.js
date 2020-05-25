@@ -87,11 +87,12 @@ describe('Request chai-http test:', () => {
         });
 
         it('File "styles.css" have links (open)(download) and anchor for download', async () => {
-            expect(result.text).to.contain(`<li> styles.css (<A href="http://${testConfig.host}:${testConfig.port}/elements/styles.css">open</A>)(<A href="http://${testConfig.host}:${testConfig.port}/elements/styles.css" download>download</A>)</li>`);
+            expect(result.text).to.contain(`<li><A href="http://${testConfig.host}:${testConfig.port}/elements/styles.css">styles.css</A> (<A href="http://${testConfig.host}:${testConfig.port}/elements/styles.css" download>download</A>)</li>`);
         });
 
         it('Directory "subelements" have only link (open)', async () => {
-            expect(result.text).to.contain(`<li> <b>subelements</b> (<A href="http://${testConfig.host}:${testConfig.port}/elements/subelements">open</A>)</li>`);
+            expect(result.text).to.contain(`<li><A href="http://${testConfig.host}:${testConfig.port}/elements/subelements"><b>subelements</b></A></li>`);
+            expect(result.text).to.contain(`<li><A href="http://${testConfig.host}:${testConfig.port}/elements/subelements"><b>subelements</b></A></li>`);
         });
     });
 });

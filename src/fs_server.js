@@ -97,12 +97,12 @@ export default class StaticServer {
         debug(listFiles.dirs, '_getHTMLDirList.dir');
         data += `<ul>`;
         for (const item of listFiles.dirs)
-            data += `<li> <b>${item}</b> (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>)</li>`;
+            data += `<li><A href="http://${this.host}:${this.port}${subdir}${item}"><b>${item}</b></A></li>`;
 
         debug(listFiles.files, '_getHTMLDirList.files');
         for (const item of listFiles.files) {
-            data += `<li> ${item} (<A href="http://${this.host}:${this.port}${subdir}${item}">open</A>)` +
-                    `(<A href="http://${this.host}:${this.port}${subdir}${item}" download>download</A>)</li>`;
+            data += `<li><A href="http://${this.host}:${this.port}${subdir}${item}">${item}</A>` +
+                    ` (<A href="http://${this.host}:${this.port}${subdir}${item}" download>download</A>)</li>`;
         }
         data += `</ul>`;
 

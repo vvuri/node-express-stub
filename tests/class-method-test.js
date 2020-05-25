@@ -37,7 +37,7 @@ describe('StaticServer unit test for methods:', () => {
 
             for (const anchor of listAnchors.files) {
                 expect(result).html.to.contain(`<A href="http://${testConfig.host}:${testConfig.port}/${anchor}">`, `Anchor ${anchor} are represents`);
-                expect(result).html.to.contain(`<li> ${anchor}`, `List file contain a name file`);
+                expect(result).html.to.contain(`<li><A href="http://${testConfig.host}:${testConfig.port}/${anchor}">${anchor}`, `List file contain a name file`);
             }
         });
     });

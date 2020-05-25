@@ -4,7 +4,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 
-import { getDir, getListDirAndFiles, getListSubDirectories } from './fs_helper';
+import { getDir, getListDirAndFiles, getListSubDirectories, getNewFileName } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -44,7 +44,7 @@ export default class StaticServer {
             },
             filename: async (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
-                const newName = await this._getNewFileName(file.originalname);
+                const newName = await getNewFileName(file.originalname, this.rootDir + this.currentDir);
 
                 debug(newName, '_configureUpload.getNewName');
                 cb(null, newName);
@@ -81,19 +81,6 @@ export default class StaticServer {
     _upload (req, res) {
         debug(req.file.destination, 'POST.file.destination');
         res.redirect(req.get('Referer') || '/');
-    }
-
-    async _getNewFileName (fileName) {
-        debug(fileName, '_getNewName');
-        debug(this.rootDir + this.currentDir, '_getNewName');
-        const listDirFiles = await getDir( this.rootDir + this.currentDir, 'utf-8' );
-
-        debug(listDirFiles, '_getNewName.listDirFiles');
-        const isFileNameMatch = listDirFiles.some( file => {
-            return file === fileName;
-        });
-
-        return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
     }
 
     _getHTMLDirList (subdir, listFiles) {
@@ -135,7 +122,7 @@ export default class StaticServer {
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
         debug(`#getDir( ${this.rootDir} + ${subdir} = ${currentPath}),  currentDir:${this.currentDir}`, '_resDirListFiles');
 
-        getDir(currentPath, 'utf-8')
+        getDir(currentPath)
             .then(files => {
                 const listDirAndFiles = getListDirAndFiles(currentPath, files);
 

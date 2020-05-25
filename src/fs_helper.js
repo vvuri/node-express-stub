@@ -20,7 +20,7 @@ export const statDir = fileName => {
         });
 };
 
-export const getDir = ( folder, enconding ) => {
+export const getDir = ( folder, enconding = 'utf-8' ) => {
     return fsReaddir( folder, enconding )
         .catch( err => {
             debug(err, 'getDir.error');
@@ -34,7 +34,7 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
     const currentPath = path.join(rootDir, subdir);
 
     debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
-    const files = await getDir( currentPath, 'utf-8')
+    const files = await getDir( currentPath )
         .catch( err => {
             console.log(`Error read ${currentPath}: ${err}`);
             throw err;
@@ -80,4 +80,16 @@ export const getListDirAndFiles = (subdir, listFiles) => {
 
     debug(JSON.stringify(result), 'getListDirAndFiles');
     return result;
+};
+
+export const getNewFileName = async (fileName, pathToFile) => {
+    debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
+    const listDirFiles = await getDir( pathToFile );
+
+    debug(listDirFiles, 'getNewName.listDirFiles');
+    const isFileNameMatch = listDirFiles.some( file => {
+        return file === fileName;
+    });
+
+    return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
 };

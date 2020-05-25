@@ -27,6 +27,7 @@ $ npm run all
 - config.json - file configuration
 - host:port - IP server listen
 - dirname - public directory
+- maxUploadFileSize - max file size for uploading in MB  
 
 #### Environment variables by default:
 ```

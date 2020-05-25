@@ -13,16 +13,16 @@ export default class StaticServer {
     constructor (args) {
         this.isRunning = false;
 
-        const { hostname, port, dirname } = config;
+        const { hostname, port, dirname, maxUploadFileSize } = config;
 
         dotenv.config();
 
         this.host = args.host || process.env.HOST || hostname;
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
+        this.maxUploadSize = ( args.maxUploadFileSize || maxUploadFileSize ) * 1024 * 1024;
         this.dirPath = [];
         this.currentDir = ``;
-        this.maxUploadSize = 10 * 1024 * 1024;
 
         this.app = null;
         this.server = null;

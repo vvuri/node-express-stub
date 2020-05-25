@@ -16,7 +16,14 @@ describe('StaticServer unit test for methods:', () => {
     });
 
     describe('_getHTMLDirList()', () => {
-        it('should return an empty list if called without arguments', () => {
+        it.skip('should return an empty list if called without arguments', () => {
+            const result = srv._getHTMLDirList();
+
+            console.log(result);
+            expect(result).html.to.contain(`<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>`);
+        });
+
+        it('should return an empty list if called with empty arguments', () => {
             const result = srv._getHTMLDirList('', { dirs: '', files: '' });
 
             expect(result).html.to.contain(`<h2>List Files in <i>${testConfig.rootDir}</i>:</h2><ul></ul>`);

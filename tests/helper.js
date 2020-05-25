@@ -53,8 +53,8 @@ export async function clearDir (subdir, recursive = false) {
     });
 
     if (recursive) {
-        listFileDir.dirs.map( dir => {
-            clearDir(`${subdir}/${dir}`, recursive);
+        await listFileDir.dirs.map( async dir => {
+            await clearDir(`${subdir}/${dir}`, recursive);
         });
     }
 }

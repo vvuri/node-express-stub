@@ -35,9 +35,7 @@ export const getDir = ( folder, enconding = 'utf-8' ) => {
         });
 };
 
-const dirPaths = ['/'];
-
-export const getListSubDirectories = async (rootDir, subdir = '') => {
+export const getListSubDirectories = async (rootDir, subdir = '', dirPaths = ['/']) => {
     const currentPath = path.join(rootDir, subdir);
 
     debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
@@ -52,7 +50,7 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
         const currentSubPath = `${subdir}/${fileName}`;
 
         dirPaths.push( currentSubPath );
-        await getListSubDirectories( rootDir, currentSubPath );
+        await getListSubDirectories( rootDir, currentSubPath, dirPaths );
     }))
         .catch( err => {
             debug( err, 'getListSubDirectories.Promise.all' );
@@ -63,7 +61,17 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
     return dirPaths;
 };
 
+//const fsStat = util.promisify(fs.stat);
+
 export const getNewFileName = async (fileName, pathToFile) => {
+    // debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
+    // await fsStat( path.join(pathToFile, fileName) )
+    //     .catch( async () => {
+    //         fileName = await getNewFileName(`${Math.random().toString(36).substring(7)}_${fileName}`, pathToFile);
+    //     } );
+    //
+    // debug(`New fileName:${fileName}`, 'getNewName');
+    // return fileName;
     debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
     const listDirFiles = await getDir( pathToFile );
     const isFileNameMatch = listDirFiles.files.some( file => {

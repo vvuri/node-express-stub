@@ -4,6 +4,7 @@ import path from 'path';
 import util from 'util';
 
 const fsReaddir = util.promisify(fs.readdir);
+const fsStat = util.promisify(fs.stat);
 
 export const getDir = ( folder, enconding = 'utf-8' ) => {
     const result = { dirs: [], files: [] };
@@ -61,22 +62,23 @@ export const getListSubDirectories = async (rootDir, subdir = '', dirPaths = ['/
     return dirPaths;
 };
 
-//const fsStat = util.promisify(fs.stat);
-
 export const getNewFileName = async (fileName, pathToFile) => {
-    // debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
-    // await fsStat( path.join(pathToFile, fileName) )
-    //     .catch( async () => {
-    //         fileName = await getNewFileName(`${Math.random().toString(36).substring(7)}_${fileName}`, pathToFile);
-    //     } );
-    //
-    // debug(`New fileName:${fileName}`, 'getNewName');
-    // return fileName;
     debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
-    const listDirFiles = await getDir( pathToFile );
-    const isFileNameMatch = listDirFiles.files.some( file => {
-        return file === fileName;
-    });
+    try {
+        await fsStat( path.join(pathToFile, fileName) );
+        fileName = await getNewFileName( `${Math.random().toString(36).substring(7)}_${fileName}`, pathToFile );
+    }
+    catch (err) {
+        debug(err.message, 'getNewName.err');
+    }
 
-    return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
+    debug(fileName, 'getNewName.return');
+    return fileName;
+    // debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
+    // const listDirFiles = await getDir( pathToFile );
+    // const isFileNameMatch = listDirFiles.files.some( file => {
+    //     return file === fileName;
+    // });
+    //
+    // return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
 };

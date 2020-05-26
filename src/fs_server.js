@@ -33,51 +33,6 @@ export default class StaticServer {
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
     }
 
-    _configureUpload () {
-        const storage = multer.diskStorage({
-            destination: (req, file, cb) => {
-                this.currentDir = req.body.savePath;
-                const localPath = path.join('./', this.rootDir, this.currentDir);
-
-                debug(localPath, '_configureUpload.destination');
-                cb(null, localPath);
-            },
-            filename: async (req, file, cb) => {
-                debug(file.originalname, '_configureUpload.filename');
-                const newName = await getNewFileName(file.originalname, this.rootDir + this.currentDir);
-
-                debug(newName, '_configureUpload.getNewName');
-                cb(null, newName);
-            }
-        });
-
-        const upload = multer({
-            storage: storage,
-            limits:  { fileSize: this.maxUploadSize }
-        }).single('fileToUpload');
-
-        this.app.post('/', (req, res) => {
-            upload( req, res, err => {
-                if (err) {
-                    debug(`${req.file} ${err.code}`, '_updateError');
-                    switch (err.code) {
-                        case 'LIMIT_FILE_SIZE':
-                            res.end('Chosen file size is greater than ' + this.maxUploadSize);
-                            break;
-                        case 'INVALID_FILE_TYPE':
-                            res.end('Chosen file is of invalid type');
-                            break;
-                        case 'ENOENT':
-                            res.end('Unable to store the file');
-                            break;
-                    }
-                }
-                else
-                    res.redirect(req.get('Referer') || '/');
-            });
-        }, this._upload);
-    }
-
     _upload (req, res) {
         debug(req.file.destination, 'POST.file.destination');
         res.redirect(req.get('Referer') || '/');
@@ -148,6 +103,49 @@ export default class StaticServer {
             this.app.use(dirPath, express.static(path.join(this.rootDir, dirPath)));
             this.app.get(dirPath, this._resDirListFiles.bind(this) );
         }
+
+        const storage = multer.diskStorage({
+            destination: (req, file, cb) => {
+                this.currentDir = req.body.savePath;
+                const localPath = path.join('./', this.rootDir, this.currentDir);
+
+                debug(localPath, '_configureUpload.destination');
+                cb(null, localPath);
+            },
+            filename: async (req, file, cb) => {
+                debug(file.originalname, '_configureUpload.filename');
+                const newName = await getNewFileName(file.originalname, this.rootDir + this.currentDir);
+
+                debug(newName, '_configureUpload.getNewName');
+                cb(null, newName);
+            }
+        });
+
+        const upload = multer({
+            storage: storage,
+            limits:  { fileSize: this.maxUploadSize }
+        }).single('fileToUpload');
+
+        this.app.post('/', (req, res) => {
+            upload( req, res, err => {
+                if (err) {
+                    debug(`${req.file} ${err.code}`, '_updateError');
+                    switch (err.code) {
+                        case 'LIMIT_FILE_SIZE':
+                            res.end('Chosen file size is greater than ' + this.maxUploadSize);
+                            break;
+                        case 'INVALID_FILE_TYPE':
+                            res.end('Chosen file is of invalid type');
+                            break;
+                        case 'ENOENT':
+                            res.end('Unable to store the file');
+                            break;
+                    }
+                }
+                else
+                    res.redirect(req.get('Referer') || '/');
+            });
+        }, this._upload);
     }
 
     async start () {
@@ -156,7 +154,6 @@ export default class StaticServer {
 
         this.dirPaths = await getListSubDirectories(this.rootDir);
         this._initApp();
-        this._configureUpload();
 
         return new Promise( (resolve, reject) => {
             debug(`Server running at http://${this.host}:${this.port}/`, 'start');

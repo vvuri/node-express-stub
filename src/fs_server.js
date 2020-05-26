@@ -21,8 +21,6 @@ export default class StaticServer {
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.maxUploadSize = ( args.maxUploadFileSize || maxUploadFileSize ) * 1024 * 1024;
-        this.dirPaths = [];
-
         this.app = null;
         this.server = null;
 
@@ -94,11 +92,12 @@ export default class StaticServer {
             });
     }
 
-    _initApp () {
+    async _initApp () {
         this.app = express();
-        debug(this.dirPaths, '_initApp');
+        const dirPaths = await getListSubDirectories(this.rootDir);
 
-        for (const dirPath of this.dirPaths) {
+        debug(dirPaths, '_initApp');
+        for (const dirPath of dirPaths) {
             this.app.use(dirPath, express.static(path.join(this.rootDir, dirPath)));
             this.app.get(dirPath, this._resDirListFiles.bind(this) );
         }
@@ -150,8 +149,7 @@ export default class StaticServer {
         if (this.isRunning)
             return Promise.reject( new Error(`Server is already running.`) );
 
-        this.dirPaths = await getListSubDirectories(this.rootDir);
-        this._initApp();
+        await this._initApp();
 
         return new Promise( (resolve, reject) => {
             debug(`Server running at http://${this.host}:${this.port}/`, 'start');

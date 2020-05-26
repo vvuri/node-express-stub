@@ -27,7 +27,7 @@ describe('Upload file tests:', () => {
     after(async () => {
         requester.close();
         await srv.stop();
-        // await clearDir(testConfig.rootDir, true);
+        await clearDir(testConfig.rootDir, true);
     });
 
     let runs = [

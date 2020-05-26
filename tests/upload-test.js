@@ -56,7 +56,7 @@ describe('Upload file tests:', () => {
             });
 
             it('The uploaded file line.png was given in get request', async () => {
-                let isAvailabile = false;
+                let isAvailable = false;
 
                 await requester.get(run.path)
                     .then(res => {

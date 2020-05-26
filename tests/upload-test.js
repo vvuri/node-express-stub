@@ -35,9 +35,9 @@ describe('Upload file tests:', () => {
         { it: 'subdir', path: '/subdir/' }
     ];
 
-    runs.forEach(run => {
-        describe(`A chain of related tests. Upload file to ${run.it}`, () => {
-            it('Upload test file line.png and redirect', async () => {
+    describe('A chain of related tests. Upload file', () => {
+        runs.forEach(run => {
+            it(`Upload test file line.png to ${run.it} and redirect`, async () => {
                 await requester
                     .post('/')
                     .field({ savePath: run.path })

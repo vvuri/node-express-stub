@@ -35,16 +35,22 @@ describe('Upload file tests:', () => {
         { it: 'subdir', path: '/subdir/' }
     ];
 
-    describe('A chain of related tests. Upload file', () => {
+    describe('Upload file', () => {
         runs.forEach(run => {
-            it(`Upload test file line.png to ${run.it} and redirect`, async () => {
-                await requester
+            let result;
+
+            before( async () => {
+                result = await requester
                     .post('/')
                     .field({ savePath: run.path })
                     .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
-                    .then(result => {
-                        expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
+                    .then( res => {
+                        return res;
                     });
+            });
+
+            it(`Redirect after upload file line.png to ${run.it} directory`, async () => {
+                expect(result).to.redirectTo(`http://${testConfig.host}:${testConfig.port}/`);
             });
 
             it('The uploaded file line.png was written to disk', async () => {

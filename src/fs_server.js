@@ -22,7 +22,6 @@ export default class StaticServer {
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.maxUploadSize = ( args.maxUploadFileSize || maxUploadFileSize ) * 1024 * 1024;
         this.dirPaths = [];
-        this.currentDir = ``;
 
         this.app = null;
         this.server = null;
@@ -106,15 +105,14 @@ export default class StaticServer {
 
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
-                this.currentDir = req.body.savePath;
-                const localPath = path.join('./', this.rootDir, this.currentDir);
+                const localPath = path.join('./', this.rootDir, req.body.savePath);
 
                 debug(localPath, '_configureUpload.destination');
                 cb(null, localPath);
             },
             filename: async (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
-                const newName = await getNewFileName(file.originalname, this.rootDir + this.currentDir);
+                const newName = await getNewFileName(file.originalname, this.rootDir + req.body.savePath);
 
                 debug(newName, '_configureUpload.getNewName');
                 cb(null, newName);

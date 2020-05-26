@@ -62,7 +62,7 @@ export default class StaticServer {
                     debug(`${req.file} ${err.code}`, '_updateError');
                     switch (err.code) {
                         case 'LIMIT_FILE_SIZE':
-                            res.end('Choosen file size is greater than ' + this.maxUploadSize);
+                            res.end('Chosen file size is greater than ' + this.maxUploadSize);
                             break;
                         case 'INVALID_FILE_TYPE':
                             res.end('Choosen file is of invalid type');

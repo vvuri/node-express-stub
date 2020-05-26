@@ -27,7 +27,7 @@ describe('Upload file tests:', () => {
     after(async () => {
         requester.close();
         await srv.stop();
-        await clearDir(testConfig.rootDir, true);
+        // await clearDir(testConfig.rootDir, true);
     });
 
     let runs = [
@@ -50,7 +50,7 @@ describe('Upload file tests:', () => {
             it('The uploaded file line.png was written to disk', async () => {
                 const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
-                expect(listFiles.some(file => {
+                expect(listFiles.files.some(file => {
                     return file === 'line.png';
                 })).to.eql(true);
             });
@@ -78,7 +78,7 @@ describe('Upload file tests:', () => {
 
                 const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
-                expect(listFiles.some(file => {
+                expect(listFiles.files.some(file => {
                     return file.includes('_line.png');
                 })).to.eql(true);
             });
@@ -104,7 +104,7 @@ describe('Upload file tests:', () => {
                 });
             const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
-            expect(listFiles.some(file => {
+            expect(listFiles.files.some(file => {
                 return file === run.fileName;
             })).to.eql(true);
         });

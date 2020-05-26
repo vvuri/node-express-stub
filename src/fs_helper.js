@@ -3,25 +3,32 @@ import debug from './fs_logger';
 import path from 'path';
 import util from 'util';
 
-const fsStat = util.promisify(fs.stat);
 const fsReaddir = util.promisify(fs.readdir);
 
-export const statDir = fileName => {
-    return fsStat( fileName )
-        .catch( err => {
-            debug( err, 'statDir.error' );
-            console.log(`Error getting information about a file:${fileName}: ${err.message}`);
-            return {
-                isDirectory: () => {
-                    return false;
-                },
-                error: new Error(`Error getting information about a file:${fileName}: ${err.message}`)
-            };
-        });
-};
-
 export const getDir = ( folder, enconding = 'utf-8' ) => {
+    const result = { dirs: [], files: [] };
+
     return fsReaddir( folder, enconding )
+        .then( listFiles => {
+            listFiles.forEach( fileName => {
+                try {
+                    const currentPath = path.join(folder, fileName);
+                    const stats = fs.lstatSync(currentPath);
+
+                    debug(currentPath, 'getDir.currentPath');
+                    if (stats.isDirectory())
+                        result.dirs.push(fileName);
+                    if (stats.isFile())
+                        result.files.push(fileName);
+                }
+                catch (e) {
+                    debug(`Error in fs.lstatSync: ${e.message}`, 'getDir.error');
+                }
+            });
+
+            debug(JSON.stringify(result), 'getDir.result');
+            return result;
+        })
         .catch( err => {
             debug(err, 'getDir.error');
             throw err.message;
@@ -34,21 +41,18 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
     const currentPath = path.join(rootDir, subdir);
 
     debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
-    const files = await getDir( currentPath )
+    const fileList = await getDir( currentPath )
         .catch( err => {
             console.log(`Error read ${currentPath}: ${err}`);
             throw err;
         });
 
-    await Promise.all( files.map( async fileName => {
-        const stat = await statDir(path.join(rootDir, subdir, fileName));
+    await Promise.all( fileList.dirs.map( async fileName => {
+        debug( fileName, 'getListSubDirectories.map' );
+        const currentSubPath = `${subdir}/${fileName}`;
 
-        if ( stat.isDirectory() ) {
-            const currentSubPath = `${subdir}/${fileName}`;
-
-            dirPaths.push( currentSubPath );
-            await getListSubDirectories( rootDir, currentSubPath );
-        }
+        dirPaths.push( currentSubPath );
+        await getListSubDirectories( rootDir, currentSubPath );
     }))
         .catch( err => {
             debug( err, 'getListSubDirectories.Promise.all' );
@@ -59,35 +63,10 @@ export const getListSubDirectories = async (rootDir, subdir = '') => {
     return dirPaths;
 };
 
-export const getListDirAndFiles = (subdir, listFiles) => {
-    const result = { dirs: [], files: [] };
-
-    listFiles.forEach( fileName => {
-        try {
-            const currentPath = path.join(subdir, fileName);
-            const stats = fs.lstatSync(currentPath);
-
-            debug(currentPath, 'getListDirAndFiles');
-            if (stats.isDirectory())
-                result.dirs.push(fileName);
-            if (stats.isFile())
-                result.files.push(fileName);
-        }
-        catch (e) {
-            debug(`Error in fs.lstatSync: ${e.message}`, 'getListDirAndFiles');
-        }
-    });
-
-    debug(JSON.stringify(result), 'getListDirAndFiles');
-    return result;
-};
-
 export const getNewFileName = async (fileName, pathToFile) => {
     debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
     const listDirFiles = await getDir( pathToFile );
-
-    debug(listDirFiles, 'getNewName.listDirFiles');
-    const isFileNameMatch = listDirFiles.some( file => {
+    const isFileNameMatch = listDirFiles.files.some( file => {
         return file === fileName;
     });
 

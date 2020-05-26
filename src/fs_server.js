@@ -4,7 +4,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 
-import { getDir, getListDirAndFiles, getListSubDirectories, getNewFileName } from './fs_helper';
+import { getDir, getListSubDirectories, getNewFileName } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -124,9 +124,8 @@ export default class StaticServer {
 
         getDir(currentPath)
             .then(files => {
-                const listDirAndFiles = getListDirAndFiles(currentPath, files);
-
-                data = this._getHTMLDirList(subdir, listDirAndFiles);
+                debug(files, '1');
+                data = this._getHTMLDirList(subdir, files);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);

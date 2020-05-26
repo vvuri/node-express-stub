@@ -21,7 +21,7 @@ export default class StaticServer {
         this.port = args.port || process.env.PORT || port;
         this.rootDir = args.rootDir || process.env.ROOT_DIR || dirname;
         this.maxUploadSize = ( args.maxUploadFileSize || maxUploadFileSize ) * 1024 * 1024;
-        this.dirPath = [];
+        this.dirPaths = [];
         this.currentDir = ``;
 
         this.app = null;

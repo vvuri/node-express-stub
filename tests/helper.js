@@ -66,10 +66,7 @@ export async function createTestUploadDir (listDir) {
 export function getMD5sum (filePath) {
     const md5File = require('md5-file');
 
-    md5File(filePath)
-        .then(hash => {
-            return hash;
-        });
+    return md5File.sync(filePath);
 }
 
 export async function stopSrv (srv) {

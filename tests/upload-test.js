@@ -146,7 +146,7 @@ describe('Upload file tests:', () => {
                 .field({ savePath: '/' })
                 .attach('fileToUpload', './tests/public/elements/line.png', 'line.png')
                 .then(result => {
-                    expect(result.text).to.eql('Choosen file size is greater than 1024');
+                    expect(result.text).to.eql('Chosen file size is greater than 1024');
                 });
         });
     });

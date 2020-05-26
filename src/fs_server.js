@@ -65,7 +65,7 @@ export default class StaticServer {
                             res.end('Chosen file size is greater than ' + this.maxUploadSize);
                             break;
                         case 'INVALID_FILE_TYPE':
-                            res.end('Choosen file is of invalid type');
+                            res.end('Chosen file is of invalid type');
                             break;
                         case 'ENOENT':
                             res.end('Unable to store the file');

@@ -8,6 +8,8 @@ import { getDir, getListSubDirectories, getNewFileName } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
+const htmlUploadTag = 'fileToUpload';
+
 export default class StaticServer {
 
     constructor (args) {
@@ -35,12 +37,12 @@ export default class StaticServer {
         res.redirect(req.get('Referer') || '/');
     }
 
-    _getHTMLDirList (subdir, listFiles) {
+    _getHTMLDirList (subdir = '', listFiles = { files: '', dirs: '' }) {
         debug(listFiles, '_getHTMLDirList');
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
 
-        debug(listFiles.dirs, '_getHTMLDirList.dir');
         data += `<ul>`;
+        debug(listFiles.dirs, '_getHTMLDirList.dir');
         for (const item of listFiles.dirs)
             data += `<li><A href="http://${this.host}:${this.port}${subdir}${item}"><b>${item}</b></A></li>`;
 
@@ -49,7 +51,7 @@ export default class StaticServer {
             const substr = `<A href="http://${this.host}:${this.port}${subdir}${item}"`;
 
             data += `<li>${substr}>${item}</A>` +
-                    ` (${substr} download>download</A>)</li>`;
+                ` (${substr} download>download</A>)</li>`;
         }
         data += `</ul>`;
 
@@ -121,7 +123,7 @@ export default class StaticServer {
         const upload = multer({
             storage: storage,
             limits:  { fileSize: this.maxUploadSize }
-        }).single('fileToUpload');
+        }).single(htmlUploadTag);
 
         this.app.post('/', (req, res) => {
             upload( req, res, err => {

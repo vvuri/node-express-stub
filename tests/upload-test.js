@@ -76,7 +76,7 @@ describe('Upload file tests:', () => {
                 expect(isAvailable).to.eql(true);
             });
 
-            it('Rename a file with the same name', async () => {
+            it.only('Rename a file with the same name', async () => {
                 await requester
                     .post('/')
                     .field({ savePath: run.path })
@@ -137,7 +137,7 @@ describe('Upload file tests:', () => {
                 });
 
             expect(getMD5sum(`${run.sourceDir}${run.fileName}`))
-                .to.eql(getMD5sum(`${testConfig.rootDir}${run.path}${run.fileName}`));
+                .to.equal(getMD5sum(`${testConfig.rootDir}${run.path}${run.fileName}`));
         });
     });
 

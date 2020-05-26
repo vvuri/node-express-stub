@@ -64,10 +64,10 @@ describe('Upload file tests:', () => {
 
                         $('li').each((index, elem) => {
                             if ($(elem).text().includes('line.png (download)'))
-                                isAvailabile = true;
+                                isAvailable = true;
                         });
                     });
-                expect(isAvailabile).to.eql(true);
+                expect(isAvailable).to.eql(true);
             });
 
             it('Rename a file with the same name', async () => {

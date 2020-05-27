@@ -6,7 +6,7 @@ import util from 'util';
 const fsReaddir = util.promisify(fs.readdir);
 const fsStat = util.promisify(fs.stat);
 
-export const getDir = ( folder, enconding = 'utf-8' ) => {
+export const getDirectorySources = ( folder, enconding = 'utf-8' ) => {
     const result = { dirs: [], files: [] };
 
     return fsReaddir( folder, enconding )
@@ -16,22 +16,22 @@ export const getDir = ( folder, enconding = 'utf-8' ) => {
                     const currentPath = path.join(folder, fileName);
                     const stats = fs.lstatSync(currentPath);
 
-                    debug(currentPath, 'getDir.currentPath');
+                    debug(currentPath, 'getDirectorySources.currentPath');
                     if (stats.isDirectory())
                         result.dirs.push(fileName);
                     if (stats.isFile())
                         result.files.push(fileName);
                 }
                 catch (e) {
-                    debug(`Error in fs.lstatSync: ${e.message}`, 'getDir.error');
+                    debug(`Error in fs.lstatSync: ${e.message}`, 'getDirectorySources.error');
                 }
             });
 
-            debug(JSON.stringify(result), 'getDir.result');
+            debug(JSON.stringify(result), 'getDirectorySources.result');
             return result;
         })
         .catch( err => {
-            debug(err, 'getDir.error');
+            debug(err, 'getDirectorySources.error');
             throw err.message;
         });
 };
@@ -40,7 +40,7 @@ export const getSubDirectoryUrlsRecursive = async (rootDir, subdir = '', dirPath
     const currentPath = path.join(rootDir, subdir);
 
     debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
-    const fileList = await getDir( currentPath )
+    const fileList = await getDirectorySources( currentPath )
         .catch( err => {
             console.log(`Error read ${currentPath}: ${err}`);
             throw err;

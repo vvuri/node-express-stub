@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
 import DomParser from 'dom-parser';
 import fs from 'fs';
-import { getDir } from '../dist/fs_helper';
+import { getDirectorySources } from '../dist/fs_helper';
 
 const _Host = '127.0.0.1';
 const _Port = '8888';
@@ -41,7 +41,7 @@ export function parseLiList (text) {
 }
 
 export async function clearDir (subdir, recursive = false) {
-    const listFileDir = await getDir( subdir, 'utf-8' );
+    const listFileDir = await getDirectorySources( subdir, 'utf-8' );
 
     listFileDir.files.map( file => {
         fs.unlink(`${subdir}/${file}`, err => {

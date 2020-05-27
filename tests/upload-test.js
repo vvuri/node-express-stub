@@ -2,7 +2,7 @@ import chai from 'chai';
 import cheerio from 'cheerio';
 import { clearDir, createRequester, createTestUploadDir, getMD5sum, stopSrv, testConfig } from './helper';
 import StaticServer from '../dist/fs_server';
-import { getDir } from '../dist/fs_helper';
+import { getDirectorySources } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
@@ -54,7 +54,7 @@ describe('Upload file tests:', () => {
             });
 
             it('The uploaded file line.png was written to disk', async () => {
-                const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+                const listFiles = await getDirectorySources(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
                 expect(listFiles.files.some(file => {
                     return file === 'line.png';
@@ -89,7 +89,7 @@ describe('Upload file tests:', () => {
                         .field({ savePath: run.path })
                         .attach('fileToUpload', './tests/public/elements/line.png', 'line.png');
 
-                    const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+                    const listFiles = await getDirectorySources(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
                     expect(listFiles.files.some(file => {
                         return file === run2.it;
@@ -116,7 +116,7 @@ describe('Upload file tests:', () => {
                 .then(result => {
                     expect(result).to.have.status(200);
                 });
-            const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+            const listFiles = await getDirectorySources(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
             expect(listFiles.files.some(file => {
                 return file === run.fileName;

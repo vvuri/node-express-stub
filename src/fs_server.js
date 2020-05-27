@@ -4,7 +4,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 
-import { getDir, getNewFileName, getSubDirectoryUrlsRecursive } from './fs_helper';
+import { getDirectorySources, getNewFileName, getSubDirectoryUrlsRecursive } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -75,9 +75,9 @@ export default class StaticServer {
 
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');
         debug(`Dir: ${subdir}  req url: ${req.url}`, '_resDirListFiles');
-        debug(`#getDir( ${this.rootDir} + ${subdir} = ${currentPath}),  currentDir:${this.currentDir}`, '_resDirListFiles');
+        debug(`getDirectorySources( ${this.rootDir} + ${subdir} = ${currentPath})`, '_resDirListFiles');
 
-        getDir(currentPath)
+        getDirectorySources(currentPath)
             .then(files => {
                 data = this._getHTMLDirList(subdir, files);
                 res.statusCode = 200;

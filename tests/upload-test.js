@@ -76,17 +76,25 @@ describe('Upload file tests:', () => {
                 expect(isAvailable).to.eql(true);
             });
 
-            it.only('Rename a file with the same name', async () => {
-                await requester
-                    .post('/')
-                    .field({ savePath: run.path })
-                    .attach('fileToUpload', './tests/public/elements/line.png', 'line.png');
+            const runs2 = [
+                { it: 'line (1).png' },
+                { it: 'line (2).png' },
+                { it: 'line (3).png' }
+            ];
 
-                const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+            runs2.forEach(run2 => {
+                it('Rename a file with the same name', async () => {
+                    await requester
+                        .post('/')
+                        .field({ savePath: run.path })
+                        .attach('fileToUpload', './tests/public/elements/line.png', 'line.png');
 
-                expect(listFiles.files.some(file => {
-                    return file.includes('_line.png');
-                })).to.eql(true);
+                    const listFiles = await getDir(`${testConfig.rootDir}${run.path}`, 'utf-8');
+
+                    expect(listFiles.files.some(file => {
+                        return file === run2.it;
+                    })).to.equal(true);
+                });
             });
         });
     });

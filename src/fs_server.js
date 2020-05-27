@@ -78,7 +78,6 @@ export default class StaticServer {
 
         getDir(currentPath)
             .then(files => {
-                debug(files, '1');
                 data = this._getHTMLDirList(subdir, files);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');

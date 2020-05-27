@@ -62,23 +62,24 @@ export const getListSubDirectories = async (rootDir, subdir = '', dirPaths = ['/
     return dirPaths;
 };
 
-export const getNewFileName = async (fileName, pathToFile) => {
-    debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
+export const getNewFileName = async (fileName, pathToFile, copy = 0) => {
+    const ext = path.extname(fileName);
+    const base = path.basename(fileName, ext);
+    let fileCandidat = `${base} (${copy})${ext}`;
+
+    if ( copy === 0)
+        fileCandidat = fileName;
+
+    debug(`${pathToFile} : ${fileName} = ${base} + ${copy} + ${ext}`, 'getNewName');
     try {
-        await fsStat( path.join(pathToFile, fileName) );
-        fileName = await getNewFileName( `${Math.random().toString(36).substring(7)}_${fileName}`, pathToFile );
+        await fsStat( path.join(pathToFile, fileCandidat) );
+
+        fileCandidat = await getNewFileName( fileName, pathToFile, copy + 1 );
     }
     catch (err) {
         debug(err.message, 'getNewName.err');
     }
 
-    debug(fileName, 'getNewName.return');
-    return fileName;
-    // debug(`fileName:${fileName}  pathToFile: ${pathToFile}`, 'getNewName');
-    // const listDirFiles = await getDir( pathToFile );
-    // const isFileNameMatch = listDirFiles.files.some( file => {
-    //     return file === fileName;
-    // });
-    //
-    // return isFileNameMatch ? `${Math.random().toString(36).substring(7)}_${fileName}` : fileName;
+    debug(fileCandidat, 'getNewName.return');
+    return fileCandidat;
 };

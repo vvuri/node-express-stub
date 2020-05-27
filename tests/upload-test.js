@@ -83,7 +83,7 @@ describe('Upload file tests:', () => {
             ];
 
             runs2.forEach(run2 => {
-                it('Rename a file with the same name', async () => {
+                it(`Rename a file with the name ${run2.it}`, async () => {
                     await requester
                         .post('/')
                         .field({ savePath: run.path })

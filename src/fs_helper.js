@@ -65,21 +65,21 @@ export const getListSubDirectories = async (rootDir, subdir = '', dirPaths = ['/
 export const getNewFileName = async (fileName, pathToFile, copy = 0) => {
     const ext = path.extname(fileName);
     const base = path.basename(fileName, ext);
-    let fileCandidat = `${base} (${copy})${ext}`;
+    let fileCandidate = `${base} (${copy})${ext}`;
 
     if ( copy === 0)
-        fileCandidat = fileName;
+        fileCandidate = fileName;
 
     debug(`${pathToFile} : ${fileName} = ${base} + ${copy} + ${ext}`, 'getNewName');
     try {
-        await fsStat( path.join(pathToFile, fileCandidat) );
+        await fsStat( path.join(pathToFile, fileCandidate) );
 
-        fileCandidat = await getNewFileName( fileName, pathToFile, copy + 1 );
+        fileCandidate = await getNewFileName( fileName, pathToFile, copy + 1 );
     }
     catch (err) {
         debug(err.message, 'getNewName.err');
     }
 
-    debug(fileCandidat, 'getNewName.return');
-    return fileCandidat;
+    debug(fileCandidate, 'getNewName.return');
+    return fileCandidate;
 };

@@ -4,7 +4,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 
-import { getDir, getListSubDirectories, getNewFileName } from './fs_helper';
+import { getDir, getNewFileName, getSubDirectoryUrlsRecursive } from './fs_helper';
 import config from '../config.json';
 import debug from './fs_logger';
 
@@ -96,7 +96,7 @@ export default class StaticServer {
 
     async _initApp () {
         this.app = express();
-        const dirPaths = await getListSubDirectories(this.rootDir);
+        const dirPaths = await getSubDirectoryUrlsRecursive(this.rootDir);
 
         debug(dirPaths, '_initApp');
         for (const dirPath of dirPaths) {

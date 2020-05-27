@@ -2,7 +2,7 @@ import chai from 'chai';
 import chaiHtml from 'chai-html';
 import StaticServer from '../dist/fs_server';
 import { testConfig } from './helper';
-import { getListSubDirectories } from '../dist/fs_helper';
+import { getSubDirectoryUrlsRecursive } from '../dist/fs_helper';
 
 chai.use(chaiHtml);
 
@@ -48,9 +48,9 @@ describe('StaticServer unit test for methods:', () => {
         });
     });
 
-    describe('getListSubDirectories()', () => {
+    describe('getSubDirectoryUrlsRecursive()', () => {
         it(`should return a list of subdirectories`, async () => {
-            srv.dirPath = await getListSubDirectories(srv.rootDir);
+            srv.dirPath = await getSubDirectoryUrlsRecursive(srv.rootDir);
 
             expect(srv.dirPath).to.be.an('array').to.have.lengthOf(3);
             expect(srv.dirPath).to.eql(['/', '/elements', '/elements/subelements']);

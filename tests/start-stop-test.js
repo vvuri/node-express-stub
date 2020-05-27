@@ -113,7 +113,7 @@ describe('Start/stop API', () => {
         // TODO: Modify the test when calling srv.start. Use mock-require
         it('Interrupt execution if directory tree traversal error', async () => {
             try {
-                const { getListSubDirectories } = proxyquire('../dist/fs_helper', {
+                const { getSubDirectoryUrlsRecursive } = proxyquire('../dist/fs_helper', {
                     'fs': {
                         'stat': ( path, callback ) => {
                             callback(null, {
@@ -125,7 +125,7 @@ describe('Start/stop API', () => {
                     }
                 });
 
-                await getListSubDirectories(testConfig.rootDir);
+                await getSubDirectoryUrlsRecursive(testConfig.rootDir);
             }
             catch (err) {
                 assert.equal(err, `Mock error`);

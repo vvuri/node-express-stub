@@ -36,7 +36,7 @@ export const getDir = ( folder, enconding = 'utf-8' ) => {
         });
 };
 
-export const getListSubDirectories = async (rootDir, subdir = '', dirPaths = ['/']) => {
+export const getSubDirectoryUrlsRecursive = async (rootDir, subdir = '', dirPaths = ['/']) => {
     const currentPath = path.join(rootDir, subdir);
 
     debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
@@ -51,7 +51,7 @@ export const getListSubDirectories = async (rootDir, subdir = '', dirPaths = ['/
         const currentSubPath = `${subdir}/${fileName}`;
 
         dirPaths.push( currentSubPath );
-        await getListSubDirectories( rootDir, currentSubPath, dirPaths );
+        await getSubDirectoryUrlsRecursive( rootDir, currentSubPath, dirPaths );
     }))
         .catch( err => {
             debug( err, 'getListSubDirectories.Promise.all' );

@@ -138,6 +138,9 @@ export default class StaticServer {
                         case 'ENOENT':
                             res.end('Unable to store the file');
                             break;
+                        default:
+                            res.end('Something went wrong. Please try again later.');
+                            break;
                     }
                 }
                 else

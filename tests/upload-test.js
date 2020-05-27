@@ -1,6 +1,6 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
-import { clearDir, createRequester, createTestUploadDir, getMD5sum, stopSrv, testConfig } from './helper';
+import { clearDir, createRequester, createTestUploadDir, stopSrv, testConfig } from './helper';
 import StaticServer from '../dist/fs_server';
 import { getDirectorySources } from '../dist/fs_helper';
 
@@ -136,6 +136,8 @@ describe('Upload file tests:', () => {
 
     runs.forEach(run => {
         it(`Uploaded format file - ${run.it}`, async () => {
+            const md5File = require('md5-file');
+
             await requester
                 .post('/')
                 .field({ savePath: run.path })
@@ -144,8 +146,8 @@ describe('Upload file tests:', () => {
                     expect(result).to.have.status(200);
                 });
 
-            expect(getMD5sum(`${run.sourceDir}${run.fileName}`))
-                .to.equal(getMD5sum(`${testConfig.rootDir}${run.path}${run.fileName}`));
+            expect(md5File.sync(`${run.sourceDir}${run.fileName}`))
+                .to.equal(md5File.sync(`${testConfig.rootDir}${run.path}${run.fileName}`));
         });
     });
 

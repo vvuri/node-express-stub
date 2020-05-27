@@ -8,7 +8,7 @@ import { getDirectorySources, getNewFileName, getSubDirectoryUrlsRecursive } fro
 import config from '../config.json';
 import debug from './fs_logger';
 
-const htmlUploadTag = 'fileToUpload';
+const HTML_UPLOAD_NAME = 'fileToUpload';
 
 export default class StaticServer {
 
@@ -123,7 +123,7 @@ export default class StaticServer {
         const upload = multer({
             storage: storage,
             limits:  { fileSize: this.maxUploadSize }
-        }).single(htmlUploadTag);
+        }).single(HTML_UPLOAD_NAME);
 
         this.app.post('/', (req, res) => {
             upload( req, res, err => {

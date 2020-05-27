@@ -65,10 +65,7 @@ export const getSubDirectoryUrlsRecursive = async (rootDir, subdir = '', dirPath
 export const getNewFileName = async (fileName, pathToFile, copy = 0) => {
     const ext = path.extname(fileName);
     const base = path.basename(fileName, ext);
-    let fileCandidate = `${base} (${copy})${ext}`;
-
-    if ( copy === 0)
-        fileCandidate = fileName;
+    let fileCandidate = copy === 0 ? fileName : `${base} (${copy})${ext}`;
 
     debug(`${pathToFile} : ${fileName} = ${base} + ${copy} + ${ext}`, 'getNewName');
     try {

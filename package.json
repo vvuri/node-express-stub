@@ -20,7 +20,7 @@
   "scripts": {
     "build": "babel src -d dist",
     "test": "npm run lint && mocha --require babel-register --require babel-polyfill --colors tests/*-test.js",
-    "debug-test": "npm run lint && mocha --require babel-register --require babel-polyfill --colors --inspect-brk tests/*-test.js",
+    "debug-test": "mocha --require babel-register --require babel-polyfill --colors --inspect-brk tests/*-test.js",
     "start": "node dist/server.js",
     "lint": "eslint src tests",
     "all": "npm run lint && npm run build && npm test"

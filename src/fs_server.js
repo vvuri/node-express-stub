@@ -40,15 +40,16 @@ export default class StaticServer {
     _getHTMLDirList (subdir = '', listFiles = { files: '', dirs: '' }) {
         debug(listFiles, '_getHTMLDirList');
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
+        const getItemHref = item => `"http://${this.host}:${this.port}${subdir}${item}"`;
 
         data += `<ul>`;
         debug(listFiles.dirs, '_getHTMLDirList.dir');
         for (const item of listFiles.dirs)
-            data += `<li><A href="http://${this.host}:${this.port}${subdir}${item}"><b>${item}</b></A></li>`;
+            data += `<li><A href=${getItemHref(item)}><b>${item}</b></A></li>`;
 
         debug(listFiles.files, '_getHTMLDirList.files');
         for (const item of listFiles.files) {
-            const substr = `<A href="http://${this.host}:${this.port}${subdir}${item}"`;
+            const substr = `<A href=${getItemHref(item)}`;
 
             data += `<li>${substr}>${item}</A>` +
                 ` (${substr} download>download</A>)</li>`;

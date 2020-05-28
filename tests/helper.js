@@ -44,8 +44,8 @@ export function parseLiList (text) {
 export async function clearDir (subdir, recursive = false) {
     const listFileDir = await getDirectorySources( subdir );
 
-    listFileDir.files.map( file => {
-        fs.unlink(path.join(subdir, file), err => {
+    listFileDir.files.map( async file => {
+        await fs.unlink(path.join(subdir, file), err => {
             if (err)
                 console.log(`Error deleted file: ${file}, err.message`);
         });

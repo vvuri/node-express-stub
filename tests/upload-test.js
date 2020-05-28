@@ -1,12 +1,13 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
 import { clearDir, createRequester, createTestUploadDir, stopSrv, testConfig } from './helper';
+import md5File from 'md5-file';
 import StaticServer from '../dist/fs_server';
 import { getDirectorySources } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
-describe('Upload file tests:', () => {
+describe.only('Upload file tests:', () => {
     let srv;
     let requester;
 
@@ -18,7 +19,6 @@ describe('Upload file tests:', () => {
             `./${testConfig.rootDir}/subdir`,
             `./${testConfig.rootDir}/subdir/subsubdir`
         ]);
-        await clearDir(testConfig.rootDir, true);
         srv = new StaticServer(testConfig);
         srv.currentDir = '/';
         await srv.start();
@@ -27,7 +27,10 @@ describe('Upload file tests:', () => {
     after(async () => {
         requester.close();
         await srv.stop();
+        // deleteTestUploadDirs(`./${testConfig.rootDir}`);
+        console.log('>>> Start');
         await clearDir(testConfig.rootDir, true);
+        console.log('>>> End');
     });
 
     let runs = [
@@ -139,8 +142,6 @@ describe('Upload file tests:', () => {
     describe('Check Uploading file format', () => {
         runs.forEach(run => {
             it(`Uploaded format file - ${run.it}`, async () => {
-                const md5File = require('md5-file');
-
                 await requester
                     .post('/')
                     .field({ savePath: run.path })

@@ -93,7 +93,7 @@ export default class StaticServer {
         res.redirect(req.get('Referer') || '/');
     }
 
-    async _configureUpload () {
+    _configureUpload () {
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
                 const localPath = path.join('./', this.rootDir, req.body.savePath);
@@ -150,7 +150,7 @@ export default class StaticServer {
             this.app.get(dirPath, this._resDirListFiles.bind(this));
         }
 
-        await this._configureUpload();
+        this._configureUpload();
     }
 
     async start () {

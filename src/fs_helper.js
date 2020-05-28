@@ -61,7 +61,7 @@ export const getSubDirectoryUrlsRecursive = async (rootDir, subdir = '', dirPath
     return dirPaths;
 };
 
-export const getNewFileName = async (fileName, pathToFile, copy = 0) => {
+export const getNewFileName = (fileName, pathToFile, copy = 0) => {
     const ext = path.extname(fileName);
     const base = path.basename(fileName, ext);
     let fileCandidate = copy === 0 ? fileName : `${base} (${copy})${ext}`;
@@ -70,7 +70,7 @@ export const getNewFileName = async (fileName, pathToFile, copy = 0) => {
     try {
         fs.lstatSync( path.join(pathToFile, fileCandidate) );
 
-        fileCandidate = await getNewFileName( fileName, pathToFile, copy + 1 );
+        fileCandidate = getNewFileName( fileName, pathToFile, copy + 1 );
     }
     catch (err) {
         debug(err.message, 'getNewName.err');

@@ -55,7 +55,7 @@ export default class StaticServer {
         data += `
         <form action="/" enctype="multipart/form-data" method="post">
           <input type="hidden" id="savePath" name="savePath" value="${subdir}"">
-          <input type="file" name="fileToUpload" value="Select file">
+          <input type="file" name="${HTML_UPLOAD_NAME}" value="Select file">
           <input type="submit" value="Upload to server">
         </form>`;
 
@@ -101,9 +101,9 @@ export default class StaticServer {
                 debug(localPath, '_configureUpload.destination');
                 cb(null, localPath);
             },
-            filename: async (req, file, cb) => {
+            filename: (req, file, cb) => {
                 debug(file.originalname, '_configureUpload.filename');
-                const newName = await getNewFileName(file.originalname, this.rootDir + req.body.savePath);
+                const newName = getNewFileName(file.originalname, this.rootDir + req.body.savePath);
 
                 debug(newName, '_configureUpload.getNewName');
                 cb(null, newName);

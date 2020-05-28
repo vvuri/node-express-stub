@@ -94,16 +94,7 @@ export default class StaticServer {
             });
     }
 
-    async _initApp () {
-        this.app = express();
-        const dirPaths = await getSubDirectoryUrlsRecursive(this.rootDir);
-
-        debug(dirPaths, '_initApp');
-        for (const dirPath of dirPaths) {
-            this.app.use(dirPath, express.static(path.join(this.rootDir, dirPath)));
-            this.app.get(dirPath, this._resDirListFiles.bind(this) );
-        }
-
+    async _configureUpload () {
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
                 const localPath = path.join('./', this.rootDir, req.body.savePath);
@@ -148,6 +139,19 @@ export default class StaticServer {
                     res.redirect(req.get('Referer') || '/');
             });
         }, this._upload);
+    }
+
+    async _initApp () {
+        this.app = express();
+        const dirPaths = await getSubDirectoryUrlsRecursive(this.rootDir);
+
+        debug(dirPaths, '_initApp');
+        for (const dirPath of dirPaths) {
+            this.app.use(dirPath, express.static(path.join(this.rootDir, dirPath)));
+            this.app.get(dirPath, this._resDirListFiles.bind(this));
+        }
+
+        await this._configureUpload();
     }
 
     async start () {

@@ -4,7 +4,6 @@ import path from 'path';
 import util from 'util';
 
 const fsReaddir = util.promisify(fs.readdir);
-const fsStat = util.promisify(fs.stat);
 
 export const getDirectorySources = ( folder, enconding = 'utf-8' ) => {
     const result = { dirs: [], files: [] };
@@ -69,7 +68,7 @@ export const getNewFileName = async (fileName, pathToFile, copy = 0) => {
 
     debug(`${pathToFile} : ${fileName} = ${base} + ${copy} + ${ext}`, 'getNewName');
     try {
-        await fsStat( path.join(pathToFile, fileCandidate) );
+        fs.lstatSync( path.join(pathToFile, fileCandidate) );
 
         fileCandidate = await getNewFileName( fileName, pathToFile, copy + 1 );
     }

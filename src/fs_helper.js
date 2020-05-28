@@ -9,8 +9,8 @@ export const getDirectorySources = ( folder, enconding = 'utf-8' ) => {
     const result = { dirs: [], files: [] };
 
     return fsReaddir( folder, enconding )
-        .then( listFiles => {
-            listFiles.forEach( fileName => {
+        .then( listFilesAndDirs => {
+            listFilesAndDirs.forEach( fileName => {
                 try {
                     const currentPath = path.join(folder, fileName);
                     const stats = fs.lstatSync(currentPath);

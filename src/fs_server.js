@@ -73,8 +73,8 @@ export default class StaticServer {
         debug(`getDirectorySources( ${this.rootDir} + ${subdir} = ${currentPath})`, '_resDirListFiles');
 
         getDirectorySources(currentPath)
-            .then(files => {
-                data = this._getHTMLDirList(subdir, files);
+            .then(souces => {
+                data = this._getHTMLDirList(subdir, souces);
                 res.statusCode = 200;
                 res.setHeader('Content-Type', 'text/html');
                 res.end(data);

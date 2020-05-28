@@ -107,20 +107,22 @@ describe('Upload file tests:', () => {
         { it: 'Dots', fileName: 'File.with.dots', path: '/subdir/' }
     ];
 
-    runs.forEach(run => {
-        it(`Uploaded file names with ${run.it} name`, async () => {
-            await requester
-                .post('/')
-                .field({ savePath: run.path })
-                .attach('fileToUpload', './tests/public/elements/text.txt', run.fileName)
-                .then(result => {
-                    expect(result).to.have.status(200);
-                });
-            const listFiles = await getDirectorySources(`${testConfig.rootDir}${run.path}`, 'utf-8');
+    describe('Check Uploading different file names', () => {
+        runs.forEach(run => {
+            it(`Uploaded file names with ${run.it} name`, async () => {
+                await requester
+                    .post('/')
+                    .field({ savePath: run.path })
+                    .attach('fileToUpload', './tests/public/elements/text.txt', run.fileName)
+                    .then(result => {
+                        expect(result).to.have.status(200);
+                    });
+                const listFiles = await getDirectorySources(`${testConfig.rootDir}${run.path}`, 'utf-8');
 
-            expect(listFiles.files.some(file => {
-                return file === run.fileName;
-            })).to.eql(true);
+                expect(listFiles.files.some(file => {
+                    return file === run.fileName;
+                })).to.eql(true);
+            });
         });
     });
 
@@ -134,20 +136,22 @@ describe('Upload file tests:', () => {
         { it: 'MP4', sourceDir: './tests/public/elements/', fileName: 'file_example_MP4_640_3MG.mp4', path: '/subdir/subsubdir/' }
     ];
 
-    runs.forEach(run => {
-        it(`Uploaded format file - ${run.it}`, async () => {
-            const md5File = require('md5-file');
+    describe('Check Uploading file format', () => {
+        runs.forEach(run => {
+            it(`Uploaded format file - ${run.it}`, async () => {
+                const md5File = require('md5-file');
 
-            await requester
-                .post('/')
-                .field({ savePath: run.path })
-                .attach('fileToUpload', `${run.sourceDir}${run.fileName}`, run.fileName)
-                .then(result => {
-                    expect(result).to.have.status(200);
-                });
+                await requester
+                    .post('/')
+                    .field({ savePath: run.path })
+                    .attach('fileToUpload', `${run.sourceDir}${run.fileName}`, run.fileName)
+                    .then(result => {
+                        expect(result).to.have.status(200);
+                    });
 
-            expect(md5File.sync(`${run.sourceDir}${run.fileName}`))
-                .to.equal(md5File.sync(`${testConfig.rootDir}${run.path}${run.fileName}`));
+                expect(md5File.sync(`${run.sourceDir}${run.fileName}`))
+                    .to.equal(md5File.sync(`${testConfig.rootDir}${run.path}${run.fileName}`));
+            });
         });
     });
 

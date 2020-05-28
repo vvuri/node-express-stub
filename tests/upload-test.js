@@ -1,6 +1,6 @@
 import chai from 'chai';
 import cheerio from 'cheerio';
-import { clearDir, createRequester, createTestUploadDir, stopSrv, testConfig } from './helper';
+import { createRequester, createTestUploadDir, deleteTestUploadDirs, stopSrv, testConfig } from './helper';
 import md5File from 'md5-file';
 import StaticServer from '../dist/fs_server';
 import { getDirectorySources } from '../dist/fs_helper';
@@ -27,10 +27,7 @@ describe('Upload file tests:', () => {
     after(async () => {
         requester.close();
         await srv.stop();
-        // deleteTestUploadDirs(`./${testConfig.rootDir}`);
-        console.log('>>> Start');
-        await clearDir(testConfig.rootDir, true);
-        console.log('>>> End');
+        deleteTestUploadDirs(`./${testConfig.rootDir}`);
     });
 
     let runs = [

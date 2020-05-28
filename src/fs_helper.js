@@ -38,7 +38,7 @@ export const getDirectorySources = ( folder, enconding = 'utf-8' ) => {
 export const getSubDirectoryUrlsRecursive = async (rootDir, subdir = '', dirPaths = ['/']) => {
     const currentPath = path.join(rootDir, subdir);
 
-    debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getListSubDirectories');
+    debug(`rootDir: ${rootDir}, subdir: ${subdir} = currentPath: ${currentPath}`, 'getSubDirectoryUrlsRecursive');
     const fileList = await getDirectorySources( currentPath )
         .catch( err => {
             console.log(`Error read ${currentPath}: ${err}`);
@@ -46,14 +46,14 @@ export const getSubDirectoryUrlsRecursive = async (rootDir, subdir = '', dirPath
         });
 
     await Promise.all( fileList.dirs.map( async fileName => {
-        debug( fileName, 'getListSubDirectories.map' );
+        debug( fileName, 'getSubDirectoryUrlsRecursive.map' );
         const currentSubPath = `${subdir}/${fileName}`;
 
         dirPaths.push( currentSubPath );
         await getSubDirectoryUrlsRecursive( rootDir, currentSubPath, dirPaths );
     }))
         .catch( err => {
-            debug( err, 'getListSubDirectories.Promise.all' );
+            debug( err, 'getSubDirectoryUrlsRecursive.Promise.all' );
             console.log(`Error read subdirectories in ${currentPath}: ${err.message}`);
             throw err.message;
         });

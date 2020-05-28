@@ -41,31 +41,6 @@ export function parseLiList (text) {
         });
 }
 
-// export async function clearDir (subdir, recursive = false) {
-//     const listFileDir = await getDirectorySources(subdir);
-//
-//     if (recursive) {
-//         await Promise.all(listFileDir.dirs.map(async dir => {
-//             const dirName = path.join(subdir, dir);
-//
-//             await clearDir(dirName, recursive);
-//             console.log('directory deleted ' + dirName);
-//         }));
-//     }
-//
-//     await Promise.all(listFileDir.files.map(async file => {
-//         const fileName = path.join(subdir, file);
-//
-//         await fs.unlink(fileName, err => {
-//             console.log('file deleted ' + fileName);
-//             if (err)
-//                 console.log(`Error deleted file: ${file}, err.message`);
-//         });
-//
-//     }));
-//
-// }
-
 export async function clearDir (subdir, recursive = false) {
     const listFileDir = await getDirectorySources( subdir );
 

@@ -41,47 +41,47 @@ export function parseLiList (text) {
         });
 }
 
-export async function clearDir (subdir, recursive = false) {
-    const listFileDir = await getDirectorySources(subdir);
-
-    if (recursive) {
-        await Promise.all(listFileDir.dirs.map(async dir => {
-            const dirName = path.join(subdir, dir);
-
-            await clearDir(dirName, recursive);
-            console.log('directory deleted ' + dirName);
-        }));
-    }
-
-    await Promise.all(listFileDir.files.map(async file => {
-        const fileName = path.join(subdir, file);
-
-        await fs.unlink(fileName, err => {
-            console.log('file deleted ' + fileName);
-            if (err)
-                console.log(`Error deleted file: ${file}, err.message`);
-        });
-
-    }));
-
-}
-
 // export async function clearDir (subdir, recursive = false) {
-//     const listFileDir = await getDirectorySources( subdir );
+//     const listFileDir = await getDirectorySources(subdir);
 //
-//     listFileDir.files.map( async file => {
-//         await fs.unlink(path.join(subdir, file), err => {
+//     if (recursive) {
+//         await Promise.all(listFileDir.dirs.map(async dir => {
+//             const dirName = path.join(subdir, dir);
+//
+//             await clearDir(dirName, recursive);
+//             console.log('directory deleted ' + dirName);
+//         }));
+//     }
+//
+//     await Promise.all(listFileDir.files.map(async file => {
+//         const fileName = path.join(subdir, file);
+//
+//         await fs.unlink(fileName, err => {
+//             console.log('file deleted ' + fileName);
 //             if (err)
 //                 console.log(`Error deleted file: ${file}, err.message`);
 //         });
-//     });
 //
-//     if (recursive) {
-//         await listFileDir.dirs.map( async dir => {
-//             await clearDir(path.join(subdir, dir), recursive);
-//         });
-//     }
+//     }));
+//
 // }
+
+export async function clearDir (subdir, recursive = false) {
+    const listFileDir = await getDirectorySources( subdir );
+
+    listFileDir.files.map( async file => {
+        await fs.unlink(path.join(subdir, file), err => {
+            if (err)
+                console.log(`Error deleted file: ${file}, err.message`);
+        });
+    });
+
+    if (recursive) {
+        await listFileDir.dirs.map( async dir => {
+            await clearDir(path.join(subdir, dir), recursive);
+        });
+    }
+}
 
 export async function createTestUploadDir (listDir) {
     await Promise.all(listDir.map( async dirPath => {

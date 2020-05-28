@@ -7,7 +7,7 @@ import { getDirectorySources } from '../dist/fs_helper';
 
 const expect = chai.expect;
 
-describe.only('Upload file tests:', () => {
+describe('Upload file tests:', () => {
     let srv;
     let requester;
 

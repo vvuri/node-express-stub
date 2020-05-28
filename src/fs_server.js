@@ -32,11 +32,6 @@ export default class StaticServer {
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, 'constructor');
     }
 
-    _upload (req, res) {
-        debug(req.file.destination, 'POST.file.destination');
-        res.redirect(req.get('Referer') || '/');
-    }
-
     _getHTMLDirList (subdir = '', listFiles = { files: '', dirs: '' }) {
         debug(listFiles, '_getHTMLDirList');
         let data = `<h2>List Files in <i>${this.rootDir}${subdir}</i>:</h2>`;
@@ -94,6 +89,10 @@ export default class StaticServer {
             });
     }
 
+    _reloadPage (req, res) {
+        res.redirect(req.get('Referer') || '/');
+    }
+
     async _configureUpload () {
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
@@ -136,9 +135,9 @@ export default class StaticServer {
                     }
                 }
                 else
-                    res.redirect(req.get('Referer') || '/');
+                    this._reloadPage(req, res);
             });
-        }, this._upload);
+        }, this._reloadPage);
     }
 
     async _initApp () {

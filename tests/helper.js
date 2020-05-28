@@ -3,6 +3,7 @@ import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
 import DomParser from 'dom-parser';
 import fs from 'fs';
+import path from 'path';
 import { getDirectorySources } from '../dist/fs_helper';
 
 const _Host = '127.0.0.1';
@@ -41,10 +42,10 @@ export function parseLiList (text) {
 }
 
 export async function clearDir (subdir, recursive = false) {
-    const listFileDir = await getDirectorySources( subdir, 'utf-8' );
+    const listFileDir = await getDirectorySources( subdir );
 
     listFileDir.files.map( file => {
-        fs.unlink(`${subdir}/${file}`, err => {
+        fs.unlink(path.join(subdir, file), err => {
             if (err)
                 console.log(`Error deleted file: ${file}, err.message`);
         });
@@ -52,7 +53,7 @@ export async function clearDir (subdir, recursive = false) {
 
     if (recursive) {
         await listFileDir.dirs.map( async dir => {
-            await clearDir(`${subdir}/${dir}`, recursive);
+            await clearDir(path.join(subdir, dir), recursive);
         });
     }
 }

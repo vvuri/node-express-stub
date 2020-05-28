@@ -67,10 +67,10 @@ export default class StaticServer {
         return data;
     }
 
-    _resDirListFiles (req, res, next, subdir = '') {
+    _resDirListFiles (req, res) {
         let data;
 
-        subdir = req.url;
+        const subdir = req.url;
         const currentPath = path.join(this.rootDir, subdir);
 
         debug(`Export::        HOST: ${this.host}  PORT: ${this.port}  ROOT_DIR: ${this.rootDir}`, '_resDirListFiles');

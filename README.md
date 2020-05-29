@@ -48,3 +48,4 @@ const srv = new StaticServer(args);
 
 await srv.start();
 ```
+

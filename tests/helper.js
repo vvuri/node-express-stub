@@ -3,8 +3,6 @@ import chaiHttp from 'chai-http';
 import chaiAsPromised from 'chai-as-promised';
 import DomParser from 'dom-parser';
 import fs from 'fs';
-import path from 'path';
-import { getDirectorySources } from '../dist/fs_helper';
 
 const _Host = '127.0.0.1';
 const _Port = '8888';
@@ -41,28 +39,10 @@ export function parseLiList (text) {
         });
 }
 
-export async function clearDir (subdir, recursive = false) {
-    const listFileDir = await getDirectorySources( subdir );
-
-    await Promise.all( listFileDir.files.map( file => {
-        fs.unlinkSync(path.join(subdir, file));
-    }));
-
-    if (recursive) {
-        await Promise.all( listFileDir.dirs.map( async dir => {
-            await clearDir(path.join(subdir, dir), recursive);
-        }) );
-    }
-}
-
 export async function createTestUploadDir (listDir) {
     await Promise.all(listDir.map( async dirPath => {
         await fs.mkdir(dirPath, () => {});
     }));
-}
-
-export function deleteTestUploadDirs (rootUploadDir) {
-    fs.rmdirSync(rootUploadDir, { recursive: true });
 }
 
 export async function stopSrv (srv) {
